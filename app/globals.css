@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/*
+  Colour tokens. Text/background pairs are chosen for WCAG AAA (7:1) contrast.
+  Status colours are never used alone: every status also shows an icon and a word.
+*/
+:root {
+  color-scheme: light;
+  --background: #fbf8f3;
+  --surface: #ffffff;
+  --foreground: #1a1a1a;
+  --muted: #3d3d3d;
+  --border: #6b6257;
+  --primary: #0b4f6c;
+  --primary-foreground: #ffffff;
+  --warning: #8a1c12;
+  --warning-bg: #fdecea;
+  --unsure: #6b4500;
+  --unsure-bg: #fff4d6;
+  --ok: #1d5e2a;
+  --ok-bg: #e7f4e9;
+  --focus: #0b4f6c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-unsure: var(--unsure);
+  --color-unsure-bg: var(--unsure-bg);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --font-sans: var(--font-atkinson), system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* A thick, always-visible focus ring for keyboard users. */
+:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
