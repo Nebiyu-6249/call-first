@@ -10,11 +10,15 @@ import {
   OctagonAlert,
   Phone,
   RotateCcw,
+  Volume2,
+  VolumeX,
   type LucideIcon,
 } from "lucide-react";
 import type { ParentCircle } from "@/lib/circle/types";
 import { MAX_REASONS, type CheckResult } from "@/lib/check";
 import { pickNextStep, telHref } from "@/lib/next-step";
+import { speechScript } from "@/lib/speech/script";
+import { canSpeak, speak } from "@/lib/speech/speak";
 import type { VerdictLevel } from "@/lib/verdict";
 import { DEFAULT_FAMILY_NAME, VERDICT_COPY, whatToDo } from "@/lib/verdict/copy";
 import { FromMessage } from "./FromMessage";
@@ -27,23 +31,49 @@ const BANNER: Record<VerdictLevel, { Icon: LucideIcon; className: string }> = {
   NO_WARNING_SIGNS: { Icon: CircleCheck, className: "border-ok bg-ok-bg text-ok" },
 };
 
+// What was checked, when it was not typed: the words read from a picture, or the transcript of the voice note.
+export type ResultSource = { kind: "text" } | { kind: "image"; text: string } | { kind: "voice"; text: string };
+
 export function ResultView({
   result,
   circle = null,
+  source = { kind: "text" },
+  autoRead = true,
   onCheckAnother,
 }: {
   result: CheckResult;
   circle?: ParentCircle | null;
+  source?: ResultSource;
+  autoRead?: boolean;
   onCheckAnother: () => void;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const stopReadingRef = useRef<() => void>(() => {});
   const [dismissed, setDismissed] = useState(false);
+  const [reading, setReading] = useState(false);
   const familyName = circle?.familyMembers[0]?.name ?? DEFAULT_FAMILY_NAME;
+  const nextStep = pickNextStep(circle, result.senderType, result.claimedPerson);
+  const script = speechScript(result, nextStep, familyName);
+  const speechAvailable = canSpeak();
 
   // Move focus to the answer so screen readers announce it straight away.
   useEffect(() => {
     headingRef.current?.focus();
   }, [dismissed]);
+
+  // Read the result aloud once it appears, and stop when the screen changes.
+  useEffect(() => {
+    if (!autoRead || dismissed) return;
+    const stop = speak(script, { onStart: () => setReading(true), onEnd: () => setReading(false) });
+    stopReadingRef.current = stop;
+    return stop;
+  }, [autoRead, dismissed, script]);
+
+  function toggleReading() {
+    stopReadingRef.current();
+    if (reading) return;
+    stopReadingRef.current = speak(script, { onStart: () => setReading(true), onEnd: () => setReading(false) });
+  }
 
   if (dismissed) {
     return (
@@ -65,7 +95,6 @@ export function ResultView({
   const { Icon, className } = BANNER[result.level];
   const copy = VERDICT_COPY[result.level];
   const reasons = result.flags.slice(0, MAX_REASONS);
-  const nextStep = pickNextStep(circle, result.senderType, result.claimedPerson);
 
   return (
     <div className="flex flex-col gap-6">
@@ -76,6 +105,38 @@ export function ResultView({
         </h1>
         <p className="text-xl font-bold">{copy.line}</p>
       </div>
+
+      {speechAvailable && (
+        <button type="button" onClick={toggleReading} className={secondaryButton}>
+          {reading ? (
+            <VolumeX aria-hidden="true" className="size-7" />
+          ) : (
+            <Volume2 aria-hidden="true" className="size-7" />
+          )}
+          {reading ? "Stop reading" : "Read it to me"}
+        </button>
+      )}
+
+      {source.kind === "voice" && (
+        <section aria-labelledby="you-said" className="rounded-2xl border-2 border-border bg-surface p-5">
+          <h2 id="you-said" className="text-xl font-bold">
+            You said:
+          </h2>
+          <p className="mt-2 text-xl">&ldquo;{source.text}&rdquo;</p>
+        </section>
+      )}
+
+      {source.kind === "image" &&
+        (source.text ? (
+          <details className="rounded-2xl border-2 border-border bg-surface p-5 text-xl">
+            <summary className="min-h-12 cursor-pointer font-bold">What we read in the picture</summary>
+            <p className="mt-3 whitespace-pre-line break-words">{source.text}</p>
+          </details>
+        ) : (
+          <p className="text-xl font-bold">
+            We could not read the picture this time. You can type the message instead.
+          </p>
+        ))}
 
       {(result.summary || result.explanation) && (
         <div className="flex flex-col gap-3 text-xl">

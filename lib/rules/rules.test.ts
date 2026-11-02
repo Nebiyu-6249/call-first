@@ -174,6 +174,23 @@ describe("medium flags", () => {
   });
 });
 
+describe("call descriptions in the person's own words", () => {
+  it.each<[string, FlagId]>([
+    ["He said not to tell my daughter about it.", "secrecy_request"],
+    ["The man told me to keep it secret from the bank.", "secrecy_request"],
+    ["She asked for my PIN so she could stop the payment.", "asks_for_code"],
+    ["He wanted me to read out the code from the text.", "asks_for_code"],
+    ["They asked me for my card number and the expiry date.", "asks_for_card_or_bank_details"],
+    ["He said I would be arrested.", "threat_or_penalty"],
+  ])("%s -> %s", (text, id) => {
+    expect(ids(text)).toContain(id);
+  });
+
+  it("does not flag the person saying they kept their code private", () => {
+    expect(ids("I did not tell them the code.")).not.toContain("asks_for_code");
+  });
+});
+
 describe("normal messages", () => {
   it.each([
     "Reminder: your appointment at Example Health Clinic is on Tuesday 14 Nov at 10:30.",

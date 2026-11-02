@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/ComingSoon";
+import { VoiceCheck } from "@/components/parent/VoiceCheck";
 
-export default function VoiceCheck() {
-  return <ComingSoon title="Tell me what happened" backHref="/p/check" />;
+export default function VoiceCheckPage() {
+  return <VoiceCheck />;
 }

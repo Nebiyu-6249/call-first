@@ -98,7 +98,7 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
       lower,
       [
         new RegExp(String.raw`\b${SHARE_VERB}\b[^.!?\n,;:]{0,40}?\b${CODE_WORD}`),
-        new RegExp(String.raw`\b(?:need|needs|require|requires|required|ask(?:ing)? (?:you )?for|asks (?:you )?for|request(?:ing)?)\b[^.!?\n]{0,25}?\b(?:your|the|that|this) ${CODE_WORD}`),
+        new RegExp(String.raw`\b(?:need|needs|needed|require|requires|required|want|wants|wanted|ask(?:ed|ing)? (?:you |me )?for|asks (?:you |me )?for|request(?:ed|ing)?)\b[^.!?\n]{0,25}?\b(?:your|my|the|that|this) ${CODE_WORD}`),
         /\b(?:what(?:'s| is| was)|tell me|read me) (?:the|your|that) (?:\d[- ]?digit )?(?:code|pin|numbers|digits)\b/,
         /\bread (?:it|them|the (?:numbers|digits|code)) (?:out|back)\b/,
         /\b(?:enter|type|input|put) (?:in )?your (?:card )?(?:pin|password|passcode)\b/,
@@ -113,7 +113,7 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
       find(
         lower,
         [
-          new RegExp(String.raw`\b(?:confirm|verify|update|provide|enter|send|give|share|tell|re-?enter|need|require|submit|fill in|type|read)\b[^.!?\n]{0,40}?\b${detail}`),
+          new RegExp(String.raw`\b(?:confirm|verify|update|provide|enter|send|give|share|tell|re-?enter|need|needed|require|submit|fill in|type|read|ask(?:ed|ing)? (?:you |me )?for|want(?:s|ed)?)\b[^.!?\n]{0,40}?\b${detail}`),
           new RegExp(String.raw`\b${detail}\b[^.!?\n]{0,20}?\b(?:is|are) (?:needed|required)\b`),
         ],
         { negatable: true },
@@ -125,7 +125,9 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
     find(
       lower,
       [
-        /\b(?:do not|don't|dont|never|you must not|you cannot|you can't|you are not allowed to)\s+(?:tell|inform|contact|call|speak to|talk to|mention (?:this|it) to|discuss (?:this|it) with|let)\s+(?:anyone|anybody|your (?:family|bank|children|kids|son|daughter|husband|wife|friends?|relatives|grandchildren|partner)|the bank|bank staff|family|branch staff|the police)\b/,
+        // Includes reported speech from a call description: "he said not to tell my daughter".
+        /\b(?:do not|don't|dont|never|not to|you must not|you cannot|you can't|you are not allowed to|i must not|i can't|i cannot|i was not allowed to|i wasn't allowed to)\s+(?:tell|inform|contact|call|speak to|talk to|mention (?:this|it) to|discuss (?:this|it) with|let)\s+(?:anyone|anybody|(?:your|my) (?:family|bank|children|kids|son|daughter|husband|wife|friends?|relatives|grandchildren|grandson|granddaughter|partner)|the bank|bank staff|family|branch staff|the police)\b/,
+        /\b(?:keep|kept) (?:it|this) (?:a )?secret\b/,
         /\bkeep (?:this|it|everything|our conversation) (?:a )?(?:secret|confidential|private|quiet|between us|to yourself)\b/,
         /\bbetween (?:you and me|you and i|ourselves)\b/,
         /\b(?:confidential|secret|undercover|covert) (?:investigation|operation|matter|case)\b/,

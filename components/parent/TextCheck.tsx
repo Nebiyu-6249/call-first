@@ -1,18 +1,16 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ClipboardPaste, LoaderCircle, Search } from "lucide-react";
+import { ClipboardPaste, Search } from "lucide-react";
 import type { ParentCircle } from "@/lib/circle/types";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
 import { MAX_TEXT_LENGTH } from "@/lib/check/request";
 import { readCachedCircle } from "@/lib/parent/circle-cache";
 import { BackLink } from "./BackLink";
+import { CheckingScreen, atLeast } from "./CheckingScreen";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
-
-// A short pause so the "checking" message can be read instead of flashing.
-const MIN_CHECKING_MS = 900;
 
 type Step =
   | { name: "input" }
@@ -46,10 +44,7 @@ export function TextCheck() {
     }
     setError("");
     setStep({ name: "checking" });
-    const [result] = await Promise.all([
-      runCheck({ type: "text", text }),
-      new Promise((resolve) => setTimeout(resolve, MIN_CHECKING_MS)),
-    ]);
+    const result = await atLeast(runCheck({ type: "text", text }));
     setStep({ name: "result", result, circle: readCachedCircle() });
   }
 
@@ -58,16 +53,7 @@ export function TextCheck() {
     setStep({ name: "input" });
   }
 
-  if (step.name === "checking") {
-    return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-6 py-10 text-center">
-        <LoaderCircle aria-hidden="true" className="size-16 text-primary motion-safe:animate-spin" />
-        <p role="status" className="text-3xl font-bold">
-          Taking a careful look...
-        </p>
-      </main>
-    );
-  }
+  if (step.name === "checking") return <CheckingScreen />;
 
   if (step.name === "result") {
     return (

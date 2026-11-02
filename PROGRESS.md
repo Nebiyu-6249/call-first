@@ -81,17 +81,48 @@ Notes:
 - Checked in the browser without an API key: the fallback works, the verified bank button is `tel:08081570000`,
   the message's number shows as plain text, bad requests get 400, and the server log has no message content.
 
-## Next: Phase 3 - Image and voice
+## Phase 3: Image and voice - done
 
-- Client-side image compression (longest side 1600px, JPEG ~0.8, strips EXIF) and the photo screen.
-- Voice recording (up to 60s, MediaRecorder), `/api/transcribe` with `gpt-transcribe`, "You said: ..." on the result.
-- Read-aloud with `speechSynthesis` ("Read it to me" button, plus automatic reading).
+- Photo (`/p/check/photo`, `components/parent/PhotoCheck.tsx`): "Take a photo" (camera) or "Choose a screenshot",
+  a preview ("Is this the right picture?"), then the check. `lib/image/compress.ts` shrinks to 1600px on the longest
+  side and re-encodes as JPEG 0.8 through a canvas, which removes EXIF data such as location (verified in the browser:
+  a 3000x2000 PNG became a 1600x1067 JPEG of 54 KB with no EXIF). Photos are turned the right way up first.
+  The picture is held in memory only. The result screen shows "What we read in the picture" (collapsed), or
+  "We could not read the picture this time" when the AI is unavailable.
+- Voice (`/p/check/voice`, `components/parent/VoiceCheck.tsx`): "Start talking" -> recording with a seconds-left
+  counter and a big "I have finished" button (auto-stops at 60s) -> "Writing down what you said..." -> check.
+  The result shows "You said: ...". Clear messages for no microphone support, microphone refused, transcription
+  failed, and silence, each with "Try again" and "Type it instead". The microphone is released on stop or leaving.
+- `/api/transcribe` (`lib/ai/transcribe.ts`): multipart upload to `/v1/audio/transcriptions` with `gpt-transcribe`
+  and a short context prompt; 20s timeout; webm/mp4/m4a/mp3/wav only, up to 5 MB; audio not stored or logged.
+- Read-aloud (`lib/speech`): `speechScript` builds the spoken text in code from the result (verdict as a word,
+  explanation, reasons, what to do, the verified button's label) and never reads numbers or links from the message.
+  `speak` uses the browser voice at rate 0.9, one sentence at a time (some browsers cut off long speech).
+  The result is read automatically and there is a "Read it to me" / "Stop reading" button.
+- Rules found a gap in the browser: spoken descriptions use reported speech. The rules now also catch
+  "he said not to tell my daughter", "keep it secret", "asked for my PIN", "wanted me to read out the code",
+  "asked me for my card number".
+- 131 unit tests. New: image sizing, audio formats, transcription client (mocked fetch, nothing logged),
+  read-aloud script, reported-speech rules.
+- Checked in the browser (no API key): photo compression and fallback, voice states with a synthetic audio stream
+  (not the real microphone), "You said" result with a stubbed transcript, auto read-aloud starting.
+
+## Next: Phase 4 - Family circle
+
+- Supabase schema and SQL migration: circles, family members, verified contacts, devices, pairing codes, alerts.
+- Create circle (`/f`), PIN (scrypt, 5 tries then 15-minute lockout), signed httpOnly family session cookie.
+- Pairing: 6-digit code (15 minutes) and QR for `/p/pair`; device token stored hashed; circle cached on the device.
+- Parent: call buttons on home, "Show [family]" on the result, "Sent to family" screen polling every 5s.
+- Family: alerts inbox with one-tap and custom replies; edit contacts and settings behind the PIN.
+- Permissions (parent device: read contacts, create alerts only), rate limit on /api/check and /api/transcribe,
+  alert expiry after 7 days, text-size and emergency-number settings.
 
 ## Known issues
 
-- Not yet tested against the live OpenAI API: there is no API key in this environment. Add `OPENAI_API_KEY` to
-  `.env.local` to try it; Phase 6's eval runs the real pipeline.
-- No rate limit on `/api/check` yet (planned for Phase 4 with the other security work).
+- Not yet tested against the live OpenAI API (no key in this environment). Add `OPENAI_API_KEY` to `.env.local`
+  to try it; Phase 6's eval runs the real pipeline.
+- The microphone and camera were not tested with real hardware here; please try them on a phone.
+- No rate limit on `/api/check` or `/api/transcribe` yet (Phase 4).
 - No call buttons until a circle is cached on the device (Phase 4). "your family" is used as the name until then.
 - Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design).
 - "Call our fraud team now" is not caught as urgency (only fixed phrases such as "call now" are). The AI covers it.

@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/ComingSoon";
+import { PhotoCheck } from "@/components/parent/PhotoCheck";
 
-export default function PhotoCheck() {
-  return <ComingSoon title="Photo or screenshot" backHref="/p/check" />;
+export default function PhotoCheckPage() {
+  return <PhotoCheck />;
 }
