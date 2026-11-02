@@ -107,23 +107,67 @@ Notes:
 - Checked in the browser (no API key): photo compression and fallback, voice states with a synthetic audio stream
   (not the real microphone), "You said" result with a stubbed transcript, auto read-aloud starting.
 
-## Next: Phase 4 - Family circle
+## Phase 4: Family circle - done
 
-- Supabase schema and SQL migration: circles, family members, verified contacts, devices, pairing codes, alerts.
-- Create circle (`/f`), PIN (scrypt, 5 tries then 15-minute lockout), signed httpOnly family session cookie.
-- Pairing: 6-digit code (15 minutes) and QR for `/p/pair`; device token stored hashed; circle cached on the device.
-- Parent: call buttons on home, "Show [family]" on the result, "Sent to family" screen polling every 5s.
-- Family: alerts inbox with one-tap and custom replies; edit contacts and settings behind the PIN.
-- Permissions (parent device: read contacts, create alerts only), rate limit on /api/check and /api/transcribe,
-  alert expiry after 7 days, text-size and emergency-number settings.
+- `supabase/migrations/0001_family_circle.sql`: circles, family_members, contacts, devices, pairing_codes, alerts,
+  rate_limits. RLS on with no policies (server-only access). Atomic SQL functions: `create_circle`,
+  `replace_circle_settings`, `consume_pairing_code` (once, before expiry), `hit_rate_limit`, `delete_expired`.
+  Execute is revoked from `anon`/`authenticated` and granted to `service_role`. Check constraints cap alert summary
+  at 200 and excerpt at 500 characters. `supabase/migration.test.ts` runs the migration in PGlite (real Postgres)
+  and tests every function.
+- Store layer `lib/server/store`: one interface, `SupabaseStore` (supabase-js, service role) and `MemoryStore`
+  (tests; also used by `npm run dev` when `SUPABASE_URL` is not set; production refuses to run without Supabase).
+- Security (`lib/server`):
+  - PIN: scrypt with a random salt. Five wrong PINs lock the circle for 15 minutes (sign-in, settings changes and
+    disconnecting a phone all count). Weak PINs (123456, 000000...) are refused.
+  - Family session: HMAC-signed httpOnly SameSite=Lax cookie (30 days); state-changing family requests also reject
+    other origins.
+  - Family sign-in on another device: 8-character family code (no look-alike letters) plus the PIN.
+  - Pairing: one-time 6-digit code, keyed hash (HMAC with SESSION_SECRET) in the database, 15-minute expiry, one
+    active code per circle, 10 tries per 15 minutes per IP. The phone gets a random 32-byte token; only its SHA-256
+    is stored.
+  - The parent's phone (Bearer token) can read the circle and create alerts and read replies. It cannot change
+    anything, never receives the PIN hash or family code, and loses access when the family disconnects it.
+  - Rate limits: `/api/check` and `/api/transcribe` share 30/hour per IP (`RATE_LIMIT_PER_HOUR`); creating circles
+    10/hour per IP; sign-in 20/15 min per IP; alerts 20/hour per phone. If the store is down, a per-instance counter
+    is used so the AI key stays protected and the demo keeps working.
+  - Alerts store only the summary, a 500-character excerpt and flag ids. Never images. Deleted after 7 days
+    (removed on every inbox read, plus `delete_expired()` for pg_cron).
+- Family screens (`/f`): start, create circle (`CircleForm`: parent name, text size, emergency number, family
+  members, verified contacts, PIN), sign in, home (inbox polled every 10 s with one-tap and custom replies,
+  "Connect Amina's phone" with code + QR), settings (PIN needed every save, optional new PIN, connected phones
+  with PIN-protected disconnect).
+- Parent screens: `/p/pair` (6-digit code, or prefilled from the QR link), home shows "Hello Amina" and a call
+  button per family member, "Connect to your family" when not paired; the circle refreshes on home and is cached for
+  offline use; text size (Large/Extra large) and emergency number come from the circle. The result screen has
+  "Show Sara" (explains what is shared), then "Sara will see this. Do not reply to the message while you wait.",
+  polling every 5 s; the reply is shown large and read aloud, with a call button.
+- `FamilyChannel` (`lib/circle/channel.ts`) abstracts sending and polling, so the demo can use in-browser state.
+- Next.js note: route handlers are wrapped with `handle()`, which calls `unstable_rethrow` so the Cache Components
+  prerender bail-out on request headers is not swallowed.
+- 165 unit tests. New: migration in PGlite, PIN hashing and lockout, session signing and tampering, validation,
+  alert building, and the whole loop through the real route handlers (create, pair, alert, reply, poll), plus:
+  phone cannot edit contacts, settings need the PIN, lockout after 5, pairing code works once, new code replaces old,
+  pairing rate limit, disconnect, cross-site request blocked, circles isolated, 7-day expiry.
+- Checked in the browser with the in-memory store: created a circle, made a code and QR, paired via the QR link,
+  home showed "Call Sara", a scam check offered "Call Gulf Example Bank" and "Show Sara", the alert appeared in the
+  family inbox, the one-tap reply reached the parent's screen; a settings change needed the PIN ("4 tries left" on a
+  wrong one) and switched the parent's phone to 28px text.
+
+## Next: Phase 5 - Demo mode
+
+- `/demo`: two phone frames side by side (toggle on mobile), fictional circle (Amina, Sara, Gulf Example Bank).
+- Sample message row (bank code, frozen account link, traffic fine, parcel fee, "Hi Mum", police secrecy, prize,
+  appointment reminder, requested login code), paste or upload.
+- In-browser family loop using a demo `FamilyChannel`; no database writes; works if Supabase is unreachable.
+- Banner explaining the demo with links to privacy and limitations.
 
 ## Known issues
 
-- Not yet tested against the live OpenAI API (no key in this environment). Add `OPENAI_API_KEY` to `.env.local`
-  to try it; Phase 6's eval runs the real pipeline.
-- The microphone and camera were not tested with real hardware here; please try them on a phone.
-- No rate limit on `/api/check` or `/api/transcribe` yet (Phase 4).
-- No call buttons until a circle is cached on the device (Phase 4). "your family" is used as the name until then.
+- Not yet run against a real Supabase project or the live OpenAI API (no credentials in this environment). The SQL is
+  tested in PGlite and the routes with the in-memory store; the `SupabaseStore` glue itself is untested until a
+  project is connected.
+- The microphone and camera were not tested with real hardware here.
 - Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design).
 - "Call our fraud team now" is not caught as urgency (only fixed phrases such as "call now" are). The AI covers it.
-- `npm audit` reports 16 moderate advisories in dev tooling from the scaffold.
+- `npm audit` reports moderate advisories in dev tooling from the scaffold.

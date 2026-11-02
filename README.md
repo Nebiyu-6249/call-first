@@ -40,7 +40,18 @@ npm run dev
 
 Open http://localhost:3000.
 
-Supabase migration steps are added in Phase 4.
+### Supabase
+
+The family circle (contacts, paired phones, alerts) is stored in Supabase Postgres. Only the server talks to it,
+using the service role key; every table has row-level security on with no policies.
+
+1. Create a free project at https://supabase.com.
+2. In the SQL editor, run `supabase/migrations/0001_family_circle.sql` (safe to run more than once).
+3. Copy the project URL and the service role key (Project Settings > API) into `SUPABASE_URL` and
+   `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`, and set `SESSION_SECRET` to a long random string.
+
+Without `SUPABASE_URL`, `npm run dev` uses an in-memory store so you can try the family loop locally
+(data is lost on restart). Production refuses to start the family features without Supabase.
 
 ### Scripts
 
@@ -64,7 +75,7 @@ app/            Next.js App Router pages and route handlers
 components/     Shared UI components
 lib/            Pure logic (rules engine, verdict, config)
 eval/           Evaluation messages and script
-supabase/       SQL migrations
+supabase/       SQL migration (tested in-process with PGlite)
 ```
 
 ## Deploy

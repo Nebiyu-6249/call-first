@@ -1,9 +1,16 @@
 import { analyse } from "@/lib/ai/openai";
 import { parseCheckRequest, type CheckApiResponse } from "@/lib/check/request";
+import { rateLimitPerHour } from "@/lib/server/config";
+import { clientIp } from "@/lib/server/http";
+import { hitRateLimit, rateLimitedResponse } from "@/lib/server/rate-limit";
 
 // Returns only the AI analysis. The rules engine and the verdict run on the device, so a
 // result is still possible when this call fails.
 export async function POST(request: Request) {
+  // Protects the AI key. When limited, the device falls back to the rules-only result.
+  const limit = await hitRateLimit(`ai:${clientIp(request)}`, rateLimitPerHour(), 60 * 60 * 1000);
+  if (!limit.allowed) return rateLimitedResponse(limit);
+
   let body: unknown;
   try {
     body = await request.json();

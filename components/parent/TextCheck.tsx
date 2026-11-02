@@ -2,11 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import { ClipboardPaste, Search } from "lucide-react";
-import type { ParentCircle } from "@/lib/circle/types";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
 import { MAX_TEXT_LENGTH } from "@/lib/check/request";
-import { readCachedCircle } from "@/lib/parent/circle-cache";
+import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
 import { ResultView } from "./ResultView";
@@ -15,9 +14,10 @@ import { primaryButton, secondaryButton } from "./styles";
 type Step =
   | { name: "input" }
   | { name: "checking" }
-  | { name: "result"; result: CheckResult; circle: ParentCircle | null };
+  | { name: "result"; result: CheckResult };
 
 export function TextCheck() {
+  const { circle, channel } = useParent();
   const [step, setStep] = useState<Step>({ name: "input" });
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -45,7 +45,7 @@ export function TextCheck() {
     setError("");
     setStep({ name: "checking" });
     const result = await atLeast(runCheck({ type: "text", text }));
-    setStep({ name: "result", result, circle: readCachedCircle() });
+    setStep({ name: "result", result });
   }
 
   function reset() {
@@ -58,7 +58,7 @@ export function TextCheck() {
   if (step.name === "result") {
     return (
       <main className="flex flex-1 flex-col">
-        <ResultView result={step.result} circle={step.circle} onCheckAnother={reset} />
+        <ResultView result={step.result} circle={circle} channel={channel} onCheckAnother={reset} />
       </main>
     );
   }

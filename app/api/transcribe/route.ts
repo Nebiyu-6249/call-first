@@ -1,8 +1,15 @@
 import { transcribeAudio } from "@/lib/ai/transcribe";
+import { rateLimitPerHour } from "@/lib/server/config";
+import { clientIp } from "@/lib/server/http";
+import { hitRateLimit, rateLimitedResponse } from "@/lib/server/rate-limit";
 import { MAX_AUDIO_BYTES, audioExtension } from "@/lib/voice/audio";
 
 // Turns the parent's recorded description of a call into text. The audio is not stored.
 export async function POST(request: Request) {
+  // Shares the AI budget with /api/check.
+  const limit = await hitRateLimit(`ai:${clientIp(request)}`, rateLimitPerHour(), 60 * 60 * 1000);
+  if (!limit.allowed) return rateLimitedResponse(limit);
+
   let form: FormData;
   try {
     form = await request.formData();

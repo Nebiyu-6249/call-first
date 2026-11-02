@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Keyboard, Mic, RotateCcw, Square } from "lucide-react";
-import type { ParentCircle } from "@/lib/circle/types";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
-import { readCachedCircle } from "@/lib/parent/circle-cache";
+import { useParent } from "@/lib/parent/use-parent";
 import { MAX_RECORDING_SECONDS, RECORDING_TYPES } from "@/lib/voice/audio";
 import { transcribe } from "@/lib/voice/client";
 import { BackLink } from "./BackLink";
@@ -22,7 +21,7 @@ type Step =
   | { name: "transcribing" }
   | { name: "checking" }
   | { name: "problem"; problem: Problem }
-  | { name: "result"; result: CheckResult; transcript: string; circle: ParentCircle | null };
+  | { name: "result"; result: CheckResult; transcript: string };
 
 const PROBLEM_TEXT: Record<Problem, string> = {
   unsupported: "This phone or browser cannot record your voice. You can type what happened instead.",
@@ -32,6 +31,7 @@ const PROBLEM_TEXT: Record<Problem, string> = {
 };
 
 export function VoiceCheck() {
+  const { circle, channel } = useParent();
   const [step, setStep] = useState<Step>({ name: "intro" });
   const [secondsLeft, setSecondsLeft] = useState(MAX_RECORDING_SECONDS);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -65,7 +65,7 @@ export function VoiceCheck() {
     if (!transcript.trim()) return setStep({ name: "problem", problem: "empty" });
     setStep({ name: "checking" });
     const result = await atLeast(runCheck({ type: "call_description", text: transcript }));
-    setStep({ name: "result", result, transcript, circle: readCachedCircle() });
+    setStep({ name: "result", result, transcript });
   }
 
   function stop() {
@@ -120,7 +120,8 @@ export function VoiceCheck() {
       <main className="flex flex-1 flex-col">
         <ResultView
           result={step.result}
-          circle={step.circle}
+          circle={circle}
+          channel={channel}
           source={{ kind: "voice", text: step.transcript }}
           onCheckAnother={reset}
         />

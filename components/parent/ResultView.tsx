@@ -10,10 +10,12 @@ import {
   OctagonAlert,
   Phone,
   RotateCcw,
+  Users,
   Volume2,
   VolumeX,
   type LucideIcon,
 } from "lucide-react";
+import { buildAlert, type FamilyChannel } from "@/lib/circle/channel";
 import type { ParentCircle } from "@/lib/circle/types";
 import { MAX_REASONS, type CheckResult } from "@/lib/check";
 import { pickNextStep, telHref } from "@/lib/next-step";
@@ -23,6 +25,7 @@ import type { VerdictLevel } from "@/lib/verdict";
 import { DEFAULT_FAMILY_NAME, VERDICT_COPY, whatToDo } from "@/lib/verdict/copy";
 import { FromMessage } from "./FromMessage";
 import { GoldenRules } from "./GoldenRules";
+import { SentToFamily } from "./SentToFamily";
 import { primaryButton, secondaryButton, textLink } from "./styles";
 
 const BANNER: Record<VerdictLevel, { Icon: LucideIcon; className: string }> = {
@@ -38,19 +41,27 @@ export function ResultView({
   result,
   circle = null,
   source = { kind: "text" },
+  channel = null,
   autoRead = true,
+  homeHref = "/p",
   onCheckAnother,
 }: {
   result: CheckResult;
   circle?: ParentCircle | null;
   source?: ResultSource;
+  // How to reach the family. Null when the phone is not connected to a family circle.
+  channel?: FamilyChannel | null;
   autoRead?: boolean;
+  homeHref?: string;
   onCheckAnother: () => void;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stopReadingRef = useRef<() => void>(() => {});
   const [dismissed, setDismissed] = useState(false);
   const [reading, setReading] = useState(false);
+  const [sentAlertId, setSentAlertId] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const familyName = circle?.familyMembers[0]?.name ?? DEFAULT_FAMILY_NAME;
   const nextStep = pickNextStep(circle, result.senderType, result.claimedPerson);
   const script = speechScript(result, nextStep, familyName);
@@ -61,13 +72,37 @@ export function ResultView({
     headingRef.current?.focus();
   }, [dismissed]);
 
+  const showingResult = !dismissed && !sentAlertId;
+
   // Read the result aloud once it appears, and stop when the screen changes.
   useEffect(() => {
-    if (!autoRead || dismissed) return;
+    if (!autoRead || !showingResult) return;
     const stop = speak(script, { onStart: () => setReading(true), onEnd: () => setReading(false) });
     stopReadingRef.current = stop;
     return stop;
-  }, [autoRead, dismissed, script]);
+  }, [autoRead, showingResult, script]);
+
+  async function showFamily() {
+    if (!channel) return;
+    setSending(true);
+    setSendError("");
+    const id = await channel.send(buildAlert(result, source.kind));
+    setSending(false);
+    if (id) setSentAlertId(id);
+    else setSendError(`We could not send it. Please call ${channel.familyName} instead.`);
+  }
+
+  if (channel && sentAlertId) {
+    return (
+      <SentToFamily
+        channel={channel}
+        alertId={sentAlertId}
+        familyPhone={circle?.familyMembers[0]?.phone}
+        autoRead={autoRead}
+        homeHref={homeHref}
+      />
+    );
+  }
 
   function toggleReading() {
     stopReadingRef.current();
@@ -84,7 +119,7 @@ export function ResultView({
         <p className="text-xl">
           We can get things wrong. If you are not sure, ask {familyName} before you do anything.
         </p>
-        <Link href="/p" className={primaryButton}>
+        <Link href={homeHref} className={primaryButton}>
           <Home aria-hidden="true" className="size-7" />
           Go to the start
         </Link>
@@ -182,6 +217,23 @@ export function ResultView({
           </div>
         )}
       </section>
+
+      {channel && (
+        <div className="flex flex-col gap-2">
+          <button type="button" onClick={showFamily} disabled={sending} className={secondaryButton}>
+            <Users aria-hidden="true" className="size-7" />
+            {sending ? "Sending..." : `Show ${channel.familyName}`}
+          </button>
+          <p className="text-lg text-muted">
+            {channel.familyName} will see the words of the message and our answer. Pictures are never sent.
+          </p>
+          {sendError && (
+            <p role="alert" className="text-xl font-bold text-warning">
+              {sendError}
+            </p>
+          )}
+        </div>
+      )}
 
       <FromMessage phoneNumbers={result.phoneNumbers} links={result.links} />
 

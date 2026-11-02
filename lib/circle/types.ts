@@ -18,10 +18,17 @@ export interface VerifiedContact {
   note?: string;
 }
 
+export type TextSizeSetting = "large" | "xl";
+
 export interface ParentCircle {
   parentName: string;
   emergencyNumber: string;
   // The first family member is the main contact.
   familyMembers: FamilyMember[];
   contacts: VerifiedContact[];
+}
+
+// What a paired parent device receives: the circle plus the text size the family chose.
+export interface DeviceCircle extends ParentCircle {
+  textSize: TextSizeSetting;
 }

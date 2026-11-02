@@ -2,11 +2,10 @@
 
 import { useRef, useState, type ChangeEvent } from "react";
 import { Camera, ImageUp, RotateCcw, Search } from "lucide-react";
-import type { ParentCircle } from "@/lib/circle/types";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
 import { compressImage } from "@/lib/image/compress";
-import { readCachedCircle } from "@/lib/parent/circle-cache";
+import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
 import { ResultView } from "./ResultView";
@@ -17,9 +16,10 @@ type Step =
   | { name: "preparing" }
   | { name: "preview"; image: string }
   | { name: "checking" }
-  | { name: "result"; result: CheckResult; circle: ParentCircle | null };
+  | { name: "result"; result: CheckResult };
 
 export function PhotoCheck() {
+  const { circle, channel } = useParent();
   const [step, setStep] = useState<Step>({ name: "choose" });
   const [error, setError] = useState("");
   const cameraInput = useRef<HTMLInputElement>(null);
@@ -44,7 +44,7 @@ export function PhotoCheck() {
   async function check(image: string) {
     setStep({ name: "checking" });
     const result = await atLeast(runCheck({ type: "image", image }));
-    setStep({ name: "result", result, circle: readCachedCircle() });
+    setStep({ name: "result", result });
   }
 
   function reset() {
@@ -60,7 +60,8 @@ export function PhotoCheck() {
       <main className="flex flex-1 flex-col">
         <ResultView
           result={step.result}
-          circle={step.circle}
+          circle={circle}
+          channel={channel}
           source={{ kind: "image", text: step.result.checkedText }}
           onCheckAnother={reset}
         />
