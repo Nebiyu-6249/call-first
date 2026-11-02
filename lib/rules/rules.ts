@@ -232,6 +232,22 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
     ]),
 };
 
+export type GuessedSender = "bank" | "government" | "police" | "delivery" | "family" | "company" | "unknown";
+
+// A rough guess at who the message claims to be from, used when the AI is unavailable.
+export function guessSenderType(input: string, flags: RuleFlag[]): GuessedSender {
+  const lower = normalise(input).toLowerCase();
+  if (flags.some((f) => f.id === "family_emergency_claim")) return "family";
+  if (/\b(?:bank|banking|building society|credit union|card services)\b/.test(lower)) return "bank";
+  if (/\b(?:police|officer|detective|constable|court|judge|magistrate)\b/.test(lower)) return "police";
+  if (/\b(?:government|tax (?:office|authority|department)|revenue|ministry|council|immigration|social security|pension service|benefits)\b/.test(lower)) {
+    return "government";
+  }
+  if (/\b(?:parcel|package|courier|delivery|post office|postal)\b/.test(lower)) return "delivery";
+  if (flags.some((f) => f.id === "impersonates_bank_or_company")) return "company";
+  return "unknown";
+}
+
 function normalise(text: string): string {
   return text.replace(/[‘’‛′]/g, "'").replace(/[“”″]/g, '"');
 }

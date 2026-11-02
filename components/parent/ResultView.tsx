@@ -2,8 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CircleCheck, CircleHelp, Home, Info, OctagonAlert, RotateCcw, type LucideIcon } from "lucide-react";
+import {
+  CircleCheck,
+  CircleHelp,
+  Home,
+  Info,
+  OctagonAlert,
+  Phone,
+  RotateCcw,
+  type LucideIcon,
+} from "lucide-react";
+import type { ParentCircle } from "@/lib/circle/types";
 import { MAX_REASONS, type CheckResult } from "@/lib/check";
+import { pickNextStep, telHref } from "@/lib/next-step";
 import type { VerdictLevel } from "@/lib/verdict";
 import { DEFAULT_FAMILY_NAME, VERDICT_COPY, whatToDo } from "@/lib/verdict/copy";
 import { FromMessage } from "./FromMessage";
@@ -18,15 +29,16 @@ const BANNER: Record<VerdictLevel, { Icon: LucideIcon; className: string }> = {
 
 export function ResultView({
   result,
-  familyName = DEFAULT_FAMILY_NAME,
+  circle = null,
   onCheckAnother,
 }: {
   result: CheckResult;
-  familyName?: string;
+  circle?: ParentCircle | null;
   onCheckAnother: () => void;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [dismissed, setDismissed] = useState(false);
+  const familyName = circle?.familyMembers[0]?.name ?? DEFAULT_FAMILY_NAME;
 
   // Move focus to the answer so screen readers announce it straight away.
   useEffect(() => {
@@ -53,6 +65,7 @@ export function ResultView({
   const { Icon, className } = BANNER[result.level];
   const copy = VERDICT_COPY[result.level];
   const reasons = result.flags.slice(0, MAX_REASONS);
+  const nextStep = pickNextStep(circle, result.senderType, result.claimedPerson);
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,6 +76,13 @@ export function ResultView({
         </h1>
         <p className="text-xl font-bold">{copy.line}</p>
       </div>
+
+      {(result.summary || result.explanation) && (
+        <div className="flex flex-col gap-3 text-xl">
+          {result.summary && <p className="font-bold">{result.summary}</p>}
+          {result.explanation && <p>{result.explanation}</p>}
+        </div>
+      )}
 
       {reasons.length > 0 && (
         <section aria-labelledby="why">
@@ -84,11 +104,22 @@ export function ResultView({
         </section>
       )}
 
-      <section aria-labelledby="todo" className="rounded-2xl bg-surface p-5">
+      <section aria-labelledby="todo" className="flex flex-col gap-4 rounded-2xl bg-surface p-5">
         <h2 id="todo" className="text-2xl font-bold">
           What to do now
         </h2>
-        <p className="mt-2 text-xl">{whatToDo(result.level, familyName)}</p>
+        <p className="text-xl">{whatToDo(result.level, familyName)}</p>
+        {nextStep && (
+          <div className="flex flex-col gap-2">
+            <a href={telHref(nextStep.phone)} className={primaryButton}>
+              <Phone aria-hidden="true" className="size-7" />
+              {nextStep.label}
+            </a>
+            <p className="text-lg text-muted">
+              {nextStep.phone}. {nextStep.reason}
+            </p>
+          </div>
+        )}
       </section>
 
       <FromMessage phoneNumbers={result.phoneNumbers} links={result.links} />

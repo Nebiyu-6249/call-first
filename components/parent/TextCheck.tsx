@@ -2,16 +2,22 @@
 
 import { useState, type FormEvent } from "react";
 import { ClipboardPaste, LoaderCircle, Search } from "lucide-react";
-import { checkWithRulesOnly, type CheckResult } from "@/lib/check";
+import type { ParentCircle } from "@/lib/circle/types";
+import type { CheckResult } from "@/lib/check";
+import { runCheck } from "@/lib/check/client";
+import { MAX_TEXT_LENGTH } from "@/lib/check/request";
+import { readCachedCircle } from "@/lib/parent/circle-cache";
 import { BackLink } from "./BackLink";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
 
-const MAX_LENGTH = 5000;
 // A short pause so the "checking" message can be read instead of flashing.
 const MIN_CHECKING_MS = 900;
 
-type Step = { name: "input" } | { name: "checking" } | { name: "result"; result: CheckResult };
+type Step =
+  | { name: "input" }
+  | { name: "checking" }
+  | { name: "result"; result: CheckResult; circle: ParentCircle | null };
 
 export function TextCheck() {
   const [step, setStep] = useState<Step>({ name: "input" });
@@ -22,7 +28,7 @@ export function TextCheck() {
     try {
       const clip = await navigator.clipboard.readText();
       if (clip.trim()) {
-        setText(clip.slice(0, MAX_LENGTH));
+        setText(clip.slice(0, MAX_TEXT_LENGTH));
         setError("");
         return;
       }
@@ -32,7 +38,7 @@ export function TextCheck() {
     }
   }
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
     if (!text.trim()) {
       setError("Please type or paste the message first.");
@@ -40,7 +46,11 @@ export function TextCheck() {
     }
     setError("");
     setStep({ name: "checking" });
-    window.setTimeout(() => setStep({ name: "result", result: checkWithRulesOnly(text) }), MIN_CHECKING_MS);
+    const [result] = await Promise.all([
+      runCheck({ type: "text", text }),
+      new Promise((resolve) => setTimeout(resolve, MIN_CHECKING_MS)),
+    ]);
+    setStep({ name: "result", result, circle: readCachedCircle() });
   }
 
   function reset() {
@@ -62,7 +72,7 @@ export function TextCheck() {
   if (step.name === "result") {
     return (
       <main className="flex flex-1 flex-col">
-        <ResultView result={step.result} onCheckAnother={reset} />
+        <ResultView result={step.result} circle={step.circle} onCheckAnother={reset} />
       </main>
     );
   }
@@ -78,7 +88,7 @@ export function TextCheck() {
           id="message"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          maxLength={MAX_LENGTH}
+          maxLength={MAX_TEXT_LENGTH}
           rows={7}
           aria-describedby={error ? "message-error" : undefined}
           aria-invalid={error ? true : undefined}

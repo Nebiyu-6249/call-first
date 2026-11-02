@@ -1,7 +1,9 @@
-// Turns a message into everything the result screen needs.
+// Turns a message (and the AI analysis, when there is one) into everything the result screen needs.
+// Used by the parent device, the demo and the evaluation script, so they all share one pipeline.
 
-import { runRules } from "@/lib/rules/rules";
-import { computeVerdict, type AiVerdictInput, type MergedFlag, type VerdictLevel } from "@/lib/verdict";
+import type { AiAnalysis, SenderType } from "@/lib/ai/schema";
+import { guessSenderType, runRules } from "@/lib/rules/rules";
+import { computeVerdict, type MergedFlag, type VerdictLevel } from "@/lib/verdict";
 
 // "skipped" means no AI call was made; "failed" means it was tried and did not answer in time.
 export type AiStatus = "ok" | "failed" | "skipped";
@@ -14,19 +16,55 @@ export interface CheckResult {
   phoneNumbers: string[];
   links: string[];
   aiStatus: AiStatus;
+  senderType: SenderType;
+  claimedPerson: string;
+  // From the AI: what the message claims to be, in one sentence.
+  summary: string;
+  // From the AI, only when it agrees with the verdict, so the words never contradict the banner.
+  explanation: string;
+  // The text that was checked (for images, what the AI read from the picture).
+  checkedText: string;
 }
 
 export const MAX_REASONS = 3;
 
-export function buildCheckResult(text: string, ai: AiVerdictInput | null, aiStatus: AiStatus): CheckResult {
-  const rules = runRules(text);
-  const verdict = computeVerdict(rules.flags, aiStatus === "ok" ? ai : null);
+const AGREES: Record<VerdictLevel, AiAnalysis["ai_assessment"]> = {
+  WARNING: "likely_scam",
+  NOT_SURE: "unclear",
+  NO_WARNING_SIGNS: "likely_normal",
+};
+
+function unique(items: string[]): string[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = item.toLowerCase().replace(/\s+/g, "");
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+// `text` is what the parent typed or said. For images pass "" and the AI's extracted text is used.
+export function buildCheckResult(text: string, ai: AiAnalysis | null, aiStatus: AiStatus): CheckResult {
+  const analysis = aiStatus === "ok" ? ai : null;
+  const checkedText = text.trim() || analysis?.extracted_text || "";
+  const rules = runRules(checkedText);
+  const verdict = computeVerdict(rules.flags, analysis);
+
   return {
     level: verdict.level,
     flags: verdict.flags,
-    phoneNumbers: rules.phoneNumbers,
-    links: rules.links.map((l) => l.text),
+    phoneNumbers: unique([...rules.phoneNumbers, ...(analysis?.phone_numbers_in_message ?? [])]),
+    links: unique([...rules.links.map((l) => l.text), ...(analysis?.links_in_message ?? [])]),
     aiStatus,
+    senderType:
+      analysis && analysis.claimed_sender_type !== "unknown"
+        ? analysis.claimed_sender_type
+        : guessSenderType(checkedText, rules.flags),
+    claimedPerson: analysis?.claimed_person ?? "",
+    summary: analysis?.input_summary ?? "",
+    explanation: analysis && AGREES[verdict.level] === analysis.ai_assessment ? analysis.plain_explanation : "",
+    checkedText,
   };
 }
 

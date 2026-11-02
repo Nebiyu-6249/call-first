@@ -47,18 +47,52 @@ Notes:
   keyboard submit works, no horizontal scroll at 375px, no console errors.
 - `npm run typecheck` now runs `next typegen` first so route types exist on a clean checkout.
 
-## Next: Phase 2 - AI analysis
+## Phase 2: AI analysis - done
 
-- Check current OpenAI docs; pick models for `OPENAI_MODEL` / `OPENAI_TRANSCRIBE_MODEL`.
-- `/api/check` with Structured Outputs, untrusted-data delimiters, ~8s timeout, rules run server-side too.
-- Client: run rules locally first, call the API, fall back to rules-only on failure.
-- Next-step logic (verified contact by `claimed_sender_type`), and a fallback sender guess from rule flags.
-- Show the AI's one-line summary and plain explanation on the result screen.
+- Models (checked against OpenAI docs, Nov 2026): `OPENAI_MODEL=gpt-6.1-terra` (fast, vision, Structured Outputs)
+  with `OPENAI_REASONING_EFFORT=none` for speed; `OPENAI_TRANSCRIBE_MODEL=gpt-transcribe` for Phase 3
+  (`whisper-1` and the `gpt-4o-*-transcribe` models shut down on Feb 26, 2027).
+- Netlify docs now list a 60-second synchronous function limit; the AI call has a hard 8-second timeout.
+- `lib/ai/schema.ts`: strict JSON schema (all fields required, no extra properties; flag ids, sender type and
+  assessment are enums). `parseAiAnalysis` re-validates everything: drops unknown/duplicate flags, cuts evidence
+  to 12 words and the explanation to 3 sentences, clamps confidence, and strips phone numbers and links from the
+  AI's own words so the parent is never pointed at a number from the message. Extra field `claimed_person`
+  (for example "son") lets the next step call the right family member.
+- `lib/ai/prompt.ts`: system prompt with the taxonomy and the "delivers a code is not asking for a code" rule.
+  The item goes between markers with a fresh random id; fake markers inside the item are removed.
+- `lib/ai/openai.ts` (server-only): raw `fetch` to the Responses API, `store: false`, strict `text.format`.
+  Returns a reason on failure (not_configured, timeout, http_error, refused, invalid_output, network).
+  Logs only the HTTP status or error name, never content.
+- `app/api/check/route.ts`: validates input (`lib/check/request.ts`: text up to 5000 chars, or a JPEG/PNG/WEBP data
+  URL up to ~3 MB) and returns only `{ aiStatus, ai }`. Image input works on the server already; the client side
+  comes in Phase 3.
+- The rules engine and the verdict run on the device (`lib/check/client.ts`), so if the call fails or the phone is
+  offline, the parent still gets the rules-only result plus the Golden Rules.
+- `lib/check/index.ts`: one pipeline for device, demo and eval. The AI's explanation is shown only when it agrees
+  with the verdict, so the words never contradict the banner (for example after a prompt injection).
+  AI-found numbers and links are merged with the rules' ones. When the AI is unavailable, `guessSenderType`
+  (rules) picks the sender type.
+- `lib/next-step`: bank -> saved bank contact; family claim -> that family member (whole-word match on name or
+  relationship, so "grandson" does not match "son"); otherwise -> main family member. Rendered as a big `tel:` button.
+- `lib/parent/circle-cache.ts`: the circle is read from localStorage (written in Phase 4) so call buttons work offline.
+- 112 unit tests. New: schema strictness, parsing and sanitising, marker handling, request validation, the OpenAI
+  client with a mocked fetch (store: false, refusal, timeout, no content in logs), next-step choices, and
+  injection end-to-end (AI fooled into "likely_normal" at confidence 1 -> still WARNING, explanation hidden).
+- Checked in the browser without an API key: the fallback works, the verified bank button is `tel:08081570000`,
+  the message's number shows as plain text, bad requests get 400, and the server log has no message content.
+
+## Next: Phase 3 - Image and voice
+
+- Client-side image compression (longest side 1600px, JPEG ~0.8, strips EXIF) and the photo screen.
+- Voice recording (up to 60s, MediaRecorder), `/api/transcribe` with `gpt-transcribe`, "You said: ..." on the result.
+- Read-aloud with `speechSynthesis` ("Read it to me" button, plus automatic reading).
 
 ## Known issues
 
-- OpenAI model names in `.env.example` are left blank until Phase 2.
-- No call buttons yet: verified contacts arrive with the family circle (Phase 4). "your family" is used as the name.
-- Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design:
-  any medium flag means NOT SURE). The evaluation in Phase 6 will show how often this happens.
+- Not yet tested against the live OpenAI API: there is no API key in this environment. Add `OPENAI_API_KEY` to
+  `.env.local` to try it; Phase 6's eval runs the real pipeline.
+- No rate limit on `/api/check` yet (planned for Phase 4 with the other security work).
+- No call buttons until a circle is cached on the device (Phase 4). "your family" is used as the name until then.
+- Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design).
+- "Call our fraud team now" is not caught as urgency (only fixed phrases such as "call now" are). The AI covers it.
 - `npm audit` reports 16 moderate advisories in dev tooling from the scaffold.
