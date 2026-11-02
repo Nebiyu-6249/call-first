@@ -18,12 +18,47 @@ Notes:
 - `@types/node` is pinned to ^24 to satisfy Vitest 5's peer range.
 - `npm audit` reports 16 moderate advisories in dev tooling from the scaffold; not addressed yet.
 
-## Next: Phase 1 - Rules engine and text check
+## Phase 1: Rules engine and text check - done
 
-- `lib/rules`: flag taxonomy, rules, unit tests (including "delivers a code" vs "asks for a code").
-- `lib/verdict`: deterministic verdict logic with tests.
-- Parent "Type or paste" flow and result screen (rules only).
+- `lib/rules/taxonomy.ts`: the 14 flags with severity, a short label (for family alerts) and a plain-language reason.
+- `lib/rules/rules.ts`: `runRules(text)` returns flags with a quote of at most 12 words (the sentence around the match).
+  - Requests in a negated clause are skipped ("we will never ask for your PIN", "never share this code"),
+    so a message that delivers a code is not treated as asking for one. The clause stops at commas, so
+    "Don't tell anyone, just send me the code" is still caught.
+  - `impersonates_bank_or_company` only fires when the message is about a problem or action
+    ("unusual activity", "could not be delivered"), not "your statement is ready".
+  - No real company or product names appear in the patterns (remote-access tools, gift card brands and
+    link shorteners are detected generically; the AI covers named ones in Phase 2).
+- `lib/rules/extract.ts`: links (full, www, bare domains on a fixed TLD list; shortened and lookalike heuristics)
+  and phone numbers (8-15 digits, skipping codes, money, dates and reference numbers).
+- `lib/verdict/index.ts`: `computeVerdict(ruleFlags, ai | null)` in the order from the brief; `mergeFlags` de-duplicates
+  rules and AI flags, high severity first. AI `other` flags count as medium. `lib/verdict/copy.ts` holds the words.
+- `lib/check/index.ts`: `buildCheckResult` / `checkWithRulesOnly` produce what the result screen needs.
+- Parent screens: `/p` (home), `/p/check` (three tiles), `/p/check/text` (type or paste, with a Paste button),
+  result screen, `/p/rules` (Golden Rules). Photo and voice tiles go to placeholders.
+  - Parent layout sets a 22px base from the first paint; `html.parent-text-xl` gives 28px when the family picks
+    Extra Large (`lib/parent/settings.ts`, written in Phase 4).
+  - Result: banner with icon and word, up to three reasons with quotes, "What to do now", non-clickable numbers and
+    links from the message, "Check something else", and "I think this is wrong".
+    Because no AI runs yet, every result shows "We could only do a quick check this time" and the Golden Rules.
+  - Focus moves to the verdict heading so screen readers announce it.
+- 78 unit tests (rules per flag with positives and negatives, extraction, verdict cases from the brief).
+- Checked in the browser: scam sample gives WARNING, the genuine login-code message gives no flags (NOT SURE without AI),
+  keyboard submit works, no horizontal scroll at 375px, no console errors.
+- `npm run typecheck` now runs `next typegen` first so route types exist on a clean checkout.
+
+## Next: Phase 2 - AI analysis
+
+- Check current OpenAI docs; pick models for `OPENAI_MODEL` / `OPENAI_TRANSCRIBE_MODEL`.
+- `/api/check` with Structured Outputs, untrusted-data delimiters, ~8s timeout, rules run server-side too.
+- Client: run rules locally first, call the API, fall back to rules-only on failure.
+- Next-step logic (verified contact by `claimed_sender_type`), and a fallback sender guess from rule flags.
+- Show the AI's one-line summary and plain explanation on the result screen.
 
 ## Known issues
 
-- OpenAI model names in `.env.example` are left blank until Phase 2, when the current OpenAI docs are checked.
+- OpenAI model names in `.env.example` are left blank until Phase 2.
+- No call buttons yet: verified contacts arrive with the family circle (Phase 4). "your family" is used as the name.
+- Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design:
+  any medium flag means NOT SURE). The evaluation in Phase 6 will show how often this happens.
+- `npm audit` reports 16 moderate advisories in dev tooling from the scaffold.

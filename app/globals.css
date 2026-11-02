@@ -13,11 +13,12 @@
   --border: #6b6257;
   --primary: #0b4f6c;
   --primary-foreground: #ffffff;
+  --primary-hover: #083c52;
   --warning: #8a1c12;
   --warning-bg: #fdecea;
   --unsure: #6b4500;
   --unsure-bg: #fff4d6;
-  --ok: #1d5e2a;
+  --ok: #17501f;
   --ok-bg: #e7f4e9;
   --focus: #0b4f6c;
 }
@@ -30,6 +31,7 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-warning: var(--warning);
   --color-warning-bg: var(--warning-bg);
   --color-unsure: var(--unsure);
@@ -45,10 +47,12 @@ body {
   font-family: var(--font-sans);
 }
 
-/* A thick, always-visible focus ring for keyboard users. */
-:focus-visible {
-  outline: 4px solid var(--focus);
-  outline-offset: 3px;
+/* A thick, always-visible focus ring for keyboard users. In the base layer so utilities can override it. */
+@layer base {
+  :focus-visible {
+    outline: 4px solid var(--focus);
+    outline-offset: 3px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -58,4 +62,12 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/*
+  Parent screens: the family can choose Large (22px base, set by the parent layout)
+  or Extra Large (28px base, this class).
+*/
+html.parent-text-xl {
+  font-size: 175%;
 }
