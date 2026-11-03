@@ -37,8 +37,15 @@ export function SomethingHappened({
   // Inside a result, which is already the page's main landmark.
   const Wrapper = onBack ? "div" : Screen;
 
+  // Show the top of the screen, with its Back link, and move focus to the heading for screen readers.
+  // In the demo the phone frame may scroll on its own; otherwise the page does.
   useEffect(() => {
-    headingRef.current?.focus();
+    const heading = headingRef.current;
+    if (!heading) return;
+    const phone = heading.closest<HTMLElement>("[data-phone-scroll]");
+    if (phone && phone.scrollHeight > phone.clientHeight) phone.scrollTo({ top: 0 });
+    else heading.parentElement?.scrollIntoView({ block: "start" });
+    heading.focus({ preventScroll: true });
   }, [kind]);
 
   // Tell the family as soon as the person says what happened. If they go back and pick something
