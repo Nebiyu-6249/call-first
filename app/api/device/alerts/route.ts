@@ -1,4 +1,5 @@
 import { MAX_EXCERPT, MAX_SUMMARY } from "@/lib/circle/alerts";
+import { ALERT_MASK_KINDS, maskText } from "@/lib/privacy/mask";
 import { isFlagId } from "@/lib/rules/taxonomy";
 import { ALERT_TTL_MS } from "@/lib/server/config";
 import { HttpError, handle, readJson, requireDevice } from "@/lib/server/http";
@@ -19,7 +20,8 @@ export const POST = handle(async (request: Request) => {
   const verdict = body.verdict as VerdictLevel;
   if (!VERDICTS.includes(verdict)) throw new HttpError(400, "Unknown verdict.");
   const summary = String(body.summary ?? "").trim().slice(0, MAX_SUMMARY);
-  const excerpt = String(body.excerpt ?? "").trim().slice(0, MAX_EXCERPT);
+  // The phone hides codes, card and account numbers; hide them again in case it is an older copy.
+  const excerpt = maskText(String(body.excerpt ?? "").trim(), { kinds: ALERT_MASK_KINDS }).text.slice(0, MAX_EXCERPT);
   const flagIds = (Array.isArray(body.flagIds) ? body.flagIds : [])
     .filter((id): id is string => typeof id === "string" && (isFlagId(id) || id === "other"))
     .slice(0, 15);

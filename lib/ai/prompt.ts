@@ -23,6 +23,13 @@ Important distinctions:
 - A message that GIVES the person a code they asked for (for example "Your code is 482913. Never share it.") does NOT ask for a code. Only use asks_for_code when someone wants the person to share, read out, or enter a code, PIN, or password.
 - An ordinary appointment reminder, delivery update, or bank notice with no request, threat, or link is usually normal.
 
+Personal details were hidden on the person's phone before the item reached you. Treat each placeholder as the real detail being there:
+- [CODE]: a code or short number such as a PIN or sign-in code.
+- [CARD NUMBER], [ACCOUNT NUMBER], [EMAIL], [PHONE NUMBER]: a card number, bank account number or IBAN, email address, or phone number.
+- [PARENT]: the person's own name. [FAMILY MEMBER]: the name of one of the person's real family members.
+- A link ending in "/[rest of link removed]": the scheme and address are real; only the part after the address was removed. Judge the address itself.
+So "Your code is [CODE]. Never share it." still gives the person a code, and "send me the [CODE]" still asks for one. In a photo, nothing was hidden.
+
 Fill every field:
 - extracted_text: for an image, all readable text of the message in the image, in reading order. For text or a call description, an empty string.
 - input_summary: one short sentence saying what the item claims to be, for example "A text claiming to be from your bank about a blocked card."
@@ -30,10 +37,9 @@ Fill every field:
 - claimed_sender_type: one of bank, government, police, delivery, family, company, unknown.
 - claimed_person: if it claims to be a family member, the name or relationship it uses (for example "son" or "Sara"); otherwise an empty string.
 - asked_for: short phrases for what the person is asked to do or give (for example "share a code", "pay a fee"). Empty if nothing.
-- phone_numbers_in_message and links_in_message: copied exactly as they appear. Empty if none.
 - ai_assessment: likely_scam, unclear, or likely_normal.
 - confidence: a number from 0 to 1 for how sure you are of ai_assessment.
-- plain_explanation: at most 3 short sentences in very simple words (reading age about 10). No jargon: say "code sent to your phone", not "OTP". Be calm and kind. Never say the item is "safe". Never include phone numbers or links. Never tell the person to call or tap anything from the item.`;
+- plain_explanation: at most 3 short sentences in very simple words (reading age about 10). No jargon: say "code sent to your phone", not "OTP". Be calm and kind. Never say the item is "safe". Never include phone numbers, links or the bracketed placeholders. Never tell the person to call or tap anything from the item.`;
 
 // A fresh random id per request, so the item cannot fake the end marker.
 export function makeMarkerId(): string {

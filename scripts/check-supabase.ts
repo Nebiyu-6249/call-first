@@ -24,6 +24,7 @@ async function main() {
     parentName: "Test Parent",
     textSize: "large",
     emergencyNumber: "999",
+    privateMode: false,
     familyMembers: [{ name: "Test Daughter", relationship: "daughter", phone: "07700 900001" }],
     contacts: [{ label: "Gulf Example Bank", category: "bank", phone: "0808 157 0000", note: "" }],
   });
@@ -37,11 +38,13 @@ async function main() {
       parentName: "Test Parent",
       textSize: "xl",
       emergencyNumber: "112",
+      privateMode: true,
       familyMembers: [{ name: "Test Son", relationship: "son", phone: "07700 900002" }],
       contacts: [],
     }, null);
     const updated = await store.getCircle(circleId);
     check(updated?.textSize === "xl" && updated.familyMembers[0]?.name === "Test Son" && updated.contacts.length === 0, "replace settings");
+    check(circle?.privateMode === false && updated?.privateMode === true, "store private mode");
 
     await store.setPinAttempts(circleId, 2, null);
     check((await store.getCircle(circleId))?.pinFailedAttempts === 2, "count wrong PINs");

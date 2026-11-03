@@ -10,6 +10,7 @@ import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
 import { Screen } from "./nav";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
+import { PrivateModeOff } from "./PrivateModeOff";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
 
@@ -47,7 +48,7 @@ export function PhotoCheck() {
   async function check(image: string) {
     setStep({ name: "checking" });
     env?.checkStarted?.({ kind: "image" });
-    const result = await atLeast(runCheck({ type: "image", image }));
+    const result = await atLeast(runCheck({ type: "image", image }, circle));
     setStep({ name: "result", result });
   }
 
@@ -56,6 +57,7 @@ export function PhotoCheck() {
     setStep({ name: "choose" });
   }
 
+  if (circle?.privateMode) return <PrivateModeOff title="Photo or screenshot" />;
   if (step.name === "preparing") return <CheckingScreen message="Getting the picture ready..." />;
   if (step.name === "checking") return <CheckingScreen />;
 
@@ -119,6 +121,9 @@ export function PhotoCheck() {
         Choose a screenshot
       </button>
 
+      <p className="text-xl font-bold">
+        The picture is sent to an AI service to read it. If it shows a card number, cover it first.
+      </p>
       <p className="text-lg text-muted">
         The picture is made smaller and its location details are removed before it is sent. It is not saved.
       </p>

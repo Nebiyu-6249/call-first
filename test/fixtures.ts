@@ -12,8 +12,6 @@ export function aiAnalysis(overrides: Partial<AiAnalysis> = {}): AiAnalysis {
     claimed_sender_type: "unknown",
     claimed_person: "",
     asked_for: [],
-    phone_numbers_in_message: [],
-    links_in_message: [],
     ai_assessment: "likely_normal",
     confidence: 0.95,
     plain_explanation: "This looks like an ordinary message.",

@@ -52,10 +52,11 @@ describe("buildCheckResult", () => {
     expect(result.senderType).toBe("delivery");
   });
 
-  it("merges numbers the AI found without duplicates", () => {
-    const ai = aiAnalysis({ phone_numbers_in_message: ["07700 900123", "07700900123", "+44 7700 900999"] });
-    const result = buildCheckResult("Call 07700 900123.", ai, "ok");
-    expect(result.phoneNumbers).toEqual(["07700 900123", "+44 7700 900999"]);
+  it("takes numbers and links from the original text on the phone, never from the AI", () => {
+    const ai = aiAnalysis({ plain_explanation: "Do not call a phone number." });
+    const result = buildCheckResult("Call 07700 900123 or 07700900123, or see https://pay.example/ref/1", ai, "ok");
+    expect(result.phoneNumbers).toEqual(["07700 900123"]);
+    expect(result.links).toEqual(["https://pay.example/ref/1"]);
   });
 
   it("guesses the sender from the rules when the AI is unavailable", () => {

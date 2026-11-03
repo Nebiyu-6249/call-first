@@ -9,6 +9,7 @@ import {
   OctagonAlert,
   Phone,
   RotateCcw,
+  Smartphone,
   Users,
   Volume2,
   VolumeX,
@@ -150,6 +151,13 @@ export function ResultView({
         <p className="text-xl font-bold">{copy.line}</p>
       </div>
 
+      {result.aiStatus === "skipped" && (
+        <p className="flex items-start gap-3 text-xl font-bold">
+          <Smartphone aria-hidden="true" className="mt-1 size-7 shrink-0" />
+          Quick check on this phone only. Nothing was sent anywhere.
+        </p>
+      )}
+
       {speechAvailable && (
         <button type="button" onClick={toggleReading} className={secondaryButton}>
           {reading ? (
@@ -234,7 +242,8 @@ export function ResultView({
             {sending ? "Sending..." : `Show ${channel.familyName}`}
           </button>
           <p className="text-lg text-muted">
-            {channel.familyName} will see the words of the message and our answer. Pictures are never sent.
+            {channel.familyName} will see the words of the message and our answer, with codes and card numbers hidden.
+            Pictures are never sent.
           </p>
           {sendError && (
             <p role="alert" className="text-xl font-bold text-warning">
@@ -246,12 +255,35 @@ export function ResultView({
 
       <FromMessage phoneNumbers={result.phoneNumbers} links={result.links} />
 
+      {result.sent.kind !== "nothing" && (
+        <details className="rounded-2xl border-2 border-border bg-surface p-5 text-lg">
+          <summary className="min-h-12 cursor-pointer text-xl font-bold">What the AI service saw</summary>
+          {result.sent.kind === "text" ? (
+            <div className="mt-3 flex flex-col gap-3">
+              <p>Codes, card and account numbers, email addresses, phone numbers and your family&apos;s names were hidden on this phone first.</p>
+              <p className="whitespace-pre-line break-words rounded-lg border-2 border-border bg-background p-3">
+                {result.sent.text}
+              </p>
+              {source.kind === "voice" && (
+                <p>Your voice recording was sent to a speech service to write it down. It is not saved.</p>
+              )}
+            </div>
+          ) : (
+            <p className="mt-3">
+              The picture itself, so the AI service could read it. Nothing in a picture can be hidden first.
+            </p>
+          )}
+        </details>
+      )}
+
       {result.aiStatus !== "ok" && (
         <>
-          <p className="flex items-start gap-3 text-lg text-muted">
-            <Info aria-hidden="true" className="mt-1 size-6 shrink-0" />
-            We could only do a quick check this time.
-          </p>
+          {result.aiStatus === "failed" && (
+            <p className="flex items-start gap-3 text-lg text-muted">
+              <Info aria-hidden="true" className="mt-1 size-6 shrink-0" />
+              We could only do a quick check this time.
+            </p>
+          )}
           <GoldenRules familyName={familyName} />
         </>
       )}

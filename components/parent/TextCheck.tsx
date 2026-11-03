@@ -31,7 +31,7 @@ export function TextCheck({ initialText = "", checkNow = false }: { initialText?
     setError("");
     setStep({ name: "checking" });
     env?.checkStarted?.({ kind: "text", text: message });
-    const result = await atLeast(runCheck({ type: "text", text: message }));
+    const result = await atLeast(runCheck({ type: "text", text: message }, circle));
     setStep({ name: "result", result });
   }
 

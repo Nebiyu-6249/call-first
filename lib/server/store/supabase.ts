@@ -64,6 +64,7 @@ export class SupabaseStore implements Store {
         p_parent_name: s.parentName,
         p_text_size: s.textSize,
         p_emergency_number: s.emergencyNumber,
+        p_private_mode: s.privateMode,
         p_pin_hash: pinHash,
         p_members: s.familyMembers,
         p_contacts: s.contacts,
@@ -75,7 +76,7 @@ export class SupabaseStore implements Store {
     const circle = check(
       await this.db
         .from("circles")
-        .select("id, family_code, parent_name, text_size, emergency_number, pin_hash, pin_failed_attempts, pin_locked_until")
+        .select("id, family_code, parent_name, text_size, emergency_number, private_mode, pin_hash, pin_failed_attempts, pin_locked_until")
         .eq("id", id)
         .maybeSingle(),
     );
@@ -92,6 +93,7 @@ export class SupabaseStore implements Store {
       parentName: circle.parent_name,
       textSize: circle.text_size as TextSizeSetting,
       emergencyNumber: circle.emergency_number,
+      privateMode: circle.private_mode === true,
       pinHash: circle.pin_hash,
       pinFailedAttempts: circle.pin_failed_attempts,
       pinLockedUntil: circle.pin_locked_until ? Date.parse(circle.pin_locked_until) : null,
@@ -112,6 +114,7 @@ export class SupabaseStore implements Store {
         p_parent_name: s.parentName,
         p_text_size: s.textSize,
         p_emergency_number: s.emergencyNumber,
+        p_private_mode: s.privateMode,
         p_pin_hash: newPinHash,
         p_members: s.familyMembers,
         p_contacts: s.contacts,

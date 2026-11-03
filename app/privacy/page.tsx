@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, Ban, Database, Send, Smartphone, TriangleAlert } from "lucide-react";
+import { ArrowLeft, Ban, Database, EyeOff, Lock, Send, Smartphone, TriangleAlert } from "lucide-react";
 import { APP_NAME, DEFAULT_EMERGENCY_NUMBER } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -37,9 +37,11 @@ export default function Privacy() {
       <div className="flex flex-col gap-4">
         <h1 className="text-4xl font-bold">Privacy and limits</h1>
         <p className="text-xl">
-          The short version: what you check is sent to an AI service to be read, and then it is gone from {APP_NAME}.
-          We never keep pictures or recordings. Family messages are kept for 7 days at most, and only when the person
-          taps &ldquo;Show&rdquo; to share them.
+          The short version: before a message leaves the phone, codes, card and account numbers, email addresses, phone
+          numbers and the family&apos;s names are hidden. What is left is sent to an AI service to be read, and then it
+          is gone from {APP_NAME}. Photos and voice recordings cannot be hidden first, so they are sent as they are. We
+          never keep pictures or recordings. Family messages are kept for 7 days at most, and only when the person taps
+          &ldquo;Show&rdquo; to share them. Families who want nothing sent at all can turn on private mode.
         </p>
       </div>
 
@@ -47,15 +49,18 @@ export default function Privacy() {
         <p>When someone checks a message, our server sends it to OpenAI&apos;s API to be read:</p>
         <ul className={list}>
           <li>
-            <strong>Typed or pasted text</strong>, as it is.
+            <strong>Typed or pasted text</strong>, with personal details hidden on the phone first (see below).
           </li>
           <li>
-            <strong>Photos and screenshots</strong>, made smaller on the phone first. Making the picture smaller also
-            removes hidden details such as the place where a photo was taken.
+            <strong>Photos and screenshots</strong>, as they are, apart from being made smaller on the phone. Making the
+            picture smaller also removes hidden details such as the place where a photo was taken. Nothing in the picture
+            itself can be hidden, because reading it is the AI service&apos;s job. If a picture shows a card number,
+            cover it before taking the photo.
           </li>
           <li>
-            <strong>Voice recordings</strong> (up to 60 seconds) are turned into words by OpenAI&apos;s speech-to-text
-            service. The words are then checked like typed text.
+            <strong>Voice recordings</strong> (up to 60 seconds) are sent as they are to OpenAI&apos;s speech-to-text
+            service to be turned into words. The words then have personal details hidden, like typed text, before they
+            are checked.
           </li>
         </ul>
         <p>
@@ -80,6 +85,47 @@ export default function Privacy() {
         </p>
       </Section>
 
+      <Section id="hidden" title="What is hidden before a message is sent" Icon={EyeOff}>
+        <p>
+          On the phone, before typed text or the words of a voice description are sent, {APP_NAME} replaces:
+        </p>
+        <ul className={list}>
+          <li>card numbers with &ldquo;[CARD NUMBER]&rdquo;;</li>
+          <li>bank account numbers, sort codes and IBANs with &ldquo;[ACCOUNT NUMBER]&rdquo;;</li>
+          <li>codes and PINs of 4 to 8 digits with &ldquo;[CODE]&rdquo; (money amounts, dates and times stay);</li>
+          <li>email addresses with &ldquo;[EMAIL]&rdquo; and phone numbers with &ldquo;[PHONE NUMBER]&rdquo;;</li>
+          <li>the names of the person and their family members with &ldquo;[PARENT]&rdquo; and &ldquo;[FAMILY MEMBER]&rdquo;;</li>
+          <li>
+            everything in a link after the web address, so &ldquo;https://pay.example/ref/77&rdquo; becomes
+            &ldquo;https://pay.example/[rest of link removed]&rdquo;. The address stays, because a fake address is one
+            of the clearest signs of a scam.
+          </li>
+        </ul>
+        <p>
+          Every result has a &ldquo;What the AI service saw&rdquo; section that shows exactly what was sent. The
+          warning signs, numbers and links shown to the person are still found on the phone in the full message, so
+          hiding details does not make the phone&apos;s own check weaker. Hiding is done by fixed rules, so an unusual
+          way of writing a number can slip through.
+        </p>
+      </Section>
+
+      <Section id="private-mode" title="Private mode" Icon={Lock}>
+        <p>
+          A family member can turn on private mode in <em>Contacts and settings</em>, with their PIN. It is off unless
+          they turn it on. With private mode on:
+        </p>
+        <ul className={list}>
+          <li>nothing the person checks leaves their phone: no text, no pictures, no recordings;</li>
+          <li>only typed or pasted messages can be checked, and photos and voice are switched off;</li>
+          <li>
+            each check uses our fixed rules alone and says &ldquo;Quick check on this phone only&rdquo;. A quick check
+            can say &ldquo;Warning&rdquo; or &ldquo;Not sure&rdquo;, but never &ldquo;No warning signs found&rdquo;,
+            and it misses more scams than a full check.
+          </li>
+        </ul>
+        <p>&ldquo;Show [family name]&rdquo; still works in private mode, because it goes to the family, not to the AI service.</p>
+      </Section>
+
       <Section id="stored" title="What we store, and for how long" Icon={Database}>
         <p>Only the family circle uses our database (Supabase). We store:</p>
         <ul className={list}>
@@ -97,8 +143,9 @@ export default function Privacy() {
           </li>
           <li>
             <strong>Messages the parent chose to share</strong> with &ldquo;Show [family name]&rdquo;: a one-line
-            summary, the first 500 characters of the text, the warning signs found, and the family&apos;s reply.{" "}
-            <strong>Deleted automatically after 7 days.</strong>
+            summary, the first 500 characters of the text, the warning signs found, and the family&apos;s reply. Codes,
+            card numbers and account numbers in the text are hidden; phone numbers and links stay, as plain text, so the
+            family can see what to warn about. <strong>Deleted automatically after 7 days.</strong>
           </li>
           <li>
             <strong>Request counters</strong> that stop the service being overused: a count per internet address per
@@ -139,7 +186,8 @@ export default function Privacy() {
         <p>
           The <Link href="/demo" className="font-bold text-primary underline underline-offset-4">demo</Link> stores
           nothing at all: its family messages stay in your browser tab and disappear when you close it. Checks in the
-          demo are still sent to OpenAI as described above. Please use the made-up samples, not real personal messages.
+          demo are still sent to OpenAI as described above, unless you switch on private mode there. Please use the
+          made-up samples, not real personal messages.
         </p>
       </Section>
 

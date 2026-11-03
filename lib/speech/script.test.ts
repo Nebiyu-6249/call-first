@@ -35,8 +35,6 @@ describe("speechScript", () => {
       claimed_sender_type: "family",
       claimed_person: "",
       asked_for: [],
-      phone_numbers_in_message: [],
-      links_in_message: [],
       ai_assessment: "likely_normal",
       confidence: 0.9,
       plain_explanation: "",

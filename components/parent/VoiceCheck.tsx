@@ -11,6 +11,7 @@ import { transcribe } from "@/lib/voice/client";
 import { BackLink } from "./BackLink";
 import { ParentLink, Screen } from "./nav";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
+import { PrivateModeOff } from "./PrivateModeOff";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
 
@@ -67,7 +68,7 @@ export function VoiceCheck() {
     if (!transcript.trim()) return setStep({ name: "problem", problem: "empty" });
     setStep({ name: "checking" });
     env?.checkStarted?.({ kind: "voice", text: transcript });
-    const result = await atLeast(runCheck({ type: "call_description", text: transcript }));
+    const result = await atLeast(runCheck({ type: "call_description", text: transcript }, circle));
     setStep({ name: "result", result, transcript });
   }
 
@@ -115,6 +116,7 @@ export function VoiceCheck() {
     setStep({ name: "intro" });
   }
 
+  if (circle?.privateMode) return <PrivateModeOff title="Tell me what happened" />;
   if (step.name === "transcribing") return <CheckingScreen message="Writing down what you said..." />;
   if (step.name === "checking") return <CheckingScreen />;
 
@@ -185,8 +187,8 @@ export function VoiceCheck() {
       </ParentLink>
 
       <p className="text-lg text-muted">
-        You can talk for up to {MAX_RECORDING_SECONDS} seconds. Your voice is turned into words and then checked. The
-        recording is not saved.
+        You can talk for up to {MAX_RECORDING_SECONDS} seconds. Your voice is sent to a speech service to turn it into
+        words, then private details are hidden before it is checked. The recording is not saved.
       </p>
     </Screen>
   );

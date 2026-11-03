@@ -57,6 +57,7 @@ describe("PIN lockout", () => {
     const id = await store.createCircle("ABCDEFGH", await hashPin("482913"), {
       parentName: "Amina",
       textSize: "large",
+      privateMode: false,
       emergencyNumber: "999",
       familyMembers: [{ name: "Sara", relationship: "daughter", phone: "07700 900001" }],
       contacts: [],

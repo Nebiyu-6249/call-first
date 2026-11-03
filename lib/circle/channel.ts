@@ -2,6 +2,7 @@
 // (Phase 5) uses shared state in the browser.
 
 import type { CheckResult } from "@/lib/check";
+import { ALERT_MASK_KINDS, maskText } from "@/lib/privacy/mask";
 import { TAXONOMY, isFlagId } from "@/lib/rules/taxonomy";
 import { MAX_EXCERPT, MAX_SUMMARY, type FamilyReply, type NewAlert } from "./alerts";
 
@@ -24,6 +25,8 @@ const SOURCE_SUMMARY: Record<AlertSource, string> = {
 };
 
 // Only what the parent chose to share: a one-line summary and the checked text, cut to 500 characters.
+// Codes, card numbers and account numbers are hidden; the family still sees numbers and links to
+// warn about, as plain text.
 export function buildAlert(result: CheckResult, source: AlertSource): NewAlert {
   const labels = result.flags
     .slice(0, 2)
@@ -33,7 +36,7 @@ export function buildAlert(result: CheckResult, source: AlertSource): NewAlert {
   return {
     verdict: result.level,
     summary: (result.summary || fallback).slice(0, MAX_SUMMARY),
-    excerpt: result.checkedText.trim().slice(0, MAX_EXCERPT),
+    excerpt: maskText(result.checkedText.trim(), { kinds: ALERT_MASK_KINDS }).text.slice(0, MAX_EXCERPT),
     flagIds: result.flags.map((f) => f.id),
   };
 }

@@ -124,6 +124,38 @@ describe("family loop", () => {
     expect(circle.contacts[0].phone).toBe("0808 157 0000");
   });
 
+  it("private mode is off by default, and only the family can turn it on, with the PIN", async () => {
+    const { cookie } = await createCircle();
+    const { deviceToken, circle } = await pairPhone(cookie);
+    expect(circle.privateMode).toBe(false);
+
+    const fromPhone = await circleRoute.PUT(
+      req("/api/family/circle", { method: "PUT", token: deviceToken, body: { ...SETTINGS, privateMode: true, pin: PIN } }),
+    );
+    expect(fromPhone.status).toBe(401);
+    const noPin = await circleRoute.PUT(req("/api/family/circle", { method: "PUT", cookie, body: { ...SETTINGS, privateMode: true } }));
+    expect(noPin.status).toBe(403);
+
+    const ok = await circleRoute.PUT(req("/api/family/circle", { method: "PUT", cookie, body: { ...SETTINGS, privateMode: true, pin: PIN } }));
+    expect(ok.status).toBe(200);
+    const refreshed = (await (await deviceCircleRoute.GET(req("/api/device/circle", { token: deviceToken }))).json()).circle;
+    expect(refreshed.privateMode).toBe(true);
+  });
+
+  it("hides codes, card and account numbers in alerts, but keeps numbers and links to warn about", async () => {
+    const { cookie } = await createCircle();
+    const { deviceToken } = await pairPhone(cookie);
+    const excerpt = "Your code is 482913. Card 4111 1111 1111 1111. Call 07700 900456 or see https://pay.example/ref/77";
+    const sent = await deviceAlertsRoute.POST(
+      req("/api/device/alerts", { method: "POST", token: deviceToken, body: { verdict: "WARNING", summary: "s", excerpt, flagIds: [] } }),
+    );
+    expect(sent.status).toBe(201);
+    const inbox = await (await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).json();
+    expect(inbox.alerts[0].excerpt).toBe(
+      "Your code is [CODE]. Card [CARD NUMBER]. Call 07700 900456 or see https://pay.example/ref/77",
+    );
+  });
+
   it("changing settings needs the PIN every time, even when signed in", async () => {
     const { cookie } = await createCircle();
     const noPin = await circleRoute.PUT(req("/api/family/circle", { method: "PUT", cookie, body: { ...SETTINGS } }));

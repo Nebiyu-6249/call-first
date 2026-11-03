@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { loadEnvConfig } from "@next/env";
 import { AI_TIMEOUT_MS, analyse } from "@/lib/ai/openai";
 import { buildCheckResult } from "@/lib/check";
+import { maskText, unmaskAnalysis } from "@/lib/privacy/mask";
 import { parseDataset, untargetedFlags, type EvalMessage } from "./dataset";
 import { countVerdicts, renderReport, type EvalRow } from "./report";
 
@@ -14,11 +15,14 @@ import { countVerdicts, renderReport, type EvalRow } from "./report";
 const CONCURRENCY = 3;
 
 async function evaluate(message: EvalMessage): Promise<EvalRow> {
+  // The same as the phone: personal details hidden before the AI sees the message. The test
+  // messages have no family circle, so there are no names to hide.
+  const masked = maskText(message.text);
   const started = Date.now();
-  const outcome = await analyse({ kind: message.type, text: message.text });
+  const outcome = await analyse({ kind: message.type, text: masked.text });
   const ms = Date.now() - started;
   const full = outcome.ok
-    ? buildCheckResult(message.text, outcome.analysis, "ok")
+    ? buildCheckResult(message.text, unmaskAnalysis(outcome.analysis, masked.replacements), "ok")
     : buildCheckResult(message.text, null, outcome.reason === "not_configured" ? "skipped" : "failed");
   return {
     message,

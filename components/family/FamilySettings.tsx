@@ -14,6 +14,7 @@ function toSettings(c: FamilyCircle): CircleSettingsInput {
     parentName: c.parentName,
     textSize: c.textSize,
     emergencyNumber: c.emergencyNumber,
+    privateMode: c.privateMode ?? false,
     familyMembers: c.familyMembers.map(({ name, relationship, phone }) => ({ name, relationship, phone })),
     contacts: c.contacts.map(({ label, category, phone, note }) => ({ label, category, phone, note: note ?? "" })),
   };

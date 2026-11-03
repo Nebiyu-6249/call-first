@@ -52,6 +52,7 @@ export class MemoryStore implements Store {
       parentName: settings.parentName,
       textSize: settings.textSize,
       emergencyNumber: settings.emergencyNumber,
+      privateMode: settings.privateMode,
       pinHash,
       pinFailedAttempts: 0,
       pinLockedUntil: null,
@@ -76,6 +77,7 @@ export class MemoryStore implements Store {
       parentName: settings.parentName,
       textSize: settings.textSize,
       emergencyNumber: settings.emergencyNumber,
+      privateMode: settings.privateMode,
       pinHash: newPinHash ?? c.pinHash,
       ...withIds(settings),
     });

@@ -11,6 +11,7 @@ export interface CircleRecord {
   parentName: string;
   textSize: TextSizeSetting;
   emergencyNumber: string;
+  privateMode: boolean;
   pinHash: string;
   pinFailedAttempts: number;
   pinLockedUntil: number | null;

@@ -8,6 +8,10 @@ import { computeVerdict, type MergedFlag, type VerdictLevel } from "@/lib/verdic
 // "skipped" means no AI call was made; "failed" means it was tried and did not answer in time.
 export type AiStatus = "ok" | "failed" | "skipped";
 
+// What left the phone for the AI service: the text with personal details hidden, the picture
+// itself, or nothing at all (private mode, or a rules-only check).
+export type SentToAi = { kind: "text"; text: string } | { kind: "image" } | { kind: "nothing" };
+
 export interface CheckResult {
   level: VerdictLevel;
   // All flags, most serious first. The parent sees the first three reasons.
@@ -24,6 +28,7 @@ export interface CheckResult {
   explanation: string;
   // The text that was checked (for images, what the AI read from the picture).
   checkedText: string;
+  sent: SentToAi;
 }
 
 export const MAX_REASONS = 3;
@@ -45,7 +50,12 @@ function unique(items: string[]): string[] {
 }
 
 // `text` is what the parent typed or said. For images pass "" and the AI's extracted text is used.
-export function buildCheckResult(text: string, ai: AiAnalysis | null, aiStatus: AiStatus): CheckResult {
+export function buildCheckResult(
+  text: string,
+  ai: AiAnalysis | null,
+  aiStatus: AiStatus,
+  sent: SentToAi = { kind: "nothing" },
+): CheckResult {
   const analysis = aiStatus === "ok" ? ai : null;
   const checkedText = text.trim() || analysis?.extracted_text || "";
   const rules = runRules(checkedText);
@@ -54,8 +64,9 @@ export function buildCheckResult(text: string, ai: AiAnalysis | null, aiStatus: 
   return {
     level: verdict.level,
     flags: verdict.flags,
-    phoneNumbers: unique([...rules.phoneNumbers, ...(analysis?.phone_numbers_in_message ?? [])]),
-    links: unique([...rules.links.map((l) => l.text), ...(analysis?.links_in_message ?? [])]),
+    // Found on the phone in the original text. The AI only ever sees them hidden.
+    phoneNumbers: unique(rules.phoneNumbers),
+    links: unique(rules.links.map((l) => l.text)),
     aiStatus,
     senderType:
       analysis && analysis.claimed_sender_type !== "unknown"
@@ -65,6 +76,7 @@ export function buildCheckResult(text: string, ai: AiAnalysis | null, aiStatus: 
     summary: analysis?.input_summary ?? "",
     explanation: analysis && AGREES[verdict.level] === analysis.ai_assessment ? analysis.plain_explanation : "",
     checkedText,
+    sent,
   };
 }
 

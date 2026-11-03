@@ -11,6 +11,8 @@ export interface CircleSettingsInput {
   parentName: string;
   textSize: TextSizeSetting;
   emergencyNumber: string;
+  // Rules-only checks on the parent's phone: nothing is sent to the AI service.
+  privateMode: boolean;
   familyMembers: { name: string; relationship: string; phone: string }[];
   contacts: { label: string; category: ContactCategory; phone: string; note: string }[];
 }
@@ -42,6 +44,7 @@ export function validateCircleSettings(input: unknown): ValidationResult<CircleS
   if (!parentName) errors.push("Enter the name of the person you are protecting.");
 
   const textSize: TextSizeSetting = v.textSize === "xl" ? "xl" : "large";
+  const privateMode = v.privateMode === true;
 
   const emergencyNumber = text(v.emergencyNumber, 6) || "999";
   if (!/^\d{2,6}$/.test(emergencyNumber)) errors.push("The emergency number must be 2 to 6 digits.");
@@ -71,5 +74,5 @@ export function validateCircleSettings(input: unknown): ValidationResult<CircleS
   });
 
   if (errors.length > 0) return { ok: false, errors };
-  return { ok: true, value: { parentName, textSize, emergencyNumber, familyMembers, contacts } };
+  return { ok: true, value: { parentName, textSize, emergencyNumber, privateMode, familyMembers, contacts } };
 }

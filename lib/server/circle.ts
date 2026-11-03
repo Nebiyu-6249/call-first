@@ -11,6 +11,7 @@ export function toDeviceCircle(c: CircleRecord): DeviceCircle {
     parentName: c.parentName,
     emergencyNumber: c.emergencyNumber,
     textSize: c.textSize,
+    privateMode: c.privateMode,
     familyMembers: c.familyMembers,
     contacts: c.contacts,
   };

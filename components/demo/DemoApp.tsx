@@ -41,6 +41,7 @@ export function DemoApp() {
   const [checked, setChecked] = useState<CheckedInput | null>(null);
   const [resultShowing, setResultShowing] = useState(false);
   const [autoRead, setAutoRead] = useState(true);
+  const [privateMode, setPrivateMode] = useState(false);
   const [call, setCall] = useState<{ name: string; phone: string } | null>(null);
   const [phone, setPhone] = useState<Phone>("parent");
   const parentFrameRef = useRef<HTMLElement>(null);
@@ -202,11 +203,25 @@ export function DemoApp() {
               />
               Read answers aloud
             </label>
+            <label className="inline-flex min-h-12 items-center gap-3 font-bold">
+              <input
+                type="checkbox"
+                checked={privateMode}
+                onChange={(e) => setPrivateMode(e.target.checked)}
+                aria-describedby="private-mode-note"
+                className="size-6 accent-primary"
+              />
+              Private mode
+            </label>
             <button type="button" onClick={restart} className={chip}>
               <RotateCcw aria-hidden="true" className="size-5 shrink-0" />
               Start again
             </button>
           </div>
+          <p id="private-mode-note" className="text-base text-muted">
+            Private mode is a setting {familyName} can turn on: checks then use the built-in rules on the phone only,
+            nothing is sent to the AI service, and photos and voice are switched off.
+          </p>
         </section>
 
         <div role="group" aria-label="Which phone to show" className="grid grid-cols-2 gap-2 lg:hidden">
@@ -231,6 +246,7 @@ export function DemoApp() {
             loop={loop}
             view={view}
             autoRead={autoRead}
+            privateMode={privateMode}
             onNavigate={navigate}
             onCall={onCall}
             onCheckStarted={setChecked}

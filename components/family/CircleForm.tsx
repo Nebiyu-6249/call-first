@@ -31,6 +31,7 @@ const EMPTY: CircleSettingsInput = {
   parentName: "",
   textSize: "large",
   emergencyNumber: "999",
+  privateMode: false,
   familyMembers: [{ name: "", relationship: "", phone: "" }],
   contacts: [{ label: "", category: "bank", phone: "", note: "" }],
 };
@@ -124,6 +125,23 @@ export function CircleForm({
             maxLength={6}
           />
         </label>
+        <div className="flex flex-col gap-1 border-t-2 border-border pt-4">
+          <label className="flex min-h-12 items-start gap-3 text-lg font-bold">
+            <input
+              type="checkbox"
+              className="mt-1 size-5 shrink-0"
+              checked={values.privateMode}
+              onChange={(e) => set("privateMode", e.target.checked)}
+              aria-describedby="private-mode-help"
+            />
+            Private mode: checks stay on their phone
+          </label>
+          <p id="private-mode-help" className="text-base text-muted">
+            Nothing they check is sent to the AI service. Only typed or pasted messages can be checked, with our
+            built-in rules alone, so answers are less sure and photos and voice are switched off. Off unless you turn
+            it on.
+          </p>
+        </div>
       </fieldset>
 
       <fieldset className={`${fCard} flex flex-col gap-4`}>

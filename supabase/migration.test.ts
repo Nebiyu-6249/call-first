@@ -1,11 +1,16 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { PGlite } from "@electric-sql/pglite";
 import { beforeAll, describe, expect, it } from "vitest";
 
-// Runs the real migration in an in-process Postgres to check the SQL and the functions.
+// Runs the real migrations, in order, in an in-process Postgres to check the SQL and the functions.
 
-const sql = readFileSync(fileURLToPath(new URL("./migrations/0001_family_circle.sql", import.meta.url)), "utf8");
+const dir = fileURLToPath(new URL("./migrations/", import.meta.url));
+const sql = readdirSync(dir)
+  .filter((f) => f.endsWith(".sql"))
+  .sort()
+  .map((f) => readFileSync(`${dir}/${f}`, "utf8"))
+  .join("\n");
 
 const members = JSON.stringify([
   { name: "Sara", relationship: "daughter", phone: "07700 900001" },
@@ -66,6 +71,24 @@ describe("supabase migration", () => {
       [circleId],
     );
     expect(counts.rows[0]).toEqual({ m: 1, c: 0 });
+  });
+
+  it("stores private mode, off unless the family turns it on", async () => {
+    const mode = async () =>
+      (await db.query<{ private_mode: boolean }>("select private_mode from circles where id = $1", [circleId])).rows[0]
+        .private_mode;
+    expect(await mode()).toBe(false);
+    await db.query(
+      "select replace_circle_settings($1, 'Amina B', 'xl', '112', null, $2::jsonb, '[]'::jsonb, true)",
+      [circleId, JSON.stringify([{ name: "Sara", relationship: "daughter", phone: "07700 900001" }])],
+    );
+    expect(await mode()).toBe(true);
+    // The old seven-argument call still works and switches it off again.
+    await db.query(
+      "select replace_circle_settings($1, 'Amina B', 'xl', '112', null, $2::jsonb, '[]'::jsonb)",
+      [circleId, JSON.stringify([{ name: "Sara", relationship: "daughter", phone: "07700 900001" }])],
+    );
+    expect(await mode()).toBe(false);
   });
 
   it("uses a pairing code once and never after it expires", async () => {

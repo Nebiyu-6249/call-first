@@ -3,6 +3,13 @@ import { buildAlert } from "./channel";
 import { validateCircleSettings, validatePin } from "./validate";
 import { buildCheckResult } from "@/lib/check";
 
+describe("buildAlert", () => {
+  it("hides the code in the excerpt the family sees, but keeps the number to warn about", () => {
+    const result = buildCheckResult("Gulf Example Bank: read us the code 482913 on 07700 900456", null, "failed");
+    expect(buildAlert(result, "text").excerpt).toBe("Gulf Example Bank: read us the code [CODE] on 07700 900456");
+  });
+});
+
 describe("validatePin", () => {
   it("needs 6 digits that are not easy to guess", () => {
     expect(validatePin("482913")).toBeNull();

@@ -31,4 +31,6 @@ export interface ParentCircle {
 // What a paired parent device receives: the circle plus the text size the family chose.
 export interface DeviceCircle extends ParentCircle {
   textSize: TextSizeSetting;
+  // Rules-only checks: nothing leaves the phone. Missing on circles cached before it existed.
+  privateMode?: boolean;
 }

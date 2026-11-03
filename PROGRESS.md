@@ -356,7 +356,46 @@ time, with a go-ahead between steps. `eval/heldout.json` must not be opened befo
 - The live site still shows "Second Look" until the next deploy (Step 6). The Step 1 and 2 commits are not pushed
   yet.
 
-Next: Step 3, masking personal details before the AI sees them.
+### Step 3: Hide personal details before the AI sees them - done
+
+- `lib/privacy/mask.ts` (pure, on the phone): `maskText` replaces card numbers (Luhn-checked; other long numbers
+  count as account numbers), IBANs, sort codes and account numbers, 4-8 digit codes, email addresses, phone numbers,
+  the circle's own names, and everything after the host in a link. Money amounts, dates, times and years stay;
+  order, parcel and case numbers stay. Links, emails and phone numbers are held back first, so digits inside them
+  are never mistaken for codes. Masking twice gives the same text.
+- `unmask` / `unmaskAnalysis` put details back into the AI's quotes on the phone, so the parent never sees
+  "[CODE]". In the AI's own words (summary, explanation) numbers, links and emails are only ever described.
+- Wiring:
+  - `runCheck` masks text and voice transcripts with the circle's names before `/api/check`, and records what was
+    sent in `CheckResult.sent`. Photos are sent as they are.
+  - `/api/check` masks again (without names) in case an older cached copy of the app sends plain text.
+  - The rules engine, and the numbers and links shown as "This came from the message", still use the original text.
+  - The AI schema no longer has `phone_numbers_in_message` or `links_in_message`; the prompt explains the
+    placeholders and says not to repeat them.
+  - Family alerts hide codes, card and account numbers in the excerpt (on the phone and again on the server), but
+    keep phone numbers and links.
+  - `npm run eval` masks the same way, so Step 5 measures what the AI really sees.
+- Result screen: a collapsed "What the AI service saw" section with the masked text (or "the picture itself"; for
+  voice, a line that the recording went to speech-to-text).
+- Photo screen: "The picture is sent to an AI service to read it. If it shows a card number, cover it first."
+- Private mode: a family setting (off by default, PIN like every setting) stored in the new `private_mode` column
+  (`supabase/migrations/0002_private_mode.sql`). When on, checks never call `/api/check` or `/api/transcribe`, only
+  "Type or paste" is offered (photo and voice screens refuse if opened directly), and results say "Quick check on
+  this phone only". The demo panel has a "Private mode" switch.
+- Supabase: the migration was applied to the live project with `db push --remote`. The new function argument has
+  a default, and the old seven-argument call was checked against the live database, so the deployed site keeps
+  working until Step 6. `npm run check:supabase` passes 16 checks, including the new "store private mode".
+- Privacy page: new sections "What is hidden before a message is sent" and "Private mode"; photos and audio are
+  described as sent as they are; alerts hide codes, card and account numbers.
+- Tests: 262 pass (mask rules and tricky cases, unmasking, runCheck makes no request in private mode, private mode
+  never gives NO WARNING SIGNS, masked request body, alert excerpts through the real route, private mode setting
+  through the real routes, migrations run in order in PGlite).
+- Checked in the browser: "Hi Mum" sends "[FAMILY MEMBER]" and still calls Omar; one request per check; private
+  mode sends nothing; Sara's excerpt of the sign-in code shows "[CODE]".
+- Trade-off seen: the AI no longer sees family names, so it writes "your family member" rather than "your son
+  Omar". The call button still uses Omar's saved number (found on the phone).
+
+Next: Step 4, the two urgent moments ("Someone is on the phone with me now", "Something already happened").
 
 ## Still to do (needs you)
 

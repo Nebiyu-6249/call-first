@@ -18,8 +18,6 @@ export interface AiAnalysis {
   // Who the message claims to be when it is a family member, for example "son" or "Sara".
   claimed_person: string;
   asked_for: string[];
-  phone_numbers_in_message: string[];
-  links_in_message: string[];
   ai_assessment: AiAssessment;
   confidence: number;
   plain_explanation: string;
@@ -39,8 +37,6 @@ export const AI_ANALYSIS_SCHEMA = {
     "claimed_sender_type",
     "claimed_person",
     "asked_for",
-    "phone_numbers_in_message",
-    "links_in_message",
     "ai_assessment",
     "confidence",
     "plain_explanation",
@@ -64,8 +60,6 @@ export const AI_ANALYSIS_SCHEMA = {
     claimed_sender_type: { type: "string", enum: [...SENDER_TYPES] },
     claimed_person: { type: "string" },
     asked_for: stringArray,
-    phone_numbers_in_message: stringArray,
-    links_in_message: stringArray,
     ai_assessment: { type: "string", enum: [...ASSESSMENTS] },
     confidence: { type: "number" },
     plain_explanation: { type: "string" },
@@ -138,8 +132,6 @@ export function parseAiAnalysis(value: unknown): AiAnalysis | null {
     claimed_sender_type: (SENDER_TYPES as readonly string[]).includes(sender) ? (sender as SenderType) : "unknown",
     claimed_person: str(v.claimed_person, 60),
     asked_for: strList(v.asked_for),
-    phone_numbers_in_message: strList(v.phone_numbers_in_message),
-    links_in_message: strList(v.links_in_message),
     ai_assessment: v.ai_assessment as AiAssessment,
     confidence: Math.min(1, Math.max(0, v.confidence)),
     plain_explanation: stripContactDetails(

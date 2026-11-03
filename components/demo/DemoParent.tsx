@@ -30,6 +30,7 @@ export function DemoParent({
   loop,
   view,
   autoRead,
+  privateMode,
   onNavigate,
   onCall,
   onCheckStarted,
@@ -38,6 +39,7 @@ export function DemoParent({
   loop: DemoFamilyLoop;
   view: ParentView;
   autoRead: boolean;
+  privateMode: boolean;
   onNavigate: (route: ParentRoute) => void;
   onCall: (name: string, phone: string) => void;
   onCheckStarted: (input: CheckedInput) => void;
@@ -47,9 +49,11 @@ export function DemoParent({
   const firstRender = useRef(true);
   const channel = useMemo(() => loop.channel(DEMO_CIRCLE.familyMembers[0].name), [loop]);
 
+  const circle = useMemo(() => ({ ...DEMO_CIRCLE, privateMode }), [privateMode]);
+
   const env = useMemo<ParentEnv>(
     () => ({
-      circle: DEMO_CIRCLE,
+      circle,
       channel,
       go: onNavigate,
       call: onCall,
@@ -58,7 +62,7 @@ export function DemoParent({
       checkStarted: onCheckStarted,
       resultShown: onResultShown,
     }),
-    [channel, onNavigate, onCall, autoRead, onCheckStarted, onResultShown],
+    [circle, channel, onNavigate, onCall, autoRead, onCheckStarted, onResultShown],
   );
 
   // On each new screen, go back to the top and move focus there, as a page change would.
