@@ -268,16 +268,44 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
   `[PLACEHOLDER: ...]` wherever your own story belongs.
 - 226 unit tests.
 
+## Deployed (Nov 3, 2026)
+
+- **Live:** https://second-look-safespace.netlify.app. **Code:** https://github.com/Nebiyu-6249/second-look (public).
+- **Supabase:**
+  - Project `second-look` (ref `zrjjvewrcraaqyzwfgns`, us-east-2) in the free organisation "Second Look". The
+    migration was applied with `supabase db push --remote`.
+  - `npm run check:supabase` (new) passed all 15 checks against it.
+  - Using the public key, every table reads empty and every function is refused.
+  - The database password is in the git-ignored `.env.supabase-db`.
+- **Netlify:**
+  - Site `second-look-safespace` on the free team `gemedunebiyu`. Environment variables were imported from
+    `.env.local`.
+  - Deployed with `npx netlify-cli deploy --prod` from this machine. GitHub is not connected for automatic deploys.
+  - Visitor access: the team default required a Netlify login for every deploy. The site is now set to protect
+    non-production deploys only, so the production site is public.
+- **Secrets:** `netlify env:import` printed the imported values, including the Supabase service_role key and the
+  session secret, into the terminal and this session's transcript. Both were replaced:
+  - the app now uses the new `sb_secret_` key;
+  - the session secret was regenerated and updated on Netlify, with output suppressed.
+
+  The old legacy JWT keys still need disabling in the Supabase dashboard (see below).
+- **Checked live:**
+  - pages return 200 and all security headers are present;
+  - `/api/check` answers (`aiStatus: failed` until the OpenAI key is set);
+  - the family API refuses requests without a session and blocks cross-site requests;
+  - the full family loop worked against the real database: create, pair, alert, reply, the parent sees it, delete,
+    then the phone is refused;
+  - in the demo, "Hi Mum" gives WARNING with "Call Omar", and the reply reaches Amina's phone.
+
 ## Still to do (needs you)
 
-1. **Deploy to Netlify:** push to GitHub, import in Netlify, and add the environment variables. Steps are in the
-   README. Then put the live link in README.md and DEVPOST.md.
-2. **Create the Supabase project** and run the migration. This is the first real test of `SupabaseStore`.
-3. **Add `OPENAI_API_KEY` to `.env.local`**, run `npm run eval`, and commit the new `EVALUATION.md`. Try the demo with
-   live AI answers.
-4. **Fill in the `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience.
-5. **On a real phone:** try the camera, the microphone and offline mode, and check the live site with a screen reader
-   (VoiceOver or TalkBack).
+1. **Disable the legacy JWT keys** in Supabase: https://supabase.com/dashboard/project/zrjjvewrcraaqyzwfgns/settings/api-keys,
+   then **Legacy API Keys > Disable JWT-based API keys**. The old service_role key was exposed in a terminal log.
+2. **Add `OPENAI_API_KEY` to `.env.local`.** Then run `npm run eval` and commit `EVALUATION.md`, and put the key on
+   Netlify: in the Netlify UI, or run `npx netlify-cli env:import .env.local` in a terminal nobody else can see, since
+   it prints the values. Redeploy with `npx netlify-cli deploy --prod` after stopping `npm run dev`.
+3. **Fill in the `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience.
+4. **On a real phone:** check the camera, the microphone, offline mode and a screen reader on the live site.
 
 ## Known issues
 

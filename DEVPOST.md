@@ -192,5 +192,5 @@ Supabase (Postgres), Netlify, Vitest, PGlite, lucide-react, Atkinson Hyperlegibl
 
 ## Try it
 
-- Live demo: [PLACEHOLDER: Netlify link]/demo
-- Code: [PLACEHOLDER: repository link]
+- Live demo: https://second-look-safespace.netlify.app/demo
+- Code: https://github.com/Nebiyu-6249/second-look

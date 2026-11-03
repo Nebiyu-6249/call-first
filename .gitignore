@@ -42,3 +42,9 @@ next-env.d.ts
 
 # keep the documented example env file
 !.env.example
+
+# Supabase CLI link state (project ref, versions)
+supabase/.temp/
+
+# Local Netlify folder
+.netlify

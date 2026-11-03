@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "eval": "tsx --conditions=react-server eval/run.ts"
+    "eval": "tsx --conditions=react-server eval/run.ts",
+    "check:supabase": "tsx --conditions=react-server scripts/check-supabase.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

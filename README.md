@@ -7,7 +7,9 @@ Built during SafeSpace Hacks (Oct 17 - Nov 22, 2026), starting from an empty rep
 
 > Second Look gives a second opinion, not a guarantee. It is not an emergency service.
 
-**Live demo:** _add the Netlify link here after deploying_ (then open `/demo`)
+**Live demo:** https://second-look-safespace.netlify.app/demo
+
+**Code:** https://github.com/Nebiyu-6249/second-look
 
 ## What it does
 
@@ -157,6 +159,7 @@ The family circle (contacts, connected phones, alerts) is stored in Supabase Pos
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript check (generates route types first) |
 | `npm test` | Unit tests (Vitest) |
+| `npm run check:supabase` | Check the connected Supabase project end to end with a made-up circle, which is deleted afterwards |
 | `npm run eval` | Run the 48 test messages in `eval/messages.json` through the real pipeline (rules, live AI, verdict) and write `EVALUATION.md`. Uses the `OPENAI_*` values from `.env.local`. Without a key it measures the rules only and says so. |
 
 ## Deploy (Netlify)
@@ -178,6 +181,19 @@ transcription after 20.
 5. Set a monthly spending limit on the OpenAI key for the judging period.
 
 Changing an environment variable needs a new deploy before it takes effect.
+
+New Netlify teams may protect every deploy with "Netlify login required". For a public demo, set **Project
+configuration > Access & security > Visitor access** so only non-production deploys are protected.
+
+The live site was deployed from this machine with the Netlify CLI rather than from GitHub:
+
+```bash
+npx netlify-cli deploy --prod
+```
+
+On Windows, stop `npm run dev` first. The Next.js plugin moves the `.next` folder, which fails while the dev server
+has files in it open. To make every push deploy automatically instead, connect the GitHub repository under
+**Project configuration > Build & deploy**.
 
 ## Project structure
 
