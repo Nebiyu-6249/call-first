@@ -160,7 +160,10 @@ you reviewed and changed, and what you decided yourself.]
 
 - [PLACEHOLDER: Your own learning, for example about how scams target older people, accessibility, or designing for
   someone who is not comfortable with technology.]
-- Small honest numbers are more useful than big claims. The evaluation set is 48 fictional messages written by us,
+- Small honest numbers are more useful than big claims. On our 48-message set, rules plus AI gave WARNING for 31 of
+  32 scams and NOT SURE for the last one, so no scam got NO WARNING SIGNS. Of 16 normal messages, 8 got NO WARNING
+  SIGNS, 7 got NOT SURE, and 1 was a false alarm: a genuine-looking bank "Reply YES or NO" check. The set is 48
+  fictional messages written by us,
   and we report the misses and false alarms exactly as they come out.
 
 ## What's next

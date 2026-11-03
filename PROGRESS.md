@@ -297,15 +297,28 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
     then the phone is refused;
   - in the demo, "Hi Mum" gives WARNING with "Call Omar", and the reply reaches Amina's phone.
 
+### Live AI (Nov 3, 2026)
+
+- `OPENAI_API_KEY` was added to `.env.local` by the user and put on Netlify with a script that prints names only.
+  Redeployed.
+- `npm run eval` with `gpt-6.1-terra` (all 48 calls answered, median 3.2 s):
+  - scams: 31 WARNING, 1 NOT SURE (s16, parcel redelivery link), 0 missed;
+  - normal: 8 NO WARNING SIGNS, 7 NOT SURE, 1 false alarm (n16, bank "Reply YES or NO").
+  - The rules were not changed after seeing these results.
+- Checked live:
+  - `/api/check` returns `likely_scam 0.98` for a code request;
+  - in the demo, "Account frozen" gives WARNING with an AI summary and "Call Gulf Example Bank";
+  - the requested sign-in code and the doctor's appointment give NO WARNING SIGNS FOUND;
+  - the police threat gives WARNING.
+- The first local AI call took 6.3 s, close to the 8 s timeout. The eval median was 3.2 s. A timeout falls back to the
+  rules-only result.
+
 ## Still to do (needs you)
 
 1. **Disable the legacy JWT keys** in Supabase: https://supabase.com/dashboard/project/zrjjvewrcraaqyzwfgns/settings/api-keys,
    then **Legacy API Keys > Disable JWT-based API keys**. The old service_role key was exposed in a terminal log.
-2. **Add `OPENAI_API_KEY` to `.env.local`.** Then run `npm run eval` and commit `EVALUATION.md`, and put the key on
-   Netlify: in the Netlify UI, or run `npx netlify-cli env:import .env.local` in a terminal nobody else can see, since
-   it prints the values. Redeploy with `npx netlify-cli deploy --prod` after stopping `npm run dev`.
-3. **Fill in the `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience.
-4. **On a real phone:** check the camera, the microphone, offline mode and a screen reader on the live site.
+2. **Fill in the `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience.
+3. **On a real phone:** check the camera, the microphone, offline mode and a screen reader on the live site.
 
 ## Known issues
 

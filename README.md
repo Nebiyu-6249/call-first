@@ -90,12 +90,20 @@ The full, plain-language version is at `/privacy` on the site.
 
 The numbers are reported exactly as they come out, misses included.
 
-The committed report currently has the **rules-only** numbers, which is what the parent sees if the AI is down:
+Results from the run on Nov 3, 2026 with `gpt-6.1-terra`. All 48 AI calls answered, with a median of 3.2 seconds:
 
-- Scams: 21 of 32 got WARNING and 11 got NOT SURE, with no scam missed.
-- Normal messages: 1 of 16 was a false alarm.
+| | WARNING | NOT SURE | NO WARNING SIGNS |
+| --- | ---: | ---: | ---: |
+| Scams, rules + AI | 31 | 1 | 0 (no misses) |
+| Normal, rules + AI | 1 (false alarm) | 7 | 8 |
+| Scams, rules only (AI down) | 21 | 11 | 0 |
+| Normal, rules only (AI down) | 1 | 15 | 0 |
 
-Run it with an OpenAI key to measure the full pipeline.
+- **The false alarm:** a bank's "did you make this payment? Reply YES or NO" message, which the rules read as a request
+  for payment.
+- **NOT SURE on normal messages:** these were cases where the AI said the message looked normal but still noted a
+  warning sign, such as a bank name. NOT SURE tells the person to check with family; it is not a false alarm.
+- **Without the AI** the app never says NO WARNING SIGNS, by design.
 
 ## Local setup
 
