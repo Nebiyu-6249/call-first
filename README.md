@@ -83,27 +83,36 @@ The full, plain-language version is at `/privacy` on the site.
 
 ## Evaluation
 
-`npm run eval` runs 48 fictional messages through the real pipeline and writes [EVALUATION.md](EVALUATION.md):
+`npm run eval` runs a set of fictional messages through the real pipeline (rules, masking, the live AI and the
+verdict) and writes [EVALUATION.md](EVALUATION.md), misses and false alarms included. There are two sets:
 
-- 32 scams, including spoken call descriptions;
-- 16 normal messages, including tricky ones such as a sign-in code the person asked for.
+- **An independent held-out set** (`eval/heldout.json`): 70 messages, 40 scams and 30 normal messages, as texts and
+  as spoken descriptions of calls. It was written in a separate session that never saw the rules, frozen in commit
+  `1814d88`, not opened while the rules, prompt and masking were being changed, and run once
+  (`npm run eval -- eval/heldout.json`; the script refuses a second run). This is the honest measure.
+- **The original set** (`eval/messages.json`): 48 messages written alongside the rules, so it flatters them.
 
-The numbers are reported exactly as they come out, misses included.
+Held-out results from Nov 3, 2026 with `gpt-6.1-terra` (all 70 AI calls answered, median 2.8 seconds). The ranges
+are 95% confidence intervals (Wilson); with 70 messages they are wide.
 
-Results from the run on Nov 3, 2026 with `gpt-6.1-terra`. All 48 AI calls answered, with a median of 3.2 seconds:
+| Held-out set | Scams caught (WARNING or NOT SURE) | Scams with WARNING | False alarms (normal with WARNING) |
+| --- | --- | --- | --- |
+| Rules + AI | 39 of 40 (98%, 87-100%) | 33 of 40 (83%, 68-91%) | 6 of 30 (20%, 10-37%) |
+| Rules only | 40 of 40 (100%, 91-100%) | 18 of 40 (45%, 31-60%) | 6 of 30 (20%, 10-37%) |
 
-| | WARNING | NOT SURE | NO WARNING SIGNS |
-| --- | ---: | ---: | ---: |
-| Scams, rules + AI | 31 | 1 | 0 (no misses) |
-| Normal, rules + AI | 1 (false alarm) | 7 | 8 |
-| Scams, rules only (AI down) | 21 | 11 | 0 |
-| Normal, rules only (AI down) | 1 | 15 | 0 |
+- **The miss:** "Hi Susan, are we still on for lunch on Saturday?", a "wrong number" opener that asks for nothing
+  yet. The AI was confident it was normal.
+- **The six false alarms:** a friend passing on a scam warning that quotes the scam (2), a genuine small money request
+  from family or a friend (3), and a genuine bank "reply Y or N" fraud check (1). Each set off a rule that the AI
+  cannot overrule, by design, so the AI did not reduce false alarms.
+- **Why we use an AI service at all:** with the rules only, the app can never say NO WARNING SIGNS, and gave WARNING
+  on fewer than half the scams. With the AI, WARNING went from 18 to 33 of 40 scams, and 14 of 30 normal messages got
+  NO WARNING SIGNS instead of a doubt. The cost was the one miss above.
+- **Original set (written alongside the rules):** rules + AI gave WARNING on 31 of 32 scams and NOT SURE on the last,
+  with 1 false alarm in 16 normal messages (the same bank YES/NO pattern). Rules only: 21 WARNING and 11 NOT SURE.
 
-- **The false alarm:** a bank's "did you make this payment? Reply YES or NO" message, which the rules read as a request
-  for payment.
-- **NOT SURE on normal messages:** these were cases where the AI said the message looked normal but still noted a
-  warning sign, such as a bank name. NOT SURE tells the person to check with family; it is not a false alarm.
-- **Without the AI** the app never says NO WARNING SIGNS, by design.
+The rules, prompt and masking were not changed after the held-out run. The weaknesses it showed, and ideas for
+later, are at the end of [EVALUATION.md](EVALUATION.md).
 
 ## Local setup
 
@@ -169,7 +178,7 @@ The family circle (contacts, connected phones, alerts) is stored in Supabase Pos
 | `npm run typecheck` | TypeScript check (generates route types first) |
 | `npm test` | Unit tests (Vitest) |
 | `npm run check:supabase` | Check the connected Supabase project end to end with a made-up circle, which is deleted afterwards |
-| `npm run eval` | Run the 48 test messages in `eval/messages.json` through the real pipeline (rules, live AI, verdict) and write `EVALUATION.md`. Uses the `OPENAI_*` values from `.env.local`. Without a key it measures the rules only and says so. |
+| `npm run eval` | Run the 48 test messages in `eval/messages.json` through the real pipeline (rules, masking, live AI, verdict), save the run in `eval/results/` and write `EVALUATION.md` from every saved run. `npm run eval -- <file>` runs another set (the held-out set runs only once); `npm run eval -- --report` rewrites the report without checking anything. Uses the `OPENAI_*` values from `.env.local`. |
 
 ## Deploy (Netlify)
 
@@ -227,7 +236,8 @@ public/sw.js    Offline support for the parent screens
 - Full checks need an AI service and an internet connection. Without them it does a quick rules-only check.
 - The family loop needs a family member who responds.
 - English only.
-- It has been evaluated on 48 fictional messages written by the builder, not on real-world data.
+- It has been evaluated on 118 fictional messages, not on real-world data. On the 70 written independently, it missed
+  1 of 40 scams and gave a false WARNING on 6 of 30 normal messages.
 
 ## Credits
 

@@ -346,8 +346,11 @@ export function orderSets(sets: EvalSet[]): EvalSet[] {
   return [...sets].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
 }
 
-export function renderEvaluation(sets: EvalSet[], changed: ChangedSince = {}): string {
+export function renderEvaluation(sets: EvalSet[], changed: ChangedSince = {}, notes = ""): string {
   const ordered = orderSets(sets);
+  const notesSection = notes
+    ? ["## What the results show (written by hand after the runs, from `eval/notes.md`)", "", notes, ""]
+    : [];
   return [
     "# Evaluation",
     "",
@@ -369,5 +372,6 @@ export function renderEvaluation(sets: EvalSet[], changed: ChangedSince = {}): s
     summaryTable(ordered),
     "",
     ...ordered.map((set, i) => renderSet(set, i + 1, changed[set.name] ?? null)),
+    ...notesSection,
   ].join("\n");
 }

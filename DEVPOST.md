@@ -130,7 +130,8 @@ the real Omar.
   - tested at 320px wide and with the keyboard only.
 - **Testing:** 220+ unit tests. They cover every warning sign, the verdict logic, prompt injection, the whole family
   loop through the real route handlers, and the SQL migration run in an in-process Postgres. An evaluation script
-  runs 48 fictional messages through the real pipeline and reports misses honestly (`EVALUATION.md`).
+  runs fictional messages through the real pipeline and reports misses honestly (`EVALUATION.md`), including a
+  70-message held-out set written separately and run once.
 
 [PLACEHOLDER: Mention how you used Claude Code as an AI coding assistant, in your own words: what you directed, what
 you reviewed and changed, and what you decided yourself.]
@@ -160,11 +161,15 @@ you reviewed and changed, and what you decided yourself.]
 
 - [PLACEHOLDER: Your own learning, for example about how scams target older people, accessibility, or designing for
   someone who is not comfortable with technology.]
-- Small honest numbers are more useful than big claims. On our 48-message set, rules plus AI gave WARNING for 31 of
-  32 scams and NOT SURE for the last one, so no scam got NO WARNING SIGNS. Of 16 normal messages, 8 got NO WARNING
-  SIGNS, 7 got NOT SURE, and 1 was a false alarm: a genuine-looking bank "Reply YES or NO" check. The set is 48
-  fictional messages written by us,
-  and we report the misses and false alarms exactly as they come out.
+- Test sets you write yourself flatter you. On our own 48 messages, rules plus AI missed no scam and gave 1 false
+  alarm in 16 normal messages. Then we ran a 70-message set written in a separate session that never saw our rules,
+  once, without changing anything afterwards. Rules plus AI caught 39 of 40 scams (98%, 95% CI 87-100%), 33 of them
+  with WARNING, but gave a false WARNING on 6 of 30 normal messages (20%, 95% CI 10-37%): friends passing on scam
+  warnings, genuine small money requests from family, and a real bank's "reply Y or N" check. The one miss was a
+  "wrong number" opener that asks for nothing yet.
+- The AI earns its place, but not where we expected. It did not reduce false alarms, because by design it cannot
+  overrule a high-risk rule. What it did was turn NOT SURE into WARNING on scams (18 to 33 of 40) and let 14 of 30
+  normal messages through with NO WARNING SIGNS, where the rules alone can only ever say NOT SURE.
 
 ## What's next
 
@@ -178,12 +183,13 @@ you reviewed and changed, and what you decided yourself.]
 
 Call First cannot listen to a live phone call, and phone calls are where many of the most damaging scams happen.
 The person can only describe a call afterwards, out loud or in writing. If the scammer has already persuaded them to
-stay on the line or move money, Call First will not know. The Golden Rules and the "Call [family name]" button are
-the best it can offer in that moment.
+stay on the line or move money, Call First will not know. The "Someone is on the phone with me now" button (it is OK
+to hang up, then the saved numbers to call) is the best it can offer in that moment.
 
 Other limits:
 
-- It cannot catch every scam.
+- It cannot catch every scam. On a 70-message set written independently, it missed 1 of 40 scams and gave a false
+  WARNING on 6 of 30 normal messages.
 - Full checks need the internet and an AI service.
 - The family loop needs a family member who answers.
 - It is not an emergency service.

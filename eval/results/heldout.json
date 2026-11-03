@@ -1,0 +1,2476 @@
+{
+  "name": "heldout",
+  "file": "eval/heldout.json",
+  "about": "Independent held-out evaluation set. Written in a separate session that never saw the checker's rules. All people, companies, numbers and links are fictional.",
+  "datasetCommit": "1814d88",
+  "info": {
+    "date": "2026-11-03",
+    "commit": "ea2b42d",
+    "model": "gpt-6.1-terra",
+    "reasoningEffort": "none",
+    "timeoutMs": 8000,
+    "aiConfigured": true
+  },
+  "rows": [
+    {
+      "message": {
+        "id": "h01",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "delivery or parcel fee",
+        "text": "Your parcel from Example Parcels could not be delivered due to an incomplete address. Update it and pay the £1.45 redelivery fee here: https://exampleparcels-redeliver.example/r/4821"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.94
+      },
+      "ms": 3509
+    },
+    {
+      "message": {
+        "id": "h02",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Are you coming to the quiz on Friday? Mavis says we're a man down without you."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2496
+    },
+    {
+      "message": {
+        "id": "h03",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "bank or card fraud-team impersonation",
+        "text": "A lady rang my landline saying she was from the fraud department at Westmere Example Bank. She knew my name and the first line of my address. She said someone had tried to take money out of my account and that I needed to move my savings into a 'safe account' while they sorted it out. She was ever so nice and kept me on the phone for ages. She even said not to tell the girls at my local branch because one of them might be involved. I've got the new account number written on the back of an envelope, but something doesn't sit right with me."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 3393
+    },
+    {
+      "message": {
+        "id": "h04",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Your Northgate Example Bank security code is 482913. It expires in 10 minutes. Only enter it in the Northgate app or website when you have asked to sign in. We will never phone you to ask for it."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 2630
+    },
+    {
+      "message": {
+        "id": "h05",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "family emergency or \"this is my new number\"",
+        "text": "Hi mum this is my new number, my phone fell in the sink. Save this one and delete the old one 😅 x"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "family_emergency_claim"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "family_emergency_claim"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.86
+      },
+      "ms": 2611
+    },
+    {
+      "message": {
+        "id": "h06",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Careful everyone!! My neighbour got a text saying 'Your parcel is held, pay £1.45 redelivery fee' with a link in it. It's a scam, don't open it. Please pass this on to anyone who might not know x"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.94
+      },
+      "ms": 2056
+    },
+    {
+      "message": {
+        "id": "h07",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "marketplace buyer or seller (overpayment, \"send it back\", fake payment proof)",
+        "text": "Hi, is the sofa still available? I'll take it. I'll pay the full asking price plus £40 extra for my courier, I'll send the payment now. Can you confirm your email address so the payment request reaches you? Thanks, Gareth"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.84
+      },
+      "ms": 2560
+    },
+    {
+      "message": {
+        "id": "h08",
+        "label": "normal",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "",
+        "text": "My bank rang from their fraud team to check a payment. The lady said she would only confirm it was me, and told me to hang up and ring the number on the back of my card before we talked about anything. I did that, got through to her, and she confirmed the payment was genuine and thanked me."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 2686
+    },
+    {
+      "message": {
+        "id": "h09",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "investment, crypto or \"guaranteed returns\"",
+        "text": "Hi Brian, I'm Lucy from Crestwood Example Capital. Our members earned an average of 14% weekly last month with our AI crypto trading desk, capital fully guaranteed. Open a free account here: https://crestwood-trade.example/start"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3330
+    },
+    {
+      "message": {
+        "id": "h10",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Mum, home safe. Rain was awful on the motorway. Call you Sunday? x"
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 2088
+    },
+    {
+      "message": {
+        "id": "h11",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "utility company (electricity, water, broadband) cut-off or refund",
+        "text": "Example Power: Your direct debit has failed and your account is 3 months overdue. Your supply will be disconnected today at 4pm unless you pay £212.80 now: https://example-power-bill.example/pay"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3537
+    },
+    {
+      "message": {
+        "id": "h12",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Pinewood Example Couriers: Your parcel is out for delivery today between 1pm and 3pm. Track it here: https://pinewood-couriers.example/track/PW48213"
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.7
+      },
+      "ms": 2953
+    },
+    {
+      "message": {
+        "id": "h13",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "romance or friendship that slowly turns to money",
+        "text": "Good morning my dear Margaret. I hope your hip is feeling better today. I was thinking about our chat all night, I haven't felt like this since my Helen passed. I'm only on this offshore rig for 3 more weeks and then I can fly over to meet you at last. Dennis x"
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.76
+      },
+      "ms": 2820
+    },
+    {
+      "message": {
+        "id": "h14",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "government, tax, pension or benefits office",
+        "text": "I had a call from a man who said he was from the Example Benefits Office. He said I'd been overpaid on my pension credit and would have to pay back £1,200 or they'd stop my payments straight away. He said the quickest way was to buy gift cards at the supermarket and read him the numbers off the back. I said I'd think about it and he got quite short with me."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_authority"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_authority"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 4785
+    },
+    {
+      "message": {
+        "id": "h15",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Sunday service is at 10:30, followed by tea and cake in the hall. The harvest collection for the food bank is in the porch if you'd like to bring a tin or two."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2020
+    },
+    {
+      "message": {
+        "id": "h16",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "bank or card fraud-team impersonation",
+        "text": "Northgate Example Bank: We have blocked a card payment of £489.00 at TECHWORLD EXAMPLE ONLINE. If this was not you, call our fraud team now on 020 7946 0312 or secure your account at https://northgate-bank-secure.example/verify"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.94
+      },
+      "ms": 3723
+    },
+    {
+      "message": {
+        "id": "h17",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Westmere Example Bank Fraud Team: Did you make a card payment of £62.40 at GREENFIELD EXAMPLE GARDEN CENTRE today? Reply YES or NO. We will never ask for your PIN or full card number."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.83
+      },
+      "ms": 2759
+    },
+    {
+      "message": {
+        "id": "h18",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "\"wrong number\" friendly opener with no request yet",
+        "text": "Hi Susan, are we still on for lunch on Saturday?"
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.97
+      },
+      "ms": 2296
+    },
+    {
+      "message": {
+        "id": "h19",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "prize, lottery or inheritance",
+        "text": "A man rang to say I had inherited money from a distant relative abroad, a Mr Prescott, who I've never heard of. He said a solicitor would handle everything but I'd need to pay a transfer tax of £850 first, and then the full amount would be released to me. He was very polite and said he'd email the paperwork. I didn't know what to say so I said I'd ring him back."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.98
+      },
+      "ms": 2974
+    },
+    {
+      "message": {
+        "id": "h20",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Surgery: Reminder, you have an appointment with Dr Patel on Thu 12 Nov at 10:20. Reply C to cancel or call us on 0113 496 0145."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.94
+      },
+      "ms": 2544
+    },
+    {
+      "message": {
+        "id": "h21",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "job, task or work-from-home offer",
+        "text": "Hello, we are hiring part-time remote reviewers. Earn £150-£300 a day liking and rating products from home, no experience needed. Message our manager on 07700 900631 to get started."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "contains_callback_number"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.9
+      },
+      "ms": 3008
+    },
+    {
+      "message": {
+        "id": "h22",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Hi, is the bike still for sale? Does it come with the lock? I can collect on Saturday afternoon and pay cash. Thanks, Raj"
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2108
+    },
+    {
+      "message": {
+        "id": "h23",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "tech support or \"your computer has a virus\"",
+        "text": "I was on my computer and a big red screen came up saying I had a virus and mustn't switch off. There was a number on it so I rang it and a very helpful man answered. He asked me to download a little program so he could look at my computer from his end. Then he showed me lots of error messages and said I was owed a refund for my broken subscription, and asked me to log into my bank so he could put the money in. That's when my daughter walked in and told me to stop."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "remote_access_request"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_callback_number"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "unexpected_prize_or_refund"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 3781
+    },
+    {
+      "message": {
+        "id": "h24",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Hi Gran, it's Ollie. Can I borrow the £20 for the school trip like you said on Sunday? Dad will pay you back at the weekend. Love you x"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "family_emergency_claim"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "family_emergency_claim"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.83
+      },
+      "ms": 2767
+    },
+    {
+      "message": {
+        "id": "h25",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "government, tax, pension or benefits office",
+        "text": "Example Revenue Office: Our records show you are due a tax refund of £638.20. To receive your payment please confirm your bank details within 24 hours at https://example-revenue-refund.example/claim"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 4076
+    },
+    {
+      "message": {
+        "id": "h26",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Northgate Example Bank: Your October statement is now available in the app. We will never send you a link asking for your details."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 2183
+    },
+    {
+      "message": {
+        "id": "h27",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "marketplace buyer or seller (overpayment, \"send it back\", fake payment proof)",
+        "text": "Sorry, I sent you £300 by mistake, it was meant to be £230. Could you send the extra £70 back to me please? I'll send you the receipt, my bank says it's still pending."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.86
+      },
+      "ms": 2890
+    },
+    {
+      "message": {
+        "id": "h28",
+        "label": "normal",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "",
+        "text": "My grandson rang and asked if I could send him £30 for his train fare back from university, like we'd talked about on Sunday. I knew his voice and he asked after my cat by name. I sent it from my own banking app and he texted to say it had arrived."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.94
+      },
+      "ms": 2263
+    },
+    {
+      "message": {
+        "id": "h29",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "utility company (electricity, water, broadband) cut-off or refund",
+        "text": "Dear customer, following a billing review you are owed a credit of £94.17 from Example Water. We just need you to confirm which account you would like it paid into: https://example-water-credit.example/refund"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.92
+      },
+      "ms": 3260
+    },
+    {
+      "message": {
+        "id": "h30",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Power: Your latest bill of £86.40 has been issued and will be taken by direct debit on 15 Nov. No action needed. Your account number ends 4471."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 2359
+    },
+    {
+      "message": {
+        "id": "h31",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "family emergency or \"this is my new number\"",
+        "text": "Hi dad it's me, I'm in a bit of trouble. Lost my wallet on the train and I need £350 for a ticket home and a new phone. Can you send it to my friend's account? I'll text the details. I'll pay you back Friday. Don't tell mum pls"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "family_emergency_claim"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "family_emergency_claim"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.98
+      },
+      "ms": 3465
+    },
+    {
+      "message": {
+        "id": "h32",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "police, court or customs threat",
+        "text": "A man phoned and said he was a police officer, Inspector Wells, and that they had arrested someone with a copy of my bank card details. He wanted me to help with their investigation by withdrawing £3,000 and handing it to a courier who would collect it from my door. He said not to tell the bank because it was an inside job. He gave me a number to ring back on to check he was real, but I think it was just his own phone."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "impersonates_authority"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 3819
+    },
+    {
+      "message": {
+        "id": "h33",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Pharmacy: 771204 is your verification code for your repeat prescription account. If you did not ask for this code, please ignore this message."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.95
+      },
+      "ms": 2365
+    },
+    {
+      "message": {
+        "id": "h34",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "investment, crypto or \"guaranteed returns\"",
+        "text": "Good evening. A few of us from the choir started putting a little into a trading group that my nephew runs. Mine has more than doubled in two months. He's taking on a few more people if you'd like me to put in a word for you. No pressure at all."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.78
+      },
+      "ms": 2499
+    },
+    {
+      "message": {
+        "id": "h35",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Walking club: meeting at Dunmere car park 9:30 Saturday. Bring waterproofs. Route is about 5 miles with a stop for tea."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.99
+      },
+      "ms": 2089
+    },
+    {
+      "message": {
+        "id": "h36",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "\"recovery\" scam offering to get back money already lost",
+        "text": "Hello, this is the Fund Recovery Unit at Safeguard Example Legal. We have identified that you may be a victim of an online investment fraud and may be eligible to have your lost funds returned. A small release fee applies. Please call 020 7946 0690 for a free assessment."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3383
+    },
+    {
+      "message": {
+        "id": "h37",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Harbourside Example Building Society: Please check the activity on your account. Reply with 'Y' if you recognise a transfer of £1,200 to a new payee, or 'N' if you do not. If you are unsure, call the number on the back of your card."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.83
+      },
+      "ms": 2814
+    },
+    {
+      "message": {
+        "id": "h38",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "delivery or parcel fee",
+        "text": "Hi, we tried to deliver your item today but nobody was in. You can reschedule here when you are free: https://deliver-slot.example/yourparcel Thanks, Pinewood Example Couriers"
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.78
+      },
+      "ms": 2756
+    },
+    {
+      "message": {
+        "id": "h39",
+        "label": "normal",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "",
+        "text": "The receptionist from Example Surgery rang to say my blood test results are fine and to book a follow-up with the nurse. She said I would get a text confirming it. I made the appointment and the text turned up an hour later with the same date."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.97
+      },
+      "ms": 1966
+    },
+    {
+      "message": {
+        "id": "h40",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "charity or disaster appeal",
+        "text": "Floodline Example Relief: Families in the Ashby Vale region have lost everything. Please donate £10 to our emergency fund today: https://floodrelief-give.example/donate Every pound helps."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.87
+      },
+      "ms": 3529
+    },
+    {
+      "message": {
+        "id": "h41",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "utility company (electricity, water, broadband) cut-off or refund",
+        "text": "A man rang saying he was from Example Broadband and that my line was going to be closed down because of fraudulent use. He said he could stop it if I confirmed some details on my account, and he said he'd pay me back for the inconvenience. I noticed he wasn't able to tell me my account number, only asked me for it. So I put the phone down, but I'm worried I've given him my name and address."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.96
+      },
+      "ms": 3524
+    },
+    {
+      "message": {
+        "id": "h42",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Parcels: Your order from Brightside Example Garden Supplies has shipped. Track at https://exampleparcels.example/t/EP90217. Expected Thursday."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.76
+      },
+      "ms": 2760
+    },
+    {
+      "message": {
+        "id": "h43",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "job, task or work-from-home offer",
+        "text": "Thank you for applying. We would like to offer you a position as a package-checking assistant with Example Staffing. Please reply with your full name, address and date of birth and we will send your contract along with the equipment you will need."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.8
+      },
+      "ms": 2897
+    },
+    {
+      "message": {
+        "id": "h44",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Hi, it's Karen from number 14. A parcel for you was left with us this morning. Pop round any time, I'm in all day."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 1842
+    },
+    {
+      "message": {
+        "id": "h45",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "bank or card fraud-team impersonation",
+        "text": "Hello Mrs Aldous, this is Daniel from the Fraud Prevention Team at Harbourside Example Building Society. We have noticed some unusual activity and I would like to go through it with you personally when convenient. Please ring me back on 07700 900415 and quote reference HB-2291. Kind regards."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.86
+      },
+      "ms": 2768
+    },
+    {
+      "message": {
+        "id": "h46",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "charity or disaster appeal",
+        "text": "A woman rang asking for a donation to help children after the earthquake. She had a very sad voice and said the charity was Hope Example Aid. When I said I would rather post a cheque she said that would be too slow and could I just read my card number out to her over the phone. I said I wasn't comfortable, and she said I obviously didn't care about the children."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.94
+      },
+      "ms": 3495
+    },
+    {
+      "message": {
+        "id": "h47",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Friend: FYI Pat from bridge club had a call from someone saying 'this is your bank's fraud team, you need to move your money to a safe account'. The bank would never ask that. Tell your mum!"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2373
+    },
+    {
+      "message": {
+        "id": "h48",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "\"wrong number\" friendly opener with no request yet",
+        "text": "Hello! Sorry, I think I have the wrong number. I'm Anna, I've just moved here and I was trying to reach my hairdresser. You sound lovely though, what part of the country are you in? 😊"
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.78
+      },
+      "ms": 2638
+    },
+    {
+      "message": {
+        "id": "h49",
+        "label": "normal",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "",
+        "text": "A man from the boiler company rang to confirm the engineer will come on Wednesday between 8 and 12. I had booked it last week and he knew the make of my boiler. He said to ring the number on my service card if I needed to change the time."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2134
+    },
+    {
+      "message": {
+        "id": "h50",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "tech support or \"your computer has a virus\"",
+        "text": "ALERT: Your computer is sending out virus warnings. Call Example Tech Support now on 0808 157 0221 to remove 4 threats before your files are lost."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3562
+    },
+    {
+      "message": {
+        "id": "h51",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Pharmacy: Your prescription is ready to collect from our counter. We are open Mon to Sat, 9 till 5:30."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2164
+    },
+    {
+      "message": {
+        "id": "h52",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "romance or friendship that slowly turns to money",
+        "text": "Margaret, I'm so embarrassed to ask. The company payroll has been delayed and I need £600 to pay for my flight home so I can finally see you. I will pay you back the day I land, you are the only person I trust. Please don't be angry with me x"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.86
+      },
+      "ms": 3345
+    },
+    {
+      "message": {
+        "id": "h53",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "delivery or parcel fee",
+        "text": "I got a recorded message on my phone, a woman's voice, saying there was a parcel waiting for me and to press 1 to arrange delivery. I pressed 1 and a man came on asking for my card number to pay a small charge of £1.50 for redelivery. I wasn't expecting anything, but I was waiting for a birthday present from my sister, so I nearly gave it to him."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_card_or_bank_details"
+          },
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.96
+      },
+      "ms": 3276
+    },
+    {
+      "message": {
+        "id": "h54",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Council: Your garden waste bin will be collected on Friday this week instead of Thursday due to a depot closure. Thank you for your patience."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 2048
+    },
+    {
+      "message": {
+        "id": "h55",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "job, task or work-from-home offer",
+        "text": "Complete 40 simple tasks to unlock your daily bonus. You've done 38 of 40! Top up your task account with £120 to finish and withdraw your £310 earnings: https://taskbonus-hub.example/me"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_link"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 3810
+    },
+    {
+      "message": {
+        "id": "h56",
+        "label": "normal",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "",
+        "text": "My neighbour phoned to say she was taking the bins out and did I want mine taking too. Very kind of her. We had a chat about her knee and she said she'd pop round with a cake on Sunday."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.99
+      },
+      "ms": 2163
+    },
+    {
+      "message": {
+        "id": "h57",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "government, tax, pension or benefits office",
+        "text": "Example Pension Service: Your annual pension review is now ready. To keep your payments on schedule please confirm your details with us using the secure form: https://pension-service-review.example/me Ref 77/4412."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.85
+      },
+      "ms": 2775
+    },
+    {
+      "message": {
+        "id": "h58",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Example Water: We will be doing planned work on your street on Tuesday 10 Nov between 9am and 1pm, so your water may be off for a short time. Sorry for any inconvenience. If you need help, call 0808 157 0233."
+      },
+      "full": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.95
+      },
+      "ms": 2684
+    },
+    {
+      "message": {
+        "id": "h59",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "marketplace buyer or seller (overpayment, \"send it back\", fake payment proof)",
+        "text": "Payment sent ✔ See proof: https://pay-receipt-example.example/p/9921 . The funds will be released once you send the item with the tracked label to my courier. Please ship today."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "contains_link"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3375
+    },
+    {
+      "message": {
+        "id": "h60",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "family emergency or \"this is my new number\"",
+        "text": "A young man rang and said 'Hello Nan, it's me'. I said is that you Ben? and he said yes. He said he'd been in a car accident and needed £1,800 for the other driver, and that a solicitor would ring me to arrange it. He sounded like he had a cold and said that was why his voice was different. He begged me not to tell his mum."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "family_emergency_claim"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.99
+      },
+      "ms": 3591
+    },
+    {
+      "message": {
+        "id": "h61",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Can you lend me £15 for petrol until Friday? Agreed with your mum last night. I'll pay you back when I get paid. Tom"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "unclear",
+        "confidence": 0.84
+      },
+      "ms": 2427
+    },
+    {
+      "message": {
+        "id": "h62",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "police, court or customs threat",
+        "text": "Final notice: a package in your name containing prohibited items has been seized by Example Border Customs. An investigation file has been opened under your name. Contact Officer Drummond on 020 7946 0558 to avoid prosecution."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3326
+    },
+    {
+      "message": {
+        "id": "h63",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "investment, crypto or \"guaranteed returns\"",
+        "text": "A man rang from Example Wealth Partners saying my savings were earning nothing and he could get me 9% fixed, guaranteed, in a bond that was only open until Friday. He was ever so smooth and had a good explanation for everything. He sent me a glossy brochure by email and said I should keep it between us so other investors wouldn't rush in. I asked my son to look at it and he said it looked dodgy."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "secrecy_request"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.96
+      },
+      "ms": 3166
+    },
+    {
+      "message": {
+        "id": "h64",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Lovely to see you yesterday! I've sent the photos from the garden party. The one of you with the cake is great 😂"
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.98
+      },
+      "ms": 1858
+    },
+    {
+      "message": {
+        "id": "h65",
+        "label": "normal",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "",
+        "text": "I had a call from the water company, Example Water, saying there was work on my road next week and my supply would be off for a few hours. They didn't ask me for anything and said I'd get a letter too, which duly arrived on Thursday with the same dates."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.96
+      },
+      "ms": 2556
+    },
+    {
+      "message": {
+        "id": "h66",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "police, court or customs threat",
+        "text": "Example County Court: A judgment has been entered against you for an unpaid debt of £1,340. Bailiffs will attend your address on 12/11 unless you settle at https://county-court-pay.example/case/88213"
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "urgency_or_deadline"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "threat_or_penalty"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "contains_link"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.97
+      },
+      "ms": 3822
+    },
+    {
+      "message": {
+        "id": "h67",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "tech support or \"your computer has a virus\"",
+        "text": "A young woman rang from Example Computer Care and said she had noticed my internet was compromised from her end. She was very calm and friendly. She asked me to switch on my computer and press a few keys, and then to read out some numbers that came up on the screen. I only did the first bit before I got a funny feeling and hung up."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "remote_access_request"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.94
+      },
+      "ms": 2739
+    },
+    {
+      "message": {
+        "id": "h68",
+        "label": "scam",
+        "type": "text",
+        "targets": [],
+        "scamType": "prize, lottery or inheritance",
+        "text": "Congratulations! Your mobile number has won £250,000 in the Example National Lucky Draw. To claim your prize contact Mr Hargreave on 07700 900872 and quote WIN-5530."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": [
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "contains_callback_number"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.98
+      },
+      "ms": 2663
+    },
+    {
+      "message": {
+        "id": "h69",
+        "label": "normal",
+        "type": "text",
+        "targets": [],
+        "scamType": "",
+        "text": "Hello, would you take £60 for the lamp? I'm local, could pick it up after 5 tomorrow."
+      },
+      "full": {
+        "level": "NO_WARNING_SIGNS",
+        "flags": []
+      },
+      "rulesOnly": {
+        "level": "NOT_SURE",
+        "flags": []
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_normal",
+        "confidence": 0.97
+      },
+      "ms": 2659
+    },
+    {
+      "message": {
+        "id": "h70",
+        "label": "scam",
+        "type": "call_description",
+        "targets": [],
+        "scamType": "\"recovery\" scam offering to get back money already lost",
+        "text": "A solicitor's office rang me and said they had traced the people who took my £4,000 last year and could get it all back, for a fee of £500 up front, paid by bank transfer. They knew exactly how much I'd lost, which was strange as I've only told the police. They said I'd get a letter confirming everything once the fee was paid."
+      },
+      "full": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_authority"
+          },
+          {
+            "id": "impersonates_bank_or_company"
+          },
+          {
+            "id": "unexpected_prize_or_refund"
+          },
+          {
+            "id": "other"
+          }
+        ]
+      },
+      "rulesOnly": {
+        "level": "WARNING",
+        "flags": [
+          {
+            "id": "asks_for_payment"
+          },
+          {
+            "id": "impersonates_authority"
+          }
+        ]
+      },
+      "ai": {
+        "status": "ok",
+        "assessment": "likely_scam",
+        "confidence": 0.98
+      },
+      "ms": 3688
+    }
+  ]
+}

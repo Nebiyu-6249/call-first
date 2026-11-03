@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 // Checked against OpenAI's "Data controls in the OpenAI platform" page in November 2026.
 const OPENAI_DATA_CONTROLS = "https://developers.openai.com/api/docs/guides/your-data";
+const EVALUATION_URL = "https://github.com/Nebiyu-6249/call-first/blob/main/EVALUATION.md";
 
 function Section({ id, title, Icon, children }: { id: string; title: string; Icon: typeof Send; children: ReactNode }) {
   return (
@@ -275,8 +276,14 @@ export default function Privacy() {
             <strong>English only.</strong>
           </li>
           <li>
-            <strong>Tested on made-up messages only.</strong> Our evaluation uses 48 fictional messages written by the
-            builder, so results on real messages may differ.
+            <strong>Tested on made-up messages only, and it makes mistakes.</strong> On 70 fictional messages written
+            separately from the checker and run once, it caught 39 of 40 scams (33 with &ldquo;Warning&rdquo;), but
+            gave a false &ldquo;Warning&rdquo; on 6 of 30 normal messages, such as a friend passing on a scam warning or
+            a family member asking to borrow a little money. Results on real messages may differ. The{" "}
+            <a href={EVALUATION_URL} className="font-bold text-primary underline underline-offset-4">
+              full results
+            </a>{" "}
+            list every miss and false alarm.
           </li>
         </ul>
       </Section>

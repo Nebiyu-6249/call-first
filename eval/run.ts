@@ -2,6 +2,7 @@
 // real pipeline (rules, masking, the live AI call and the verdict), saves the results in
 // eval/results/<name>.json, and writes EVALUATION.md from every saved run.
 // npm run eval -- --report: writes EVALUATION.md again from the saved runs, without checking anything.
+// eval/notes.md, if present, is added at the end under its own heading.
 // Reads OPENAI_* from .env.local.
 
 import { execFileSync } from "node:child_process";
@@ -100,7 +101,10 @@ function writeReport(root: string) {
   const sets = loadSavedSets(root);
   if (sets.length === 0) throw new Error("No saved runs in eval/results. Run npm run eval first.");
   const changed: ChangedSince = Object.fromEntries(sets.map((s) => [s.name, changedSince(s.info.commit)]));
-  writeFileSync(join(root, "EVALUATION.md"), renderEvaluation(sets, changed));
+  // Notes written by hand after looking at the results, kept apart from the generated numbers.
+  const notesPath = join(root, "eval", "notes.md");
+  const notes = existsSync(notesPath) ? readFileSync(notesPath, "utf8").trim() : "";
+  writeFileSync(join(root, "EVALUATION.md"), renderEvaluation(sets, changed, notes));
   console.log(`Wrote EVALUATION.md from ${sets.map((s) => s.name).join(", ")}.`);
 }
 

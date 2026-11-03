@@ -17,10 +17,209 @@ a rough guide, not a precise rate. AI answers can also vary a little between run
 
 | Set | Checked by | Scams caught (WARNING or NOT SURE) | Scams with WARNING | False alarms |
 | --- | --- | --- | --- | --- |
+| Independent held-out set | Rules + AI | 39 of 40 (98%, 95% CI 87-100%) | 33 of 40 (83%, 95% CI 68-91%) | 6 of 30 (20%, 95% CI 10-37%) |
+| Independent held-out set | Rules only | 40 of 40 (100%, 95% CI 91-100%) | 18 of 40 (45%, 95% CI 31-60%) | 6 of 30 (20%, 95% CI 10-37%) |
 | Original set (written alongside the rules) | Rules + AI | 32 of 32 (100%, 95% CI 89-100%) | 31 of 32 (97%, 95% CI 84-99%) | 1 of 16 (6%, 95% CI 1-28%) |
 | Original set (written alongside the rules) | Rules only | 32 of 32 (100%, 95% CI 89-100%) | 21 of 32 (66%, 95% CI 48-80%) | 1 of 16 (6%, 95% CI 1-28%) |
 
-## 1. Original set (written alongside the rules)
+## 1. Independent held-out set
+
+70 fictional messages: 40 scams and 30 normal messages (`eval/heldout.json`).
+
+Written in a separate session that never saw the checker's rules, prompt or masking code. The file says: "Independent held-out evaluation set. Written in a separate session that never saw the checker's rules. All people, companies, numbers and links are fictional."
+It was frozen in commit `1814d88` and not opened while the rules, prompt and masking were being changed.
+It was run **once**, on 2026-11-03 at commit `ea2b42d`. The rules, the AI prompt and schema, the masking and the verdict code (`lib/rules`, `lib/ai`, `lib/privacy`, `lib/verdict`, `lib/check`) have not changed since this run (checked with git when this report was written).
+Its messages have no list of intended warning signs, so there is no coverage table for this set.
+
+Model: `gpt-6.1-terra`, reasoning effort: `none`, timeout 8 s.
+
+### Rules + AI (what the parent sees)
+
+- Scams caught (WARNING or NOT SURE): 39 of 40 (98%, 95% CI 87-100%)
+- Scams with WARNING: 33 of 40 (83%, 95% CI 68-91%)
+- False alarms (normal messages with WARNING): 6 of 30 (20%, 95% CI 10-37%)
+
+**Scam messages (40)**
+
+| Verdict | Count | Share | Meaning |
+| --- | ---: | ---: | --- |
+| WARNING | 33 | 83% | caught |
+| NOT SURE | 6 | 15% | told to check with family |
+| NO WARNING SIGNS | 1 | 3% | **missed** |
+
+**Normal messages (30)**
+
+| Verdict | Count | Share | Meaning |
+| --- | ---: | ---: | --- |
+| WARNING | 6 | 20% | **false alarm** |
+| NOT SURE | 10 | 33% | told to check with family |
+| NO WARNING SIGNS | 14 | 47% | correct |
+
+AI calls: 70 of 70 answered.
+Median time per AI call: 2.8 s.
+
+#### Missed scams (rules + AI)
+
+- **h18** (text, "wrong number" friendly opener with no request yet; AI: likely_normal 0.97). Found: no warning signs found.
+
+  > Hi Susan, are we still on for lunch on Saturday?
+
+#### False alarms (rules + AI)
+
+- **h06** (text; AI: likely_normal 0.94). Found: asks_for_payment, impersonates_bank_or_company.
+
+  > Careful everyone!! My neighbour got a text saying 'Your parcel is held, pay £1.45 redelivery fee' with a link in it. It's a scam, don't open it. Please pass this on to anyone who might not know x
+
+- **h24** (text; AI: unclear 0.83). Found: asks_for_payment, family_emergency_claim.
+
+  > Hi Gran, it's Ollie. Can I borrow the £20 for the school trip like you said on Sunday? Dad will pay you back at the weekend. Love you x
+
+- **h28** (phone call; AI: likely_normal 0.94). Found: asks_for_payment.
+
+  > My grandson rang and asked if I could send him £30 for his train fare back from university, like we'd talked about on Sunday. I knew his voice and he asked after my cat by name. I sent it from my own banking app and he texted to say it had arrived.
+
+- **h37** (text; AI: unclear 0.83). Found: asks_for_payment, impersonates_bank_or_company.
+
+  > Harbourside Example Building Society: Please check the activity on your account. Reply with 'Y' if you recognise a transfer of £1,200 to a new payee, or 'N' if you do not. If you are unsure, call the number on the back of your card.
+
+- **h47** (text; AI: likely_normal 0.98). Found: asks_for_payment, impersonates_bank_or_company.
+
+  > Friend: FYI Pat from bridge club had a call from someone saying 'this is your bank's fraud team, you need to move your money to a safe account'. The bank would never ask that. Tell your mum!
+
+- **h61** (text; AI: unclear 0.84). Found: asks_for_payment.
+
+  > Can you lend me £15 for petrol until Friday? Agreed with your mum last night. I'll pay you back when I get paid. Tom
+
+### Rules only (what the parent sees if the AI is down, or in private mode)
+
+- Scams caught (WARNING or NOT SURE): 40 of 40 (100%, 95% CI 91-100%)
+- Scams with WARNING: 18 of 40 (45%, 95% CI 31-60%)
+- False alarms (normal messages with WARNING): 6 of 30 (20%, 95% CI 10-37%)
+
+**Scam messages (40)**
+
+| Verdict | Count | Share | Meaning |
+| --- | ---: | ---: | --- |
+| WARNING | 18 | 45% | caught |
+| NOT SURE | 22 | 55% | told to check with family |
+| NO WARNING SIGNS | 0 | 0% | **missed** |
+
+**Normal messages (30)**
+
+| Verdict | Count | Share | Meaning |
+| --- | ---: | ---: | --- |
+| WARNING | 6 | 20% | **false alarm** |
+| NOT SURE | 24 | 80% | told to check with family |
+| NO WARNING SIGNS | 0 | 0% | correct |
+
+Without the AI, the app cannot give NO WARNING SIGNS at all: the most it says is NOT SURE, with the Golden Rules.
+
+#### Missed scams (rules only)
+
+None.
+
+#### False alarms (rules only)
+
+- **h06** (text; no AI). Found: asks_for_payment, impersonates_bank_or_company.
+
+  > Careful everyone!! My neighbour got a text saying 'Your parcel is held, pay £1.45 redelivery fee' with a link in it. It's a scam, don't open it. Please pass this on to anyone who might not know x
+
+- **h24** (text; no AI). Found: family_emergency_claim.
+
+  > Hi Gran, it's Ollie. Can I borrow the £20 for the school trip like you said on Sunday? Dad will pay you back at the weekend. Love you x
+
+- **h28** (phone call; no AI). Found: asks_for_payment.
+
+  > My grandson rang and asked if I could send him £30 for his train fare back from university, like we'd talked about on Sunday. I knew his voice and he asked after my cat by name. I sent it from my own banking app and he texted to say it had arrived.
+
+- **h37** (text; no AI). Found: asks_for_payment, impersonates_bank_or_company.
+
+  > Harbourside Example Building Society: Please check the activity on your account. Reply with 'Y' if you recognise a transfer of £1,200 to a new payee, or 'N' if you do not. If you are unsure, call the number on the back of your card.
+
+- **h47** (text; no AI). Found: asks_for_payment, impersonates_bank_or_company.
+
+  > Friend: FYI Pat from bridge club had a call from someone saying 'this is your bank's fraud team, you need to move your money to a safe account'. The bank would never ask that. Tell your mum!
+
+- **h61** (text; no AI). Found: asks_for_payment.
+
+  > Can you lend me £15 for petrol until Friday? Agreed with your mum last night. I'll pay you back when I get paid. Tom
+
+### Every message
+
+| Id | Label | Kind | Rules + AI | Rules only | AI said | Message |
+| --- | --- | --- | --- | --- | --- | --- |
+| h01 | scam | text | WARNING | WARNING | likely_scam 0.94 | Your parcel from Example Parcels could not be delivered due to an i... |
+| h02 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | Are you coming to the quiz on Friday? Mavis says we're a man down w... |
+| h03 | scam | call | WARNING | WARNING | likely_scam 0.99 | A lady rang my landline saying she was from the fraud department at... |
+| h04 | normal | text | NOT SURE | NOT SURE | likely_normal 0.96 | Your Northgate Example Bank security code is 482913. It expires in ... |
+| h05 | scam | text | WARNING | WARNING | likely_scam 0.86 | Hi mum this is my new number, my phone fell in the sink. Save this ... |
+| h06 | normal | text | WARNING | WARNING | likely_normal 0.94 | Careful everyone!! My neighbour got a text saying 'Your parcel is h... |
+| h07 | scam | text | WARNING | WARNING | likely_scam 0.84 | Hi, is the sofa still available? I'll take it. I'll pay the full as... |
+| h08 | normal | call | NOT SURE | NOT SURE | likely_normal 0.96 | My bank rang from their fraud team to check a payment. The lady sai... |
+| h09 | scam | text | WARNING | WARNING | likely_scam 0.97 | Hi Brian, I'm Lucy from Crestwood Example Capital. Our members earn... |
+| h10 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.96 | Mum, home safe. Rain was awful on the motorway. Call you Sunday? x |
+| h11 | scam | text | WARNING | WARNING | likely_scam 0.97 | Example Power: Your direct debit has failed and your account is 3 m... |
+| h12 | normal | text | NOT SURE | NOT SURE | unclear 0.70 | Pinewood Example Couriers: Your parcel is out for delivery today be... |
+| h13 | scam | text | NOT SURE | NOT SURE | unclear 0.76 | Good morning my dear Margaret. I hope your hip is feeling better to... |
+| h14 | scam | call | WARNING | WARNING | likely_scam 0.99 | I had a call from a man who said he was from the Example Benefits O... |
+| h15 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | Sunday service is at 10:30, followed by tea and cake in the hall. T... |
+| h16 | scam | text | WARNING | NOT SURE | likely_scam 0.94 | Northgate Example Bank: We have blocked a card payment of £489.00 a... |
+| h17 | normal | text | NOT SURE | NOT SURE | likely_normal 0.83 | Westmere Example Bank Fraud Team: Did you make a card payment of £6... |
+| h18 | scam | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.97 | Hi Susan, are we still on for lunch on Saturday? |
+| h19 | scam | call | WARNING | WARNING | likely_scam 0.98 | A man rang to say I had inherited money from a distant relative abr... |
+| h20 | normal | text | NOT SURE | NOT SURE | likely_normal 0.94 | Example Surgery: Reminder, you have an appointment with Dr Patel on... |
+| h21 | scam | text | WARNING | NOT SURE | likely_scam 0.90 | Hello, we are hiring part-time remote reviewers. Earn £150-£300 a d... |
+| h22 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | Hi, is the bike still for sale? Does it come with the lock? I can c... |
+| h23 | scam | call | WARNING | NOT SURE | likely_scam 0.99 | I was on my computer and a big red screen came up saying I had a vi... |
+| h24 | normal | text | WARNING | WARNING | unclear 0.83 | Hi Gran, it's Ollie. Can I borrow the £20 for the school trip like ... |
+| h25 | scam | text | WARNING | WARNING | likely_scam 0.99 | Example Revenue Office: Our records show you are due a tax refund o... |
+| h26 | normal | text | NOT SURE | NOT SURE | likely_normal 0.96 | Northgate Example Bank: Your October statement is now available in ... |
+| h27 | scam | text | WARNING | WARNING | unclear 0.86 | Sorry, I sent you £300 by mistake, it was meant to be £230. Could y... |
+| h28 | normal | call | WARNING | WARNING | likely_normal 0.94 | My grandson rang and asked if I could send him £30 for his train fa... |
+| h29 | scam | text | WARNING | NOT SURE | likely_scam 0.92 | Dear customer, following a billing review you are owed a credit of ... |
+| h30 | normal | text | NOT SURE | NOT SURE | likely_normal 0.96 | Example Power: Your latest bill of £86.40 has been issued and will ... |
+| h31 | scam | text | WARNING | WARNING | likely_scam 0.98 | Hi dad it's me, I'm in a bit of trouble. Lost my wallet on the trai... |
+| h32 | scam | call | WARNING | WARNING | likely_scam 0.99 | A man phoned and said he was a police officer, Inspector Wells, and... |
+| h33 | normal | text | NOT SURE | NOT SURE | likely_normal 0.95 | Example Pharmacy: 771204 is your verification code for your repeat ... |
+| h34 | scam | text | NOT SURE | NOT SURE | unclear 0.78 | Good evening. A few of us from the choir started putting a little i... |
+| h35 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.99 | Walking club: meeting at Dunmere car park 9:30 Saturday. Bring wate... |
+| h36 | scam | text | WARNING | WARNING | likely_scam 0.97 | Hello, this is the Fund Recovery Unit at Safeguard Example Legal. W... |
+| h37 | normal | text | WARNING | WARNING | unclear 0.83 | Harbourside Example Building Society: Please check the activity on ... |
+| h38 | scam | text | NOT SURE | NOT SURE | unclear 0.78 | Hi, we tried to deliver your item today but nobody was in. You can ... |
+| h39 | normal | call | NO WARNING SIGNS | NOT SURE | likely_normal 0.97 | The receptionist from Example Surgery rang to say my blood test res... |
+| h40 | scam | text | WARNING | NOT SURE | unclear 0.87 | Floodline Example Relief: Families in the Ashby Vale region have lo... |
+| h41 | scam | call | WARNING | WARNING | likely_scam 0.96 | A man rang saying he was from Example Broadband and that my line wa... |
+| h42 | normal | text | NOT SURE | NOT SURE | unclear 0.76 | Example Parcels: Your order from Brightside Example Garden Supplies... |
+| h43 | scam | text | NOT SURE | NOT SURE | unclear 0.80 | Thank you for applying. We would like to offer you a position as a ... |
+| h44 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.96 | Hi, it's Karen from number 14. A parcel for you was left with us th... |
+| h45 | scam | text | NOT SURE | NOT SURE | unclear 0.86 | Hello Mrs Aldous, this is Daniel from the Fraud Prevention Team at ... |
+| h46 | scam | call | WARNING | WARNING | likely_scam 0.94 | A woman rang asking for a donation to help children after the earth... |
+| h47 | normal | text | WARNING | WARNING | likely_normal 0.98 | Friend: FYI Pat from bridge club had a call from someone saying 'th... |
+| h48 | scam | text | NOT SURE | NOT SURE | unclear 0.78 | Hello! Sorry, I think I have the wrong number. I'm Anna, I've just ... |
+| h49 | normal | call | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | A man from the boiler company rang to confirm the engineer will com... |
+| h50 | scam | text | WARNING | NOT SURE | likely_scam 0.97 | ALERT: Your computer is sending out virus warnings. Call Example Te... |
+| h51 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | Example Pharmacy: Your prescription is ready to collect from our co... |
+| h52 | scam | text | WARNING | NOT SURE | likely_scam 0.86 | Margaret, I'm so embarrassed to ask. The company payroll has been d... |
+| h53 | scam | call | WARNING | WARNING | likely_scam 0.96 | I got a recorded message on my phone, a woman's voice, saying there... |
+| h54 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | Example Council: Your garden waste bin will be collected on Friday ... |
+| h55 | scam | text | WARNING | NOT SURE | likely_scam 0.99 | Complete 40 simple tasks to unlock your daily bonus. You've done 38... |
+| h56 | normal | call | NO WARNING SIGNS | NOT SURE | likely_normal 0.99 | My neighbour phoned to say she was taking the bins out and did I wa... |
+| h57 | scam | text | WARNING | NOT SURE | likely_scam 0.85 | Example Pension Service: Your annual pension review is now ready. T... |
+| h58 | normal | text | NOT SURE | NOT SURE | likely_normal 0.95 | Example Water: We will be doing planned work on your street on Tues... |
+| h59 | scam | text | WARNING | NOT SURE | likely_scam 0.97 | Payment sent ✔ See proof: https://pay-receipt-example.example/p/992... |
+| h60 | scam | call | WARNING | NOT SURE | likely_scam 0.99 | A young man rang and said 'Hello Nan, it's me'. I said is that you ... |
+| h61 | normal | text | WARNING | WARNING | unclear 0.84 | Can you lend me £15 for petrol until Friday? Agreed with your mum l... |
+| h62 | scam | text | WARNING | NOT SURE | likely_scam 0.97 | Final notice: a package in your name containing prohibited items ha... |
+| h63 | scam | call | WARNING | WARNING | likely_scam 0.96 | A man rang from Example Wealth Partners saying my savings were earn... |
+| h64 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.98 | Lovely to see you yesterday! I've sent the photos from the garden p... |
+| h65 | normal | call | NO WARNING SIGNS | NOT SURE | likely_normal 0.96 | I had a call from the water company, Example Water, saying there wa... |
+| h66 | scam | text | WARNING | NOT SURE | likely_scam 0.97 | Example County Court: A judgment has been entered against you for a... |
+| h67 | scam | call | WARNING | NOT SURE | likely_scam 0.94 | A young woman rang from Example Computer Care and said she had noti... |
+| h68 | scam | text | WARNING | NOT SURE | likely_scam 0.98 | Congratulations! Your mobile number has won £250,000 in the Example... |
+| h69 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.97 | Hello, would you take £60 for the lamp? I'm local, could pick it up... |
+| h70 | scam | call | WARNING | WARNING | likely_scam 0.98 | A solicitor's office rang me and said they had traced the people wh... |
+
+## 2. Original set (written alongside the rules)
 
 48 fictional messages: 32 scams and 16 normal messages (`eval/messages.json`).
 
@@ -175,3 +374,51 @@ How often each warning sign was found in the scams that were written to contain 
 | n14 | normal | text | NO WARNING SIGNS | NOT SURE | likely_normal 0.97 | Hi Grandma, thank you for the birthday card! Can't wait to see you ... |
 | n15 | normal | text | NOT SURE | NOT SURE | unclear 0.87 | Swift Example Parcels: your order is on its way. Track it at https:... |
 | n16 | normal | text | WARNING | WARNING | unclear 0.78 | Gulf Example Bank: did you try to pay £64.99 to Example Shop? Reply... |
+
+## What the results show (written by hand after the runs, from `eval/notes.md`)
+
+These notes were written after looking at the held-out results. Nothing in the rules, the prompt, the masking or the
+verdict code was changed because of them; the ideas at the end are for later, and would need a new held-out set to
+measure.
+
+### Why the AI is worth using
+
+On the held-out set, the AI changed two things for the parent:
+
+- **Stronger warnings on scams.** WARNING went from 18 of 40 scams with the rules only to 33 of 40 with the AI.
+  The rules alone gave 22 scams only NOT SURE, across many kinds (tech support, police and court threats, job
+  offers, fake fraud teams, a family emergency, a prize, a charity appeal and more). The AI lifted 15 of those 22
+  to WARNING.
+- **Fewer pointless doubts on normal messages.** With the rules only, all 30 normal messages got NOT SURE or
+  WARNING, because the rules can never say NO WARNING SIGNS. With the AI, 14 of 30 got NO WARNING SIGNS.
+
+It did not reduce false alarms (6 of 30 either way, see below), and it cost one miss.
+
+### Weaknesses the held-out run showed
+
+- **One scam missed with the AI on (h18).** "Hi Susan, are we still on for lunch on Saturday?" is the friendly
+  "wrong number" opener that starts a longer scam. On its own it asks for nothing, so neither the rules nor the AI
+  had anything to find, and the AI was confident it was normal. The app can only judge what it is shown: the later
+  message that asks for something is the one that would be caught. A similar opener (h48) got NOT SURE.
+- **6 of 30 normal messages got WARNING (20%, 95% CI 10-37%), with or without the AI.** Each one set off a
+  high-severity rule, and by design the AI cannot overrule those (so a message cannot talk the AI into calling it
+  fine). They fall into three groups:
+  - a friend passing on a scam warning that quotes the scam's words (h06, h47);
+  - a genuine small money request from family or a friend that mentions an earlier agreement (h24, h28, h61);
+  - a genuine bank fraud check asking for a Y or N reply (h37), the same pattern as n16 in the original set.
+
+  For the parent, a false alarm means checking with family before acting, which costs little. But one in five
+  normal messages is often enough to make the warning feel like crying wolf.
+- **6 scams got only NOT SURE with the AI on** (h13, h34, h38, h43, h45, h48): a romance message, an investment
+  "club", a delivery reschedule link, a job offer, a fraud-team call and a wrong-number opener. The parent is still
+  told not to reply and to check with family, but the message is weaker than WARNING.
+- **The gap between the sets is real.** On the original set, written alongside the rules, the false-alarm rate was
+  1 of 16 and every scam got WARNING or NOT SURE. The held-out set is the more honest measure.
+
+### Ideas for later (not done)
+
+- Tell a message that quotes a scam in order to warn about it apart from the scam itself.
+- Let a confident AI "likely normal" lower a payment request to NOT SURE when it comes from a known person and
+  refers to an agreed amount, weighed against the prompt-injection protection the current order gives.
+- Treat a bank's "reply Y or N" fraud check as a normal bank pattern when it asks for nothing else.
+- Write a new held-out set before measuring any of these, since this one has now been seen.

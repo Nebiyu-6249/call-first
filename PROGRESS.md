@@ -430,7 +430,35 @@ time, with a go-ahead between steps. `eval/heldout.json` must not be opened befo
 - Seen, not changed: a dev-only hydration warning on `<html>` because the `/p` layout script adds the `parent-text`
   class before React loads. It was there before Step 4.
 
-Next: Step 5, the held-out evaluation, run once.
+### Step 5: Independent evaluation (run once) - done
+
+- `eval/heldout.json` was opened for the first time in this step. Format: 70 messages (40 scams, 30 normal; texts and
+  call descriptions) with `id`, `label`, `type`, `scam_type`, `text`, no `targets`. No format problems; the file was
+  not edited. Checked before running: no real brand names, and every number and link is in the fictional ranges (now
+  a unit test for both sets).
+- `npm run eval -- <file>` (default `eval/messages.json`). Each run is saved to `eval/results/<name>.json`, and
+  `EVALUATION.md` is written from every saved run, held-out set first. `npm run eval -- --report` rewrites it without
+  checking anything. The held-out set refuses a second run (and needs the AI key). Targets are optional per set; no
+  coverage table without them. The report has 95% Wilson intervals, every miss and false alarm in full, and a git
+  check that `lib/rules`, `lib/ai`, `lib/privacy`, `lib/verdict` and `lib/check` have not changed since each run.
+  Hand-written notes in `eval/notes.md` are added at the end under their own heading.
+- Original 48 re-run with masking (commit `3b360aa`): rules + AI 31 WARNING / 1 NOT SURE / 0 missed; 1 false alarm
+  of 16 (n16, the bank YES/NO check). Same as before masking.
+- Held-out set run once (commit `ea2b42d`, frozen in `1814d88`), all 70 AI calls answered:
+  - rules + AI: caught 39 of 40 (98%, CI 87-100%), WARNING 33 of 40; false alarms 6 of 30 (20%, CI 10-37%);
+    14 of 30 normal messages got NO WARNING SIGNS;
+  - rules only: caught 40 of 40 (it can never say NO WARNING SIGNS), WARNING 18 of 40; false alarms 6 of 30.
+  - Miss: h18, a "wrong number" opener with no request. False alarms: friends passing on scam warnings (h06, h47),
+    genuine small money requests (h24, h28, h61), a bank "reply Y or N" check (h37).
+- Nothing in the rules, prompt or masking was changed after the run. Weaknesses and ideas for later are in
+  `eval/notes.md` (shown at the end of EVALUATION.md).
+- README, DEVPOST.md and the privacy page now give the held-out numbers, misses and false alarms included, and use
+  the rules-only versus rules + AI gap as the reason for the AI. DEVPOST's honest limitation now mentions the "on the
+  phone now" button.
+- Tests: 292 pass (held-out format, sets without targets, Wilson values, report order and provenance, the
+  changed-since note).
+
+Next: Step 6, deploy and verify (stop the dev server first), push the commits, final README/DEVPOST/PROGRESS.
 
 ## Still to do (needs you)
 
