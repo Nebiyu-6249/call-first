@@ -4,9 +4,9 @@
 import { useSyncExternalStore } from "react";
 import type { DeviceCircle } from "@/lib/circle/types";
 
-const CIRCLE_KEY = "secondlook.circle";
-const TOKEN_KEY = "secondlook.deviceToken";
-const CHANGE_EVENT = "secondlook:device-change";
+const CIRCLE_KEY = "callfirst.circle";
+const TOKEN_KEY = "callfirst.deviceToken";
+const CHANGE_EVENT = "callfirst:device-change";
 
 function read(key: string): string | null {
   try {

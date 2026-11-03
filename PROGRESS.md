@@ -251,7 +251,7 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
     evidence (long words now break on result and alert screens), and the demo grid column (`grid-cols-1`).
   - Keyboard only: Tab, Enter and typing through home, input choice, type-or-paste and the check. The focus ring is
     4px solid.
-  - Every page has its own title ("Golden Rules - Second Look").
+  - Every page has its own title ("Golden Rules - Call First").
 - Bug fixed: the parent's 22px size used a global `<style>` tag. Next.js keeps visited pages mounted but hidden, so
   the large text leaked onto `/privacy` after moving there in the same tab. It is now a `parent-text` class, set
   before the first paint by an inline script and kept in sync by `TextSizeApplier` (`useLayoutEffect`, removed on
@@ -338,7 +338,19 @@ time, with a go-ahead between steps. `eval/heldout.json` must not be opened befo
 - Tests: 232 pass (demo panel cases added). Checked in the browser: sample, then pasted text, then a generated
   screenshot.
 
-Next: Step 2, the rename to "Call First".
+### Step 2: Rename to "Call First" - done in the code and docs
+
+- `APP_NAME` is now "Call First". Every page title, heading, footer, the demo, README, DEVPOST.md and the
+  evaluation set's "about" text follow it. The AI prompt never named the product, and EVALUATION.md has no name in it.
+- Internal names changed too: package `call-first`, the service worker cache `call-first-v1` (old `second-look-`
+  caches are deleted on update), the phone's storage keys `callfirst.*` and the family cookie `cf_family`. A phone
+  paired before this change, and a family member signed in before it, have to pair or sign in again.
+- Kept on purpose: the brief in CLAUDE.md, old commit messages, the Supabase project and organisation names (account
+  names, not shown anywhere), and the live and GitHub links, which still use `second-look` until you decide on
+  renaming them.
+- Not done (needs your answer): renaming the GitHub repository and the Netlify site.
+
+Next: Step 3, masking personal details before the AI sees them.
 
 ## Still to do (needs you)
 

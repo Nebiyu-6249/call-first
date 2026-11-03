@@ -73,7 +73,7 @@ describe("family loop", () => {
 
   it("create -> pair -> parent sends alert -> family replies -> parent sees reply", async () => {
     const { cookie, familyCode } = await createCircle();
-    expect(cookie).toMatch(/^sl_family=/);
+    expect(cookie).toMatch(/^cf_family=/);
     expect(familyCode).toMatch(/^[A-Z0-9]{8}$/);
 
     const { deviceToken, circle } = await pairPhone(cookie);

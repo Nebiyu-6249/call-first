@@ -5,7 +5,7 @@ import "server-only";
 import { keyedHash, safeEqual } from "./crypto";
 import { SESSION_TTL_MS, sessionSecret } from "./config";
 
-export const SESSION_COOKIE = "sl_family";
+export const SESSION_COOKIE = "cf_family";
 
 interface SessionPayload {
   c: string;

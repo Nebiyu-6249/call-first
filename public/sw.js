@@ -3,7 +3,7 @@
 // the copy kept on the phone), the Golden Rules and the quick rules-only check still work without
 // internet. Never stores API requests or anything personal.
 
-const CACHE = "second-look-v1";
+const CACHE = "call-first-v1";
 const PAGES = ["/p", "/p/check", "/p/check/text", "/p/rules"];
 
 function isParentPage(pathname) {
@@ -37,7 +37,9 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       const names = await caches.keys();
-      await Promise.all(names.filter((n) => n.startsWith("second-look-") && n !== CACHE).map((n) => caches.delete(n)));
+      // "second-look-" caches are from before the app was renamed.
+      const ours = (n) => n.startsWith("call-first-") || n.startsWith("second-look-");
+      await Promise.all(names.filter((n) => ours(n) && n !== CACHE).map((n) => caches.delete(n)));
       await self.clients.claim();
     })(),
   );

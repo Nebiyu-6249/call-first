@@ -1,4 +1,4 @@
--- Second Look: family circle schema.
+-- Call First: family circle schema.
 -- Run this once in the Supabase SQL editor (or with the Supabase CLI).
 -- The browser never talks to Supabase: every table has row-level security switched on with
 -- no policies, so only the server (using the service role key) can read or write.
@@ -200,7 +200,7 @@ $$;
 
 -- Removes expired alerts and pairing codes. The app also calls this as it goes; if pg_cron is
 -- enabled you can schedule it too:
---   select cron.schedule('second-look-cleanup', '0 * * * *', 'select delete_expired()');
+--   select cron.schedule('call-first-cleanup', '0 * * * *', 'select delete_expired()');
 create or replace function delete_expired() returns void
 language sql
 as $$

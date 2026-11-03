@@ -1,11 +1,11 @@
-# Second Look
+# Call First
 
 A scam interrupter for older people who are not comfortable with technology, and for the family members who look
 out for them.
 
 Built during SafeSpace Hacks (Oct 17 - Nov 22, 2026), starting from an empty repository.
 
-> Second Look gives a second opinion, not a guarantee. It is not an emergency service.
+> Call First gives a second opinion, not a guarantee. It is not an emergency service.
 
 **Live demo:** https://second-look-safespace.netlify.app/demo
 
@@ -14,7 +14,7 @@ Built during SafeSpace Hacks (Oct 17 - Nov 22, 2026), starting from an empty rep
 ## What it does
 
 Most scams rely on three tricks: a message pretending to be someone trusted, a fake number or link to "verify", and
-pressure to act fast and tell no one. Most scam checkers only deal with the first. Second Look handles all three:
+pressure to act fast and tell no one. Most scam checkers only deal with the first. Call First handles all three:
 
 1. **Check it.** The older person shows the app a screenshot, a photo, pasted text, or describes a phone call out loud.
    They get a plain-language answer (WARNING, NOT SURE, or NO WARNING SIGNS FOUND, never "safe"), read aloud.
@@ -154,7 +154,7 @@ The family circle (contacts, connected phones, alerts) is stored in Supabase Pos
    `pg_cron` extension and run:
 
    ```sql
-   select cron.schedule('second-look-cleanup', '0 * * * *', 'select delete_expired()');
+   select cron.schedule('call-first-cleanup', '0 * * * *', 'select delete_expired()');
    ```
 
 ### Scripts

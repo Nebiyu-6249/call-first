@@ -1,6 +1,6 @@
 // Product-wide settings. Change the product name here and nowhere else.
 
-export const APP_NAME = "Second Look";
+export const APP_NAME = "Call First";
 
 export const APP_TAGLINE = "A calm second opinion on messages and calls that worry you.";
 

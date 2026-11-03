@@ -5,6 +5,7 @@ import { BookUser, Inbox, LockKeyhole } from "lucide-react";
 import { AlertCard } from "@/components/family/AlertCard";
 import { fCard } from "@/components/family/ui";
 import type { ReplyKind } from "@/lib/circle/alerts";
+import { APP_NAME } from "@/lib/config";
 import { DEMO_CIRCLE } from "@/lib/demo/circle";
 import type { DemoFamilyLoop } from "@/lib/demo/family-loop";
 
@@ -22,7 +23,7 @@ export function DemoFamily({ loop }: { loop: DemoFamilyLoop }) {
   return (
     <div className="flex flex-col gap-6 px-4 py-6 text-lg">
       <div className="flex flex-col gap-1">
-        <p className="text-base font-bold text-muted">Second Look for families</p>
+        <p className="text-base font-bold text-muted">{APP_NAME} for families</p>
         <p className="text-2xl font-bold">Looking after {parent}</p>
       </div>
 

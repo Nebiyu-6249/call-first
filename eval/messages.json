@@ -1,5 +1,5 @@
 {
-  "about": "Evaluation set for Second Look. Every person, company, number and link is made up. Numbers use UK ranges set aside for drama (07700 900xxx, 0808 157 0xxx, 020 7946 0xxx, 0113 496 0xxx) and links use the reserved .example domain. 'targets' lists the warning signs each scam was written to contain; it is used only for the coverage table, never by the checker.",
+  "about": "Evaluation set for Call First. Every person, company, number and link is made up. Numbers use UK ranges set aside for drama (07700 900xxx, 0808 157 0xxx, 020 7946 0xxx, 0113 496 0xxx) and links use the reserved .example domain. 'targets' lists the warning signs each scam was written to contain; it is used only for the coverage table, never by the checker.",
   "messages": [
     {
       "id": "s01",

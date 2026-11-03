@@ -1,4 +1,4 @@
-# Second Look - Devpost draft
+# Call First - Devpost draft
 
 Draft text for the SafeSpace Hacks submission page. Replace every `[PLACEHOLDER: ...]` with your own words before
 submitting; those parts should come from your own experience, not from this draft.
@@ -24,7 +24,7 @@ Scams against older people usually rely on three tricks:
 2. A fake number or link to "verify" or call back, which leads straight to the scammer.
 3. Urgency and isolation: "act now", "don't tell your family".
 
-Second Look is built to interrupt all three, not just the first.
+Call First is built to interrupt all three, not just the first.
 
 ## What it does
 
@@ -34,7 +34,7 @@ Second Look is built to interrupt all three, not just the first.
 - paste or type the message,
 - or describe a phone call out loud.
 
-Second Look answers in plain words and reads the answer aloud:
+Call First answers in plain words and reads the answer aloud:
 
 - **WARNING:** this looks like a scam;
 - **NOT SURE:** be careful;
@@ -80,7 +80,7 @@ Amina, 74, gets a text:
 > "Hi Mum, it's Omar. I dropped my phone in the sink so this is my new number. Can you send £450 to my friend's
 > account today? I'll pay you back. Don't tell Dad yet x"
 
-Amina pastes it into Second Look. Within seconds the phone reads out:
+Amina pastes it into Call First. Within seconds the phone reads out:
 
 > "Warning. This looks like a scam. It tells you to keep this secret. It asks you to pay or send money. It says a
 > family member has a new number."
@@ -91,7 +91,7 @@ the text.
 Amina also taps "Show Sara". Sara's phone shows the alert, and Sara taps "Don't do anything. I'm calling you now."
 Amina sees the reply in large letters before opening the banking app.
 
-Without Second Look, the most natural thing to do was reply to the new number. With it, the next step is a call to
+Without Call First, the most natural thing to do was reply to the new number. With it, the next step is a call to
 the real Omar.
 
 (Amina, Omar, Sara and the message are fictional, as is everything in the demo.)
@@ -176,9 +176,9 @@ you reviewed and changed, and what you decided yourself.]
 
 ## One honest limitation
 
-Second Look cannot listen to a live phone call, and phone calls are where many of the most damaging scams happen.
+Call First cannot listen to a live phone call, and phone calls are where many of the most damaging scams happen.
 The person can only describe a call afterwards, out loud or in writing. If the scammer has already persuaded them to
-stay on the line or move money, Second Look will not know. The Golden Rules and the "Call [family name]" button are
+stay on the line or move money, Call First will not know. The Golden Rules and the "Call [family name]" button are
 the best it can offer in that moment.
 
 Other limits:
