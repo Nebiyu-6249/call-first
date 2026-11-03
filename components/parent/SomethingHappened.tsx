@@ -32,7 +32,8 @@ export function SomethingHappened({
   const [kind, setKind] = useState<HappenedKind | null>(null);
   const { state, tell } = useTellFamily(channel);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const toldRef = useRef(false);
+  // The choice the family was last told about.
+  const toldRef = useRef<HappenedKind | null>(null);
   // Inside a result, which is already the page's main landmark.
   const Wrapper = onBack ? "div" : Screen;
 
@@ -40,12 +41,13 @@ export function SomethingHappened({
     headingRef.current?.focus();
   }, [kind]);
 
-  // Tell the family once, as soon as the person says what happened.
+  // Tell the family as soon as the person says what happened. If they go back and pick something
+  // else, the family is told the new choice; picking the same one again sends nothing.
   useEffect(() => {
-    if (!kind || !circle || !channel || toldRef.current) return;
-    toldRef.current = true;
+    if (!kind || !circle || !channel || toldRef.current === kind) return;
+    toldRef.current = kind;
     void tell(urgentAlert(kind, circle.parentName, checked));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- sends once, guarded by toldRef
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sends once per choice, guarded by toldRef
   }, [kind]);
 
   if (!kind) {
@@ -85,6 +87,10 @@ export function SomethingHappened({
 
   return (
     <Wrapper className="flex flex-1 flex-col gap-6 break-words">
+      <button type="button" onClick={() => setKind(null)} className={`${textLink} self-start`}>
+        <ArrowLeft aria-hidden="true" className="size-6" />
+        Back
+      </button>
       <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold outline-none">
         What to do now
       </h1>

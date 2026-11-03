@@ -17,8 +17,11 @@ const MAX_WAIT_MS = 30 * 60 * 1000;
 export function useFamilyReply(channel: FamilyChannel | null, alertId: string | null, autoRead = true) {
   // The demo asks more often, so the reply shows up quickly.
   const pollMs = useParentEnv()?.pollMs ?? POLL_MS;
-  const [reply, setReply] = useState<FamilyReply | null>(null);
-  const [gone, setGone] = useState(false);
+  // Kept with the alert it belongs to, so a new alert starts out waiting again.
+  const [answer, setAnswer] = useState<{ alertId: string; reply: FamilyReply | null; gone: boolean } | null>(null);
+  const current = answer && answer.alertId === alertId ? answer : null;
+  const reply = current?.reply ?? null;
+  const gone = current?.gone ?? false;
   const name = channel?.familyName ?? "";
 
   useEffect(() => {
@@ -30,10 +33,10 @@ export function useFamilyReply(channel: FamilyChannel | null, alertId: string | 
       const result = await channel.poll(alertId);
       if (result.status === "gone") {
         window.clearInterval(timer);
-        setGone(true);
+        setAnswer({ alertId, reply: null, gone: true });
       } else if (result.status === "replied") {
         window.clearInterval(timer);
-        setReply(result.reply);
+        setAnswer({ alertId, reply: result.reply, gone: false });
         if (autoRead) stopSpeaking = speak(`${name} says: ${result.reply.text}`);
       }
     }, pollMs);
