@@ -4,7 +4,7 @@ import { getStore } from "@/lib/server/store";
 
 export const POST = handle(async (request: Request, ctx: RouteContext<"/api/family/alerts/[id]/reply">) => {
   requireSameOrigin(request);
-  const circleId = requireFamily(request);
+  const circleId = await requireFamily(request);
   const { id } = await ctx.params;
   const body = await readJson(request);
   const kind = body.kind as ReplyKind;

@@ -50,7 +50,12 @@ export default function Home() {
         </ul>
       </nav>
 
-      <footer className="mt-auto text-lg text-muted">{emergencyLine()}</footer>
+      <footer className="mt-auto flex flex-col gap-2 text-lg text-muted">
+        <p>{emergencyLine()}</p>
+        <Link href="/privacy" className="inline-flex min-h-11 items-center self-start font-bold text-primary underline underline-offset-4">
+          Privacy and limits
+        </Link>
+      </footer>
     </main>
   );
 }

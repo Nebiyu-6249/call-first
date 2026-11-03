@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LogIn, UserPlus } from "lucide-react";
 import { fButton, fButtonSecondary } from "@/components/family/ui";
 import { APP_NAME } from "@/lib/config";
+
+export const metadata: Metadata = { title: "For families" };
 
 export default function FamilyStart() {
   return (

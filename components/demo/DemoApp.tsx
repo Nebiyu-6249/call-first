@@ -116,7 +116,7 @@ export function DemoApp() {
         </p>
       </header>
 
-      <div className="grid gap-8 lg:grid-cols-[25rem_25rem] lg:justify-center xl:grid-cols-[minmax(18rem,26rem)_25rem_25rem]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[25rem_25rem] lg:justify-center xl:grid-cols-[minmax(18rem,26rem)_25rem_25rem]">
         <section aria-labelledby="samples-heading" className="flex flex-col gap-4 lg:col-span-2 xl:col-span-1">
           <h2 id="samples-heading" className="flex items-center gap-2 text-2xl font-bold">
             <MessageSquareText aria-hidden="true" className="size-7 text-primary" />

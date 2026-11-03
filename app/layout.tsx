@@ -14,7 +14,7 @@ const atkinson = Atkinson_Hyperlegible_Next({
 });
 
 export const metadata: Metadata = {
-  title: APP_NAME,
+  title: { default: APP_NAME, template: `%s - ${APP_NAME}` },
   description: APP_TAGLINE,
 };
 

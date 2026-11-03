@@ -29,7 +29,7 @@ export function ChooseInput() {
         ))}
       </ul>
 
-      <p className="text-lg text-muted">An AI service checks it. Nothing is saved.</p>
+      <p className="text-lg text-muted">An AI service checks it. We do not save it.</p>
     </Screen>
   );
 }

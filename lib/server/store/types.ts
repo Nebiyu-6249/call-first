@@ -31,6 +31,8 @@ export interface Store {
   getCircleIdByFamilyCode(familyCode: string): Promise<string | null>;
   replaceSettings(id: string, settings: CircleSettingsInput, newPinHash: string | null): Promise<void>;
   setPinAttempts(id: string, attempts: number, lockedUntil: number | null): Promise<void>;
+  // Removes the circle and everything in it: family members, contacts, phones, pairing codes and alerts.
+  deleteCircle(id: string): Promise<void>;
 
   // Replaces any unused code for the circle. Throws if another circle has the same unused code.
   createPairingCode(circleId: string, codeHash: string, expiresAt: number): Promise<void>;

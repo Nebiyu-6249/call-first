@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CircleCheck, Unplug } from "lucide-react";
+import { ArrowLeft, CircleCheck, Trash2, Unplug } from "lucide-react";
 import type { CircleSettingsInput } from "@/lib/circle/validate";
 import { familyApi, type DeviceInfo, type FamilyCircle } from "@/lib/family/api";
 import { CircleForm } from "./CircleForm";
@@ -140,6 +140,65 @@ export function FamilySettings() {
           </ul>
         )}
       </section>
+
+      <DeleteCircle parentName={circle.parentName} onDeleted={() => router.replace("/f/deleted")} />
     </main>
+  );
+}
+
+function DeleteCircle({ parentName, onDeleted }: { parentName: string; onDeleted: () => void }) {
+  const [pin, setPin] = useState("");
+  const [sure, setSure] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function remove(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError("");
+    const res = await familyApi.deleteCircle(pin);
+    setBusy(false);
+    setPin("");
+    if (!res.ok) return setError(res.error);
+    onDeleted();
+  }
+
+  return (
+    <section aria-labelledby="delete-circle" className={`${fCard} flex flex-col gap-3`}>
+      <h2 id="delete-circle" className="text-2xl font-bold">
+        Delete everything
+      </h2>
+      <p>
+        This deletes {parentName}&apos;s circle: names, numbers, connected phones and all messages. {parentName}&apos;s
+        phone stops working with it straight away. It cannot be undone.
+      </p>
+      <form onSubmit={remove} className="flex flex-col gap-3">
+        <label className="flex min-h-12 items-center gap-3 font-bold">
+          <input type="checkbox" checked={sure} onChange={(e) => setSure(e.target.checked)} className="size-6 accent-primary" />
+          I understand this cannot be undone
+        </label>
+        <label className={fLabel}>
+          Your PIN
+          <input
+            className={`${fInput} max-w-xs`}
+            type="password"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={6}
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+          />
+        </label>
+        <button type="submit" className={`${fButtonSecondary} self-start border-warning text-warning`} disabled={!sure || pin.length !== 6 || busy}>
+          <Trash2 aria-hidden="true" className="size-5" />
+          {busy ? "Deleting..." : "Delete the circle"}
+        </button>
+      </form>
+      {error && (
+        <p role="alert" className="font-bold text-warning">
+          {error}
+        </p>
+      )}
+    </section>
   );
 }

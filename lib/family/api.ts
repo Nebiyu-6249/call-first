@@ -44,6 +44,8 @@ export const familyApi = {
       method: "POST",
       body: JSON.stringify({ kind, text }),
     }),
+  deleteCircle: (pin: string) =>
+    api<{ ok: true }>("/api/family/circle", { method: "DELETE", body: JSON.stringify({ pin }) }),
   removeDevice: (deviceId: string, pin: string) =>
     api<{ ok: true }>(`/api/family/devices/${encodeURIComponent(deviceId)}`, {
       method: "DELETE",

@@ -6,7 +6,7 @@ import { getStore } from "@/lib/server/store";
 // Make a one-time 6-digit code (valid 15 minutes) to connect the parent's phone.
 export const POST = handle(async (request: Request) => {
   requireSameOrigin(request);
-  const circleId = requireFamily(request);
+  const circleId = await requireFamily(request);
   const store = getStore();
   const expiresAt = Date.now() + PAIRING_CODE_TTL_MS;
   for (let attempt = 0; attempt < 5; attempt++) {

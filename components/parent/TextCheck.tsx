@@ -80,9 +80,9 @@ export function TextCheck({ initialText = "", checkNow = false }: { initialText?
     <Screen className="flex flex-1 flex-col gap-6">
       <BackLink to="check" />
       <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
-        <label htmlFor="message" className="text-3xl font-bold">
-          Type or paste the message
-        </label>
+        <h1 className="text-3xl font-bold">
+          <label htmlFor="message">Type or paste the message</label>
+        </h1>
         <textarea
           id="message"
           value={text}

@@ -239,6 +239,11 @@ export class SupabaseStore implements Store {
     return (rows ?? []).length > 0;
   }
 
+  async deleteCircle(id: string) {
+    // Every other table references circles with "on delete cascade".
+    check(await this.db.from("circles").delete().eq("id", id));
+  }
+
   async deleteExpired() {
     check(await this.db.rpc("delete_expired"));
   }

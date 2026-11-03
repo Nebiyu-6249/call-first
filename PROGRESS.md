@@ -215,11 +215,69 @@ Notes:
 To get the real numbers: put `OPENAI_API_KEY` (and the other `OPENAI_*` values from `.env.example`) in `.env.local`,
 run `npm run eval`, and commit the new `EVALUATION.md`.
 
-## Next: Phase 7 - Polish and deploy
+## Phase 7: Polish and deploy - done except the deploy itself
 
-- Accessibility pass (contrast, 200% zoom, keyboard, screen reader), offline cache for contacts and Golden Rules,
-  privacy page with a `#limitations` section (check OpenAI's current API data-usage policy), Netlify deploy, final
-  README and DEVPOST.md.
+- Checked the sources (Nov 2026):
+  - OpenAI's data-controls page: API data is not used for training. `/v1/responses` has 30-day abuse-monitoring
+    retention and no application state with `store: false`. `/v1/audio/transcriptions` lists no retention.
+  - Netlify: synchronous functions have a fixed 60-second limit, and Next.js route handlers run as Netlify Functions
+    via the OpenNext adapter (no plugin needed).
+- Privacy page (`/privacy`): what is sent to OpenAI and what OpenAI keeps, what we store and for how long, what stays
+  on the parent's phone, what is never stored, and `#limitations`. Linked from every footer (parent, family, landing);
+  in the demo it opens in a new tab so the demo keeps its place.
+  - The parent line under the input tiles now says "An AI service checks it. We do not save it." instead of
+    "Nothing is saved", because OpenAI may keep abuse-monitoring logs for up to 30 days.
+- New privacy features:
+  - "Delete everything" in family settings (PIN plus a confirmation tick). `DELETE /api/family/circle` removes the
+    circle, and the database cascades to members, contacts, phones, codes and alerts. The page then shows
+    `/f/deleted`.
+  - `requireFamily` now also checks that the circle still exists, so a deleted circle's cookie is refused everywhere.
+  - Rate-limit keys (which contain IP addresses) are stored as an HMAC with `SESSION_SECRET` (plain SHA-256 if it is
+    missing).
+- Offline (`public/sw.js`, registered in production by `components/parent/OfflineSupport.tsx`):
+  - On install it saves `/p`, `/p/check`, `/p/check/text` and `/p/rules`, plus the `/_next/static` files their HTML
+    lists.
+  - Built files are served cache-first. Parent pages are network-first, falling back to the saved copy.
+  - `/api` is never cached.
+  - Verified on a production build with the server stopped: home showed "Hello Amina" and "Call Sara"
+    (`tel:07700900001`), the Golden Rules said "call Sara", and a typed check gave WARNING (quick check) with
+    "Call Gulf Example Bank".
+- Accessibility:
+  - `test/contrast.test.ts` checks every text and background token pair at 7:1 (AAA), and borders and the focus ring
+    at 3:1. All pass.
+  - axe-core 4.14 (WCAG 2.2 AA plus best practices) on all 14 pages and on the demo result, call note and alert
+    states: only "no h1" on "Type or paste" and "Connect", now fixed (the label sits inside an h1).
+  - Reflow at 320px wide, a stricter test than 200% zoom, found two overflows, now fixed: a long link quoted as
+    evidence (long words now break on result and alert screens), and the demo grid column (`grid-cols-1`).
+  - Keyboard only: Tab, Enter and typing through home, input choice, type-or-paste and the check. The focus ring is
+    4px solid.
+  - Every page has its own title ("Golden Rules - Second Look").
+- Bug fixed: the parent's 22px size used a global `<style>` tag. Next.js keeps visited pages mounted but hidden, so
+  the large text leaked onto `/privacy` after moving there in the same tab. It is now a `parent-text` class, set
+  before the first paint by an inline script and kept in sync by `TextSizeApplier` (`useLayoutEffect`, removed on
+  leave).
+- Security headers (`next.config.ts`, verified on the production build):
+  - `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`;
+  - a CSP with frame-ancestors, base-uri, form-action and object-src;
+  - `Permissions-Policy` allowing the microphone and camera for this site only, and HSTS;
+  - `sw.js` is served with no-cache.
+- `netlify.toml` (build command, Node 22). `.env.example` loses the unused `NEXT_PUBLIC_APP_URL`.
+- README final: demo in three steps, how a check works, privacy and security summary, evaluation numbers, setup on
+  PowerShell and macOS/Linux, Supabase with optional pg_cron cleanup, Netlify deploy steps, limitations, credits.
+- `DEVPOST.md` draft with all sections, a concrete safer-outcome example, an honest limitation, and
+  `[PLACEHOLDER: ...]` wherever your own story belongs.
+- 226 unit tests.
+
+## Still to do (needs you)
+
+1. **Deploy to Netlify:** push to GitHub, import in Netlify, and add the environment variables. Steps are in the
+   README. Then put the live link in README.md and DEVPOST.md.
+2. **Create the Supabase project** and run the migration. This is the first real test of `SupabaseStore`.
+3. **Add `OPENAI_API_KEY` to `.env.local`**, run `npm run eval`, and commit the new `EVALUATION.md`. Try the demo with
+   live AI answers.
+4. **Fill in the `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience.
+5. **On a real phone:** try the camera, the microphone and offline mode, and check the live site with a screen reader
+   (VoiceOver or TalkBack).
 
 ## Known issues
 
@@ -230,7 +288,6 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
 - Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design).
 - "Call our fraud team now" is not caught as urgency (only fixed phrases such as "call now" are). The AI covers it.
 - `npm audit` reports moderate advisories in dev tooling from the scaffold.
-- `/privacy` is still a placeholder (Phase 7); the demo banner already links to it and to `#limitations`.
 - The demo has not been seen with live AI answers yet (no API key here).
 - "Don't tell Dad" is now a secrecy request, so a harmless "don't tell Dad about his birthday present" gets WARNING
   from the rules. Accepted: it errs on the side of caution, and the eval in Phase 6 will show how often this matters.
@@ -244,4 +301,8 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
   - threats to a "computer" or "online banking", or "cut off" (s20, s29, s23): 5 of 8;
   - a bank "Reply YES or NO" check (n16) is treated as a payment request: the one false alarm.
   Fixing these later means saying in EVALUATION.md that the rules changed after the first run.
+- No full script Content-Security-Policy: the prerendered pages use Next.js inline scripts, which would need nonces
+  (and dynamic rendering).
+- Offline mode covers pages opened at least once after the service worker installed. Photo and voice need the internet.
+- Screen reader checks were automated (axe) plus keyboard testing. No manual VoiceOver or TalkBack run yet.
 - The demo's parent phone uses CSS `zoom` (supported in current Chrome, Edge, Safari and Firefox 126+).

@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useCachedCircle } from "@/lib/parent/circle-cache";
 
-// Applies the Extra Large text size chosen by the family while a parent screen is open.
+// Sets the parent screens' large text while one is showing: Large (22px) always, Extra Large (28px)
+// when the family chose it. Removed again when the parent screens are left (Next.js keeps visited
+// pages mounted but hidden, and hides them by running this cleanup), so other pages keep the normal size.
 export function TextSizeApplier() {
   const xl = useCachedCircle()?.textSize === "xl";
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.documentElement;
+    root.classList.add("parent-text");
     root.classList.toggle("parent-text-xl", xl);
-    return () => root.classList.remove("parent-text-xl");
+    return () => root.classList.remove("parent-text", "parent-text-xl");
   }, [xl]);
   return null;
 }

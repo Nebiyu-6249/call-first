@@ -59,7 +59,7 @@ export function SentToFamily({
   }, [alertId, autoRead, channel, gone, name, pollMs, reply]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 break-words">
       {reply ? (
         <>
           <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-3 text-3xl font-bold outline-none">

@@ -5,7 +5,7 @@ import { getStore } from "@/lib/server/store";
 // Disconnect a parent phone (for example if it is lost). Needs the PIN.
 export const DELETE = handle(async (request: Request, ctx: RouteContext<"/api/family/devices/[id]">) => {
   requireSameOrigin(request);
-  const circleId = requireFamily(request);
+  const circleId = await requireFamily(request);
   const { id } = await ctx.params;
   const body = await readJson(request);
   const store = getStore();

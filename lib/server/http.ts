@@ -65,9 +65,10 @@ export function requireSameOrigin(request: Request): void {
   throw new HttpError(403, "Request from another site was blocked.");
 }
 
-export function requireFamily(request: Request): string {
+// The signed cookie says which circle; the circle must also still exist (it may have been deleted).
+export async function requireFamily(request: Request, store: Store = getStore()): Promise<string> {
   const circleId = verifySession(readSessionCookie(request));
-  if (!circleId) throw new HttpError(401, "Please sign in.");
+  if (!circleId || !(await store.getCircle(circleId))) throw new HttpError(401, "Please sign in.");
   return circleId;
 }
 

@@ -159,6 +159,13 @@ export class MemoryStore implements Store {
     return true;
   }
 
+  async deleteCircle(id: string) {
+    this.circles.delete(id);
+    this.pairing = this.pairing.filter((p) => p.circleId !== id);
+    for (const [key, d] of this.devices) if (d.circleId === id) this.devices.delete(key);
+    for (const [key, a] of this.alerts) if (a.circleId === id) this.alerts.delete(key);
+  }
+
   async deleteExpired() {
     for (const [id, a] of this.alerts) if (a.expiresAt <= this.now()) this.alerts.delete(id);
     this.pairing = this.pairing.filter((p) => p.expiresAt > this.now() - 24 * 60 * 60 * 1000);

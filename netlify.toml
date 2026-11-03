@@ -1,0 +1,9 @@
+# Netlify builds Next.js with its OpenNext adapter automatically; no plugin needs to be listed.
+# Set the environment variables from .env.example in the Netlify UI (Site configuration >
+# Environment variables), not in this file.
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "22"

@@ -4,7 +4,7 @@ import { toFamilyCircle } from "@/lib/server/circle";
 import { HttpError, clientIp, handle, readJson, requireFamily, requireSameOrigin } from "@/lib/server/http";
 import { checkPin, pinErrorMessage } from "@/lib/server/pin";
 import { hitRateLimit, rateLimitedResponse } from "@/lib/server/rate-limit";
-import { sessionCookie, signSession } from "@/lib/server/session";
+import { clearSessionCookie, sessionCookie, signSession } from "@/lib/server/session";
 import { getStore } from "@/lib/server/store";
 
 // Create a circle. The person creating it gets a family session on this device.
@@ -36,7 +36,7 @@ export const POST = handle(async (request: Request) => {
 
 // Read the circle for the family screens (signed in).
 export const GET = handle(async (request: Request) => {
-  const circleId = requireFamily(request);
+  const circleId = await requireFamily(request);
   const store = getStore();
   const circle = await store.getCircle(circleId);
   if (!circle) throw new HttpError(401, "Please sign in.");
@@ -50,7 +50,7 @@ export const GET = handle(async (request: Request) => {
 // Change settings and contacts. The PIN is needed every time, even when signed in.
 export const PUT = handle(async (request: Request) => {
   requireSameOrigin(request);
-  const circleId = requireFamily(request);
+  const circleId = await requireFamily(request);
   const body = await readJson(request);
   const store = getStore();
   const circle = await store.getCircle(circleId);
@@ -72,4 +72,20 @@ export const PUT = handle(async (request: Request) => {
   await store.replaceSettings(circleId, settings.value, newPinHash);
   const updated = await store.getCircle(circleId);
   return Response.json({ circle: updated ? toFamilyCircle(updated) : null });
+});
+
+// Delete the circle and everything stored for it. Needs the PIN. Connected phones lose access.
+export const DELETE = handle(async (request: Request) => {
+  requireSameOrigin(request);
+  const circleId = await requireFamily(request);
+  const body = await readJson(request);
+  const store = getStore();
+  const circle = await store.getCircle(circleId);
+  if (!circle) throw new HttpError(401, "Please sign in.");
+
+  const pin = await checkPin(store, circle, String(body.pin ?? ""));
+  if (!pin.ok) throw new HttpError(pin.reason === "locked" ? 429 : 403, pinErrorMessage(pin));
+
+  await store.deleteCircle(circleId);
+  return Response.json({ ok: true }, { headers: { "Set-Cookie": clearSessionCookie() } });
 });

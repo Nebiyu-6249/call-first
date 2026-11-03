@@ -225,6 +225,35 @@ describe("family loop", () => {
     expect((await (await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).json()).alerts).toEqual([]);
   });
 
+  it("deletes the whole circle with the PIN, and the phone and family lose access", async () => {
+    const { cookie } = await createCircle();
+    const { deviceToken } = await pairPhone(cookie);
+    await deviceAlertsRoute.POST(req("/api/device/alerts", { method: "POST", token: deviceToken, body: { verdict: "WARNING", summary: "s", excerpt: "e" } }));
+
+    const wrong = await circleRoute.DELETE(req("/api/family/circle", { method: "DELETE", cookie, body: { pin: "000001" } }));
+    expect(wrong.status).toBe(403);
+    const fromPhone = await circleRoute.DELETE(req("/api/family/circle", { method: "DELETE", token: deviceToken, body: { pin: PIN } }));
+    expect(fromPhone.status).toBe(401);
+
+    const res = await circleRoute.DELETE(req("/api/family/circle", { method: "DELETE", cookie, body: { pin: PIN } }));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("set-cookie")).toMatch(/Max-Age=0/);
+    expect((await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).status).toBe(401);
+    expect((await deviceCircleRoute.GET(req("/api/device/circle", { token: deviceToken }))).status).toBe(401);
+  });
+
+  it("stores rate-limit counters without the IP address", async () => {
+    const keys: string[] = [];
+    const original = store.hitRateLimit.bind(store);
+    store.hitRateLimit = async (key, windowStart) => {
+      keys.push(key);
+      return original(key, windowStart);
+    };
+    await pairRoute.POST(req("/api/pair", { method: "POST", ip: "10.1.2.3", body: { code: "000000" } }));
+    expect(keys.length).toBeGreaterThan(0);
+    for (const key of keys) expect(key).not.toContain("10.1.2.3");
+  });
+
   it("rejects weak PINs and invalid settings when creating a circle", async () => {
     const weak = await circleRoute.POST(req("/api/family/circle", { method: "POST", body: { ...SETTINGS, pin: "123456" } }));
     expect(weak.status).toBe(400);

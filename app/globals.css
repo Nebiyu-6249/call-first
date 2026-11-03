@@ -65,9 +65,14 @@ body {
 }
 
 /*
-  Parent screens: the family can choose Large (22px base, set by the parent layout)
-  or Extra Large (28px base, this class).
+  Parent screens: the family can choose Large (22px base) or Extra Large (28px base).
+  The classes are set while a parent screen is showing (components/parent/TextSizeApplier.tsx),
+  so other pages keep the normal size.
 */
-html.parent-text-xl {
+html.parent-text {
+  font-size: 137.5%;
+}
+
+html.parent-text.parent-text-xl {
   font-size: 175%;
 }

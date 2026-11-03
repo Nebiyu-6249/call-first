@@ -50,7 +50,7 @@ export function AlertCard({
   const labels = alert.flagIds.filter(isFlagId).map((id) => TAXONOMY[id].label);
 
   return (
-    <article className={`${fCard} @container flex flex-col gap-4`} aria-label={`Alert from ${parentName}, ${when(alert.createdAt)}`}>
+    <article className={`${fCard} @container flex flex-col gap-4 break-words`} aria-label={`Alert from ${parentName}, ${when(alert.createdAt)}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <VerdictBadge level={alert.verdict} />
         <time dateTime={alert.createdAt} className="text-base text-muted">

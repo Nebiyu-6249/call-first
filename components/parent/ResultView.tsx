@@ -113,7 +113,7 @@ export function ResultView({
 
   if (dismissed) {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 break-words">
         <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold outline-none">
           That is OK.
         </h1>
@@ -133,7 +133,7 @@ export function ResultView({
   const reasons = result.flags.slice(0, MAX_REASONS);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 break-words">
       <div className={`flex flex-col items-center gap-2 rounded-2xl border-4 p-5 text-center ${className}`}>
         <Icon aria-hidden="true" className="size-16" />
         <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold outline-none">
