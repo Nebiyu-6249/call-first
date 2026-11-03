@@ -123,6 +123,26 @@ describe("supabase migration", () => {
     expect(left.rows.map((r) => r.summary)).toEqual(["new"]);
   });
 
+  it("stores URGENT alerts, with or without a check, and the calling-now reply", async () => {
+    await db.query("insert into alerts (circle_id, verdict, urgent, summary, excerpt) values ($1, null, 'phone_call', 'call', '')", [circleId]);
+    await db.query("insert into alerts (circle_id, verdict, urgent, summary, excerpt) values ($1, 'WARNING', 'sent_money', 'money', 'e')", [circleId]);
+    await expect(
+      db.query("insert into alerts (circle_id, verdict, urgent, summary, excerpt) values ($1, null, null, 's', '')", [circleId]),
+    ).rejects.toThrow();
+    await expect(
+      db.query("insert into alerts (circle_id, verdict, urgent, summary, excerpt) values ($1, null, 'made_up', 's', '')", [circleId]),
+    ).rejects.toThrow();
+    await db.query("update alerts set reply_kind = 'calling_now', reply_text = 'r', replied_at = now() where summary = 'call'");
+    const rows = await db.query<{ urgent: string; reply_kind: string | null }>(
+      "select urgent, reply_kind from alerts where circle_id = $1 and urgent is not null order by summary",
+      [circleId],
+    );
+    expect(rows.rows).toEqual([
+      { urgent: "phone_call", reply_kind: "calling_now" },
+      { urgent: "sent_money", reply_kind: null },
+    ]);
+  });
+
   it("deletes everything for a circle when the circle is deleted", async () => {
     await db.query("delete from circles where id = $1", [circleId]);
     const rows = await db.query<{ n: number }>(

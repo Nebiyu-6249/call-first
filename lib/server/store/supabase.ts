@@ -4,7 +4,7 @@ import "server-only";
 // Multi-row changes go through the SQL functions in supabase/migrations so they are atomic.
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { AlertView, NewAlert, ReplyKind } from "@/lib/circle/alerts";
+import type { AlertView, NewAlert, ReplyKind, UrgentKind } from "@/lib/circle/alerts";
 import type { ContactCategory } from "@/lib/circle/types";
 import type { CircleSettingsInput, TextSizeSetting } from "@/lib/circle/validate";
 import type { VerdictLevel } from "@/lib/verdict";
@@ -12,7 +12,8 @@ import type { CircleRecord, DeviceRecord, Store } from "./types";
 
 interface AlertRow {
   id: string;
-  verdict: VerdictLevel;
+  verdict: VerdictLevel | null;
+  urgent: UrgentKind | null;
   summary: string;
   excerpt: string;
   flag_ids: string[];
@@ -22,12 +23,13 @@ interface AlertRow {
   replied_at: string | null;
 }
 
-const ALERT_COLUMNS = "id, verdict, summary, excerpt, flag_ids, created_at, reply_kind, reply_text, replied_at";
+const ALERT_COLUMNS = "id, verdict, urgent, summary, excerpt, flag_ids, created_at, reply_kind, reply_text, replied_at";
 
 function alertView(row: AlertRow): AlertView {
   return {
     id: row.id,
     verdict: row.verdict,
+    urgent: row.urgent ?? null,
     summary: row.summary,
     excerpt: row.excerpt,
     flagIds: row.flag_ids ?? [],
@@ -191,6 +193,7 @@ export class SupabaseStore implements Store {
           circle_id: circleId,
           device_id: deviceId,
           verdict: alert.verdict,
+          urgent: alert.urgent,
           summary: alert.summary,
           excerpt: alert.excerpt,
           flag_ids: alert.flagIds,

@@ -115,6 +115,10 @@ export function DemoApp() {
           <li>
             Tap &ldquo;Show {familyName}&rdquo;, then reply on {familyName}&apos;s phone. {parentName} sees the reply.
           </li>
+          <li>
+            Also try &ldquo;Someone is on the phone with me now&rdquo; and &ldquo;I already sent money, clicked, or
+            shared something&rdquo; on {parentName}&apos;s home screen: {familyName} gets an URGENT alert.
+          </li>
         </ol>
         <p className="max-w-4xl text-base text-muted xl:col-span-2 xl:max-w-none">
           The checks are real: each message goes through our rules and an AI service. Nothing in this demo is saved,

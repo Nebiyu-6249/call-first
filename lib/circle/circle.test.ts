@@ -48,7 +48,7 @@ describe("buildAlert", () => {
     expect(alert.excerpt.length).toBe(500);
     expect(alert.summary).toBe("A message: asks for a code or password.");
     expect(alert.flagIds).toContain("asks_for_code");
-    expect(Object.keys(alert).sort()).toEqual(["excerpt", "flagIds", "summary", "verdict"]);
+    expect(Object.keys(alert).sort()).toEqual(["excerpt", "flagIds", "summary", "urgent", "verdict"]);
   });
 
   it("says when it was a described phone call", () => {

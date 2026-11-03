@@ -13,6 +13,8 @@ export const PARENT_ROUTES = {
   photo: "/p/check/photo",
   voice: "/p/check/voice",
   rules: "/p/rules",
+  phone: "/p/phone",
+  happened: "/p/happened",
   pair: "/p/pair",
 } as const;
 

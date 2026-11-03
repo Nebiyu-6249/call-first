@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CheckCheck, Clock, PhoneCall, Send, ThumbsUp } from "lucide-react";
+import { CheckCheck, Clock, PhoneCall, Send, Siren, ThumbsUp } from "lucide-react";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { MAX_CUSTOM_REPLY, QUICK_REPLIES, type AlertView, type ReplyKind } from "@/lib/circle/alerts";
 import { TAXONOMY, isFlagId } from "@/lib/rules/taxonomy";
-import { fButton, fButtonSecondary, fCard, fInput } from "./ui";
+import { fButton, fButtonSecondary, fCard, fCardUrgent, fInput } from "./ui";
 
 const QUICK: { kind: Exclude<ReplyKind, "custom">; Icon: typeof PhoneCall }[] = [
   { kind: "calling", Icon: PhoneCall },
   { kind: "wait", Icon: Clock },
   { kind: "fine", Icon: ThumbsUp },
 ];
+
+// An URGENT alert needs a call, not "That one is fine".
+const QUICK_URGENT: typeof QUICK = [{ kind: "calling_now", Icon: PhoneCall }];
 
 function when(iso: string): string {
   const d = new Date(iso);
@@ -48,11 +51,24 @@ export function AlertCard({
   }
 
   const labels = alert.flagIds.filter(isFlagId).map((id) => TAXONOMY[id].label);
+  const quick = alert.urgent ? QUICK_URGENT : QUICK;
+  const firstQuick = quick[0].kind;
 
   return (
-    <article className={`${fCard} @container flex flex-col gap-4 break-words`} aria-label={`Alert from ${parentName}, ${when(alert.createdAt)}`}>
+    <article
+      className={`${alert.urgent ? fCardUrgent : fCard} @container flex flex-col gap-4 break-words`}
+      aria-label={`${alert.urgent ? "Urgent alert" : "Alert"} from ${parentName}, ${when(alert.createdAt)}`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <VerdictBadge level={alert.verdict} />
+        <div className="flex flex-wrap items-center gap-2">
+          {alert.urgent && (
+            <span className="inline-flex items-center gap-2 rounded-lg bg-warning px-3 py-1 text-base font-bold text-warning-bg">
+              <Siren aria-hidden="true" className="size-5" />
+              URGENT
+            </span>
+          )}
+          {alert.verdict && <VerdictBadge level={alert.verdict} />}
+        </div>
         <time dateTime={alert.createdAt} className="text-base text-muted">
           {when(alert.createdAt)}
         </time>
@@ -82,8 +98,8 @@ export function AlertCard({
         <div className="flex flex-col gap-3">
           <p className="font-bold">Reply to {parentName}:</p>
           <div className="flex flex-col gap-2 @lg:flex-row @lg:flex-wrap">
-            {QUICK.map(({ kind, Icon }) => (
-              <button key={kind} type="button" disabled={busy} onClick={() => reply(kind)} className={kind === "calling" ? fButton : fButtonSecondary}>
+            {quick.map(({ kind, Icon }) => (
+              <button key={kind} type="button" disabled={busy} onClick={() => reply(kind)} className={kind === firstQuick ? fButton : fButtonSecondary}>
                 <Icon aria-hidden="true" className="size-5" />
                 {QUICK_REPLIES[kind]}
               </button>

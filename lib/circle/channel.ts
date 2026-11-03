@@ -35,6 +35,7 @@ export function buildAlert(result: CheckResult, source: AlertSource): NewAlert {
   const fallback = labels.length > 0 ? `${SOURCE_SUMMARY[source]}: ${labels.join(", ")}.` : `${SOURCE_SUMMARY[source]}.`;
   return {
     verdict: result.level,
+    urgent: null,
     summary: (result.summary || fallback).slice(0, MAX_SUMMARY),
     excerpt: maskText(result.checkedText.trim(), { kinds: ALERT_MASK_KINDS }).text.slice(0, MAX_EXCERPT),
     flagIds: result.flags.map((f) => f.id),

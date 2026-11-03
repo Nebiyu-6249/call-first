@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { BookOpenCheck, Link2, Phone, Search } from "lucide-react";
+import { BookOpenCheck, LifeBuoy, Link2, Phone, PhoneIncoming, Search } from "lucide-react";
+import { HAPPENED_BUTTON } from "@/lib/urgent";
 import { refreshCircle } from "@/lib/parent/device";
 import { useParentEnv } from "@/lib/parent/env";
 import { useParent } from "@/lib/parent/use-parent";
 import { CallLink, ParentLink, Screen } from "./nav";
-import { primaryButton, secondaryButton, textLink } from "./styles";
+import { primaryButton, secondaryButton, textLink, urgentButton } from "./styles";
 
 export function ParentHome() {
   const { circle } = useParent();
@@ -27,6 +28,17 @@ export function ParentHome() {
         <Search aria-hidden="true" className="size-14" />
         Check something
       </ParentLink>
+
+      <div className="flex flex-col gap-4">
+        <ParentLink to="phone" className={`${secondaryButton} min-h-20 text-2xl`}>
+          <PhoneIncoming aria-hidden="true" className="size-9 shrink-0" />
+          Someone is on the phone with me now
+        </ParentLink>
+        <ParentLink to="happened" className={`${urgentButton} min-h-20 text-2xl`}>
+          <LifeBuoy aria-hidden="true" className="size-9 shrink-0" />
+          {HAPPENED_BUTTON}
+        </ParentLink>
+      </div>
 
       {circle && circle.familyMembers.length > 0 && (
         <section aria-labelledby="call-family" className="flex flex-col gap-4">

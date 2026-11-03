@@ -395,7 +395,42 @@ time, with a go-ahead between steps. `eval/heldout.json` must not be opened befo
 - Trade-off seen: the AI no longer sees family names, so it writes "your family member" rather than "your son
   Omar". The call button still uses Omar's saved number (found on the phone).
 
-Next: Step 4, the two urgent moments ("Someone is on the phone with me now", "Something already happened").
+### Step 4: The two urgent moments - done
+
+- Guidance read first (3 Nov 2026), and listed on the privacy page under "Where the advice comes from": FTC "What To
+  Do if You Were Scammed", FTC "Phone Scams", FTC "Tech Support Scams", and UK police Report Fraud "Courier fraud".
+  The NCSC page tried first was a 404 and is not used. Every line of advice in `lib/urgent/index.ts` has a comment
+  naming the page it comes from.
+- "Someone is on the phone with me now" (`/p/phone`, `components/parent/OnThePhone.tsx`): "It is OK to hang up..."
+  with "I hung up"; then "Well done for hanging up", the line "Before you call anyone, wait five minutes or use a
+  different phone" (from Report Fraud), call buttons for the saved bank and the main family member, "Tell [family]"
+  (URGENT alert: "Amina had a worrying phone call and hung up."), and "Tell me what happened" (voice; hidden in
+  private mode).
+- "Something already happened" (`/p/happened`, `components/parent/SomethingHappened.tsx`), on the home screen and on
+  every WARNING or NOT SURE result: four choices, then a plan. Step 1 is a call to the saved bank (or the main family
+  member, or "the number on the back of your card" without a circle); step 2 "We have told [family]" (sent
+  automatically once, with the choice, and from a result also the verdict and the masked excerpt); then two or three
+  steps from the guidance. "This happens to many people. Acting now helps." Nothing promises money back.
+- Family reply status on both screens: "We have told Sara", then her reply in large text (shared `useFamilyReply`
+  hook, also used by "Sent to family").
+- Alerts: new `urgent` field (`phone_call`, `sent_money`, `shared_code`, `gave_card`, `remote_access`); verdict is
+  empty for the phone-call alert, which has no check. New reply "I'm calling you now." (`calling_now`).
+  `supabase/migrations/0003_urgent_alerts.sql` adds the column, allows an empty verdict only on URGENT alerts, and
+  adds the reply kind. Applied to the live project with `db push --remote` after a dry run; the live site's older code
+  still works with it. `npm run check:supabase` passes 18 checks, including an URGENT alert and its reply.
+- Family inbox and demo: URGENT alerts waiting for a reply come first (`inboxOrder`), with a red border, a siren icon
+  and the word URGENT, and the one-tap "I'm calling you now." Once answered they drop back into time order. The demo
+  instructions have a new line for both buttons.
+- Tests: 286 pass (plan per choice, first call falls back to family, the card number is mentioned once, no phone
+  numbers in advice, call buttons only use saved numbers, the urgent path through the real route handlers, inbox
+  order, bad urgent kinds rejected, the migration in PGlite, and the demo loop).
+- Checked in the browser (demo): hang-up flow to Sara's URGENT card to Amina seeing "I'm calling you now."; bank-code
+  sample, then "I shared a code or password": one URGENT alert with WARNING and the message, plan read correctly;
+  `/p/happened` without a circle.
+- Seen, not changed: a dev-only hydration warning on `<html>` because the `/p` layout script adds the `parent-text`
+  class before React loads. It was there before Step 4.
+
+Next: Step 5, the held-out evaluation, run once.
 
 ## Still to do (needs you)
 

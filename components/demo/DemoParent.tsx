@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { ChooseInput } from "@/components/parent/ChooseInput";
 import { ParentFooter } from "@/components/parent/ParentFooter";
+import { OnThePhone } from "@/components/parent/OnThePhone";
 import { ParentHome } from "@/components/parent/ParentHome";
 import { PhotoCheck } from "@/components/parent/PhotoCheck";
 import { RulesScreen } from "@/components/parent/RulesScreen";
+import { SomethingHappened } from "@/components/parent/SomethingHappened";
 import { TextCheck } from "@/components/parent/TextCheck";
 import { VoiceCheck } from "@/components/parent/VoiceCheck";
 import { DEMO_CIRCLE } from "@/lib/demo/circle";
@@ -99,6 +101,12 @@ export function DemoParent({
       break;
     case "rules":
       screen = <RulesScreen />;
+      break;
+    case "phone":
+      screen = <OnThePhone />;
+      break;
+    case "happened":
+      screen = <SomethingHappened />;
       break;
     default:
       screen = <ParentHome />;

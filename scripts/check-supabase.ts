@@ -61,12 +61,22 @@ async function main() {
     const alertId = await store.createAlert(
       circleId,
       deviceId,
-      { verdict: "WARNING", summary: "A test alert.", excerpt: "Made-up message for the check.", flagIds: ["asks_for_code"] },
+      { verdict: "WARNING", urgent: null, summary: "A test alert.", excerpt: "Made-up message for the check.", flagIds: ["asks_for_code"] },
       Date.now() + 60_000,
     );
     check((await store.listAlerts(circleId)).some((a) => a.id === alertId), "send an alert");
     check(await store.replyToAlert(circleId, alertId, "calling", "Don't do anything. I'm calling you now."), "reply to an alert");
     check((await store.getAlert(circleId, alertId))?.reply?.kind === "calling", "read the reply");
+
+    const urgentId = await store.createAlert(
+      circleId,
+      deviceId,
+      { verdict: null, urgent: "phone_call", summary: "A test urgent alert.", excerpt: "", flagIds: [] },
+      Date.now() + 60_000,
+    );
+    const urgent = await store.getAlert(circleId, urgentId);
+    check(urgent?.urgent === "phone_call" && urgent.verdict === null, "send an URGENT alert with no check");
+    check(await store.replyToAlert(circleId, urgentId, "calling_now", "I'm calling you now."), "reply to an URGENT alert");
 
     const window = Math.floor(Date.now() / 3_600_000) * 3_600_000;
     const rateKey = `check:${randomToken()}`;

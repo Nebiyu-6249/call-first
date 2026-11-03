@@ -13,31 +13,16 @@ export const POLL_MS = 5000;
 // Stop asking after half an hour; the family can still call.
 const MAX_WAIT_MS = 30 * 60 * 1000;
 
-export function SentToFamily({
-  channel,
-  alertId,
-  familyPhone,
-  autoRead = true,
-}: {
-  channel: FamilyChannel;
-  alertId: string;
-  familyPhone?: string;
-  autoRead?: boolean;
-}) {
+// Asks every 5 seconds whether the family has replied, and reads the reply aloud when it arrives.
+export function useFamilyReply(channel: FamilyChannel | null, alertId: string | null, autoRead = true) {
   // The demo asks more often, so the reply shows up quickly.
   const pollMs = useParentEnv()?.pollMs ?? POLL_MS;
   const [reply, setReply] = useState<FamilyReply | null>(null);
   const [gone, setGone] = useState(false);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const name = channel.familyName;
+  const name = channel?.familyName ?? "";
 
   useEffect(() => {
-    headingRef.current?.focus();
-  }, [reply]);
-
-  // Ask every 5 seconds whether the family has replied.
-  useEffect(() => {
-    if (reply || gone) return;
+    if (!channel || !alertId || reply || gone) return;
     const started = Date.now();
     let stopSpeaking = () => {};
     const timer = window.setInterval(async () => {
@@ -57,6 +42,28 @@ export function SentToFamily({
       stopSpeaking();
     };
   }, [alertId, autoRead, channel, gone, name, pollMs, reply]);
+
+  return { reply, gone };
+}
+
+export function SentToFamily({
+  channel,
+  alertId,
+  familyPhone,
+  autoRead = true,
+}: {
+  channel: FamilyChannel;
+  alertId: string;
+  familyPhone?: string;
+  autoRead?: boolean;
+}) {
+  const { reply, gone } = useFamilyReply(channel, alertId, autoRead);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const name = channel.familyName;
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, [reply]);
 
   return (
     <div className="flex flex-col gap-6 break-words">

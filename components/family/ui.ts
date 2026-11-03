@@ -12,3 +12,5 @@ export const fInput = "min-h-12 w-full rounded-lg border-2 border-border bg-surf
 export const fLabel = "flex flex-col gap-1 text-lg font-bold";
 
 export const fCard = "rounded-2xl border-2 border-border bg-surface p-5";
+// An URGENT alert: a thicker red border, always with the word URGENT on the card too.
+export const fCardUrgent = "rounded-2xl border-4 border-warning bg-surface p-5";

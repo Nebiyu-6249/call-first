@@ -8,3 +8,6 @@ export const primaryButton = `${big} bg-primary text-primary-foreground hover:bg
 export const secondaryButton = `${big} border-4 border-primary bg-surface text-primary hover:bg-background`;
 
 export const textLink = "inline-flex min-h-12 items-center gap-2 text-lg font-bold text-primary underline underline-offset-4";
+
+// For "Something already happened": stands out from the other buttons, with an icon and words.
+export const urgentButton = `${big} border-4 border-warning bg-surface text-warning hover:bg-warning-bg`;

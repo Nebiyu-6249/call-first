@@ -142,8 +142,8 @@ Open http://localhost:3000.
 The family circle (contacts, connected phones, alerts) is stored in Supabase Postgres.
 
 1. Create a free project at https://supabase.com.
-2. In the SQL editor, run the files in `supabase/migrations/` in order (`0001_family_circle.sql`, then
-   `0002_private_mode.sql`). Each is safe to run more than once. With the Supabase CLI, `supabase db push` does the same.
+2. In the SQL editor, run the files in `supabase/migrations/` in order (`0001_family_circle.sql`,
+   `0002_private_mode.sql`, then `0003_urgent_alerts.sql`). Each is safe to run more than once. With the Supabase CLI, `supabase db push` does the same.
 3. Copy the project URL and the service role key (Project Settings > API) into `SUPABASE_URL` and
    `SUPABASE_SERVICE_ROLE_KEY`. Set `SESSION_SECRET` to a long random string:
 

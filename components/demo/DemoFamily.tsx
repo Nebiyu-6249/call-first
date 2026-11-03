@@ -1,10 +1,10 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { BookUser, Inbox, LockKeyhole } from "lucide-react";
 import { AlertCard } from "@/components/family/AlertCard";
 import { fCard } from "@/components/family/ui";
-import type { ReplyKind } from "@/lib/circle/alerts";
+import { inboxOrder, type ReplyKind } from "@/lib/circle/alerts";
 import { APP_NAME } from "@/lib/config";
 import { DEMO_CIRCLE } from "@/lib/demo/circle";
 import type { DemoFamilyLoop } from "@/lib/demo/family-loop";
@@ -14,7 +14,9 @@ const family = DEMO_CIRCLE.familyMembers[0].name;
 
 // Sara's side of the demo: Amina's alerts with one-tap replies, and the numbers Sara saved.
 export function DemoFamily({ loop }: { loop: DemoFamilyLoop }) {
-  const alerts = useSyncExternalStore(loop.subscribe, loop.getAlerts, loop.getAlerts);
+  const newestFirst = useSyncExternalStore(loop.subscribe, loop.getAlerts, loop.getAlerts);
+  // URGENT alerts waiting for a reply come first, as in the real inbox.
+  const alerts = useMemo(() => inboxOrder(newestFirst), [newestFirst]);
 
   async function reply(id: string, kind: ReplyKind, text: string) {
     return loop.reply(id, kind, text);

@@ -38,6 +38,7 @@ export function createDemoFamilyLoop(now: () => number = Date.now): DemoFamilyLo
     const view: AlertView = {
       id,
       verdict: alert.verdict,
+      urgent: alert.urgent,
       summary: alert.summary.slice(0, MAX_SUMMARY),
       excerpt: alert.excerpt.slice(0, MAX_EXCERPT),
       flagIds: [...alert.flagIds],

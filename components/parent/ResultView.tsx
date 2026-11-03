@@ -6,6 +6,7 @@ import {
   CircleHelp,
   Home,
   Info,
+  LifeBuoy,
   OctagonAlert,
   Phone,
   RotateCcw,
@@ -24,11 +25,13 @@ import { speechScript } from "@/lib/speech/script";
 import { canSpeak, speak } from "@/lib/speech/speak";
 import type { VerdictLevel } from "@/lib/verdict";
 import { DEFAULT_FAMILY_NAME, VERDICT_COPY, whatToDo } from "@/lib/verdict/copy";
+import { HAPPENED_BUTTON } from "@/lib/urgent";
 import { FromMessage } from "./FromMessage";
 import { GoldenRules } from "./GoldenRules";
 import { CallLink, ParentLink } from "./nav";
 import { SentToFamily } from "./SentToFamily";
-import { primaryButton, secondaryButton, textLink } from "./styles";
+import { SomethingHappened } from "./SomethingHappened";
+import { primaryButton, secondaryButton, textLink, urgentButton } from "./styles";
 
 const BANNER: Record<VerdictLevel, { Icon: LucideIcon; className: string }> = {
   WARNING: { Icon: OctagonAlert, className: "border-warning bg-warning-bg text-warning" },
@@ -65,6 +68,8 @@ export function ResultView({
   const [sentAlertId, setSentAlertId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
+  // "I already sent money, clicked, or shared something", opened from this result.
+  const [happened, setHappened] = useState(false);
   const familyName = circle?.familyMembers[0]?.name ?? DEFAULT_FAMILY_NAME;
   const nextStep = pickNextStep(circle, result.senderType, result.claimedPerson);
   const script = speechScript(result, nextStep, familyName);
@@ -75,7 +80,7 @@ export function ResultView({
     headingRef.current?.focus();
   }, [dismissed]);
 
-  const showingResult = !dismissed && !sentAlertId;
+  const showingResult = !dismissed && !sentAlertId && !happened;
 
   // Tell the demo panel while the answer is on screen.
   const resultShown = env?.resultShown;
@@ -112,6 +117,10 @@ export function ResultView({
         autoRead={readAloud}
       />
     );
+  }
+
+  if (happened) {
+    return <SomethingHappened checked={{ result, source: source.kind }} onBack={() => setHappened(false)} />;
   }
 
   function toggleReading() {
@@ -251,6 +260,13 @@ export function ResultView({
             </p>
           )}
         </div>
+      )}
+
+      {result.level !== "NO_WARNING_SIGNS" && (
+        <button type="button" onClick={() => setHappened(true)} className={urgentButton}>
+          <LifeBuoy aria-hidden="true" className="size-7 shrink-0" />
+          {HAPPENED_BUTTON}
+        </button>
       )}
 
       <FromMessage phoneNumbers={result.phoneNumbers} links={result.links} />

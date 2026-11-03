@@ -26,6 +26,7 @@ function view(alert: StoredAlert): AlertView {
   return {
     id: alert.id,
     verdict: alert.verdict,
+    urgent: alert.urgent,
     summary: alert.summary,
     excerpt: alert.excerpt,
     flagIds: [...alert.flagIds],

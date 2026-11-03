@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, Ban, Database, EyeOff, Lock, Send, Smartphone, TriangleAlert } from "lucide-react";
+import { ArrowLeft, Ban, Database, EyeOff, Library, Lock, Send, Smartphone, TriangleAlert } from "lucide-react";
 import { APP_NAME, DEFAULT_EMERGENCY_NUMBER } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -25,6 +25,34 @@ function Section({ id, title, Icon, children }: { id: string; title: string; Ico
 }
 
 const list = "flex list-disc flex-col gap-2 pl-6";
+
+// Official pages the urgent-moment advice is paraphrased from. Opened and read on 3 Nov 2026.
+const ADVICE_SOURCES: { title: string; publisher: string; url: string; used: string }[] = [
+  {
+    title: "What To Do if You Were Scammed",
+    publisher: "US Federal Trade Commission",
+    url: "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed",
+    used: "Calling the bank straight away to ask them to stop or reverse a payment, keeping gift cards and receipts, changing passwords and turning on the extra sign-in check, and getting help to check a phone or computer.",
+  },
+  {
+    title: "Phone Scams",
+    publisher: "US Federal Trade Commission",
+    url: "https://consumer.ftc.gov/articles/phone-scams",
+    used: "Hanging up on a caller who pressures you, and that anyone offering to get lost money back is probably another scammer.",
+  },
+  {
+    title: "How To Spot, Avoid, and Report Tech Support Scams",
+    publisher: "US Federal Trade Commission",
+    url: "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams",
+    used: "Real computer companies do not call about problems with your computer, and checking your bank statement for payments you did not make.",
+  },
+  {
+    title: "Courier fraud",
+    publisher: "Report Fraud, UK police",
+    url: "https://www.reportfraud.police.uk/courier-fraud/",
+    used: "It is OK to refuse a caller, waiting five minutes or using a different phone before calling back, the bank and police never collect your card or money, and calling the bank straight away to stop a card.",
+  },
+];
 
 export default function Privacy() {
   return (
@@ -148,6 +176,12 @@ export default function Privacy() {
             family can see what to warn about. <strong>Deleted automatically after 7 days.</strong>
           </li>
           <li>
+            <strong>URGENT alerts</strong>, sent when the parent taps &ldquo;Tell [family name]&rdquo; after hanging up
+            on a worrying call, or says something already happened (for example &ldquo;I sent money&rdquo;): which
+            choice they made, and, if it came from a checked message, the same summary and hidden-detail excerpt as
+            above. <strong>Deleted automatically after 7 days.</strong>
+          </li>
+          <li>
             <strong>Request counters</strong> that stop the service being overused: a count per internet address per
             hour. The address is stored only as a scrambled code, and counters are deleted after a day.
           </li>
@@ -188,6 +222,28 @@ export default function Privacy() {
           nothing at all: its family messages stay in your browser tab and disappear when you close it. Checks in the
           demo are still sent to OpenAI as described above, unless you switch on private mode there. Please use the
           made-up samples, not real personal messages.
+        </p>
+      </Section>
+
+      <Section id="advice" title="Where the advice comes from" Icon={Library}>
+        <p>
+          The steps on &ldquo;Someone is on the phone with me now&rdquo; and &ldquo;Something already happened&rdquo;
+          are put in plain words from these official pages. We read them on 3 November 2026. Every call button uses a
+          number the family saved, never one from a message or a web page.
+        </p>
+        <ul className={list}>
+          {ADVICE_SOURCES.map((source) => (
+            <li key={source.url}>
+              <a href={source.url} className="font-bold text-primary underline underline-offset-4">
+                {source.title}
+              </a>{" "}
+              ({source.publisher}). Used for: {source.used}
+            </li>
+          ))}
+        </ul>
+        <p>
+          This is general guidance, not legal or financial advice. We cannot promise that money can be got back: the
+          bank decides, and it is always worth asking.
         </p>
       </Section>
 

@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { buildCheckResult } from "@/lib/check";
+import { urgentAlert } from "@/lib/urgent";
 import { MemoryStore } from "@/lib/server/store/memory";
 import { setStoreForTesting } from "@/lib/server/store";
 import * as circleRoute from "./family/circle/route";
@@ -154,6 +156,71 @@ describe("family loop", () => {
     expect(inbox.alerts[0].excerpt).toBe(
       "Your code is [CODE]. Card [CARD NUMBER]. Call 07700 900456 or see https://pay.example/ref/77",
     );
+  });
+
+  it("URGENT alerts: sent with no check, shown first in the inbox, answered with one tap", async () => {
+    let now = Date.now();
+    store = new MemoryStore(() => now);
+    setStoreForTesting(store);
+    const { cookie } = await createCircle();
+    const { deviceToken, circle } = await pairPhone(cookie);
+    const send = async (body: unknown) => {
+      now += 1000;
+      const res = await deviceAlertsRoute.POST(req("/api/device/alerts", { method: "POST", token: deviceToken, body }));
+      return { status: res.status, id: (await res.json()).id as string };
+    };
+
+    const check = await send({ verdict: "WARNING", urgent: null, summary: "A text from the bank.", excerpt: "e", flagIds: [] });
+    const phoneCall = await send(urgentAlert("phone_call", circle.parentName as string));
+    const later = await send({ verdict: "NOT_SURE", urgent: null, summary: "Another text.", excerpt: "e", flagIds: [] });
+    expect([check.status, phoneCall.status, later.status]).toEqual([201, 201, 201]);
+
+    let inbox = (await (await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).json()).alerts;
+    expect(inbox.map((a: { id: string }) => a.id)).toEqual([phoneCall.id, later.id, check.id]);
+    expect(inbox[0]).toMatchObject({ urgent: "phone_call", verdict: null, summary: "Amina had a worrying phone call and hung up." });
+
+    const replied = await replyRoute.POST(
+      req(`/api/family/alerts/${phoneCall.id}/reply`, { method: "POST", cookie, body: { kind: "calling_now" } }),
+      ctx(phoneCall.id),
+    );
+    expect(replied.status).toBe(200);
+    const answer = await (await deviceAlertRoute.GET(req(`/api/device/alerts/${phoneCall.id}`, { token: deviceToken }), ctx(phoneCall.id))).json();
+    expect(answer.reply).toMatchObject({ kind: "calling_now", text: "I'm calling you now." });
+
+    // Once answered, it takes its place by time again.
+    inbox = (await (await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).json()).alerts;
+    expect(inbox.map((a: { id: string }) => a.id)).toEqual([later.id, phoneCall.id, check.id]);
+  });
+
+  it("an URGENT alert after a check carries the choice, the verdict and the masked excerpt", async () => {
+    const { cookie } = await createCircle();
+    const { deviceToken } = await pairPhone(cookie);
+    const result = buildCheckResult("Gulf Example Bank: read us the code 482913 on 07700 900456 now.", null, "failed");
+    const sent = await deviceAlertsRoute.POST(
+      req("/api/device/alerts", { method: "POST", token: deviceToken, body: urgentAlert("shared_code", "Amina", { result, source: "text" }) }),
+    );
+    expect(sent.status).toBe(201);
+    const [alert] = (await (await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).json()).alerts;
+    expect(alert).toMatchObject({
+      urgent: "shared_code",
+      verdict: "WARNING",
+      summary: 'Amina says: "I shared a code or password." Please call now.',
+      excerpt: "Gulf Example Bank: read us the code [CODE] on 07700 900456 now.",
+    });
+  });
+
+  it("rejects unknown URGENT kinds, and alerts with neither a verdict nor URGENT", async () => {
+    const { cookie } = await createCircle();
+    const { deviceToken } = await pairPhone(cookie);
+    for (const body of [
+      { verdict: null, urgent: "made_up", summary: "s", excerpt: "" },
+      { verdict: null, urgent: null, summary: "s", excerpt: "" },
+      { summary: "s", excerpt: "" },
+    ]) {
+      const res = await deviceAlertsRoute.POST(req("/api/device/alerts", { method: "POST", token: deviceToken, body }));
+      expect(res.status).toBe(400);
+    }
+    expect((await (await familyAlertsRoute.GET(req("/api/family/alerts", { cookie }))).json()).alerts).toEqual([]);
   });
 
   it("changing settings needs the PIN every time, even when signed in", async () => {

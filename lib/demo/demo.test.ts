@@ -3,6 +3,8 @@ import { buildCheckResult } from "@/lib/check";
 import { buildAlert } from "@/lib/circle/channel";
 import { pickNextStep } from "@/lib/next-step";
 import { DEMO_CIRCLE } from "./circle";
+import { inboxOrder } from "@/lib/circle/alerts";
+import { urgentAlert } from "@/lib/urgent";
 import { createDemoFamilyLoop } from "./family-loop";
 import { checkedPanel, checkedSample, showFamilyHint } from "./panel";
 import { DEMO_SAMPLES } from "./samples";
@@ -128,6 +130,22 @@ describe("demo family loop", () => {
     loop.send({ ...alert, excerpt: "x".repeat(900), summary: "y".repeat(400) });
     expect(loop.getAlerts()[0].excerpt).toHaveLength(500);
     expect(loop.getAlerts()[0].summary).toHaveLength(200);
+  });
+
+  it("URGENT alerts reach Sara's phone first, and Amina sees the one-tap reply", async () => {
+    let now = Date.parse("2026-11-20T10:00:00Z");
+    const loop = createDemoFamilyLoop(() => (now += 1000));
+    const channel = loop.channel("Sara");
+    await channel.send(alert);
+    const urgentId = (await channel.send(urgentAlert("phone_call", DEMO_CIRCLE.parentName)))!;
+    await channel.send(alert);
+
+    const inbox = inboxOrder(loop.getAlerts());
+    expect(inbox[0]).toMatchObject({ id: urgentId, urgent: "phone_call", verdict: null, summary: "Amina had a worrying phone call and hung up." });
+
+    expect(loop.reply(urgentId, "calling_now")).toBeNull();
+    expect(await channel.poll(urgentId)).toMatchObject({ status: "replied", reply: { text: "I'm calling you now." } });
+    expect(inboxOrder(loop.getAlerts())[0].id).not.toBe(urgentId);
   });
 
   it("reports an alert as gone after the demo is reset", async () => {
