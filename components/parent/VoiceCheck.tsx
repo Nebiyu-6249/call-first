@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Keyboard, Mic, RotateCcw, Square } from "lucide-react";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
+import { useParentEnv } from "@/lib/parent/env";
 import { useParent } from "@/lib/parent/use-parent";
 import { MAX_RECORDING_SECONDS, RECORDING_TYPES } from "@/lib/voice/audio";
 import { transcribe } from "@/lib/voice/client";
@@ -32,6 +33,7 @@ const PROBLEM_TEXT: Record<Problem, string> = {
 
 export function VoiceCheck() {
   const { circle, channel } = useParent();
+  const env = useParentEnv();
   const [step, setStep] = useState<Step>({ name: "intro" });
   const [secondsLeft, setSecondsLeft] = useState(MAX_RECORDING_SECONDS);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -64,6 +66,7 @@ export function VoiceCheck() {
     if (transcript === null) return setStep({ name: "problem", problem: "failed" });
     if (!transcript.trim()) return setStep({ name: "problem", problem: "empty" });
     setStep({ name: "checking" });
+    env?.checkStarted?.({ kind: "voice", text: transcript });
     const result = await atLeast(runCheck({ type: "call_description", text: transcript }));
     setStep({ name: "result", result, transcript });
   }

@@ -313,6 +313,33 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
 - The first local AI call took 6.3 s, close to the 8 s timeout. The eval median was 3.2 s. A timeout falls back to the
   rules-only result.
 
+## Upgrade batch (UPGRADE.md)
+
+`UPGRADE.md` adds a second batch of work on top of CLAUDE.md; where they disagree, UPGRADE.md wins. One step at a
+time, with a go-ahead between steps. `eval/heldout.json` must not be opened before Step 5.
+
+### Step 0: Starting point - done
+
+- `main` matched GitHub after pulling `1814d88` ("Add files via upload"), the commit that adds `eval/heldout.json` on
+  its own. The file was checked with `git log` only, not opened.
+- 226 tests passed.
+
+### Step 1: Demo fixes - done
+
+- The demo panel now follows what Amina's phone actually checked. The parent check screens report each check through
+  the optional `checkStarted` hook in `ParentEnv` (`lib/parent/env.ts`); `lib/demo/panel.ts` turns that into the
+  panel text and the highlighted sample. After "Paste your own" the panel shows the pasted text, after "Upload a
+  screenshot" it says "A screenshot Amina uploaded", and no sample stays highlighted.
+- "Hi Mum, new number" is the first sample.
+- After a result, the panel shows "Next: tap Show Sara, then reply on Sara's phone." until anything has been sent to
+  Sara in this demo (Start again resets it). `ResultView` reports when an answer is on screen through `resultShown`.
+- Lint now ignores `.netlify/**` (Netlify's local build output); the run-once effect in `TextCheck` is marked as
+  intended.
+- Tests: 232 pass (demo panel cases added). Checked in the browser: sample, then pasted text, then a generated
+  screenshot.
+
+Next: Step 2, the rename to "Call First".
+
 ## Still to do (needs you)
 
 1. **Disable the legacy JWT keys** in Supabase: https://supabase.com/dashboard/project/zrjjvewrcraaqyzwfgns/settings/api-keys,
@@ -322,14 +349,10 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
 
 ## Known issues
 
-- Not yet run against a real Supabase project or the live OpenAI API (no credentials in this environment). The SQL is
-  tested in PGlite and the routes with the in-memory store; the `SupabaseStore` glue itself is untested until a
-  project is connected.
 - The microphone and camera were not tested with real hardware here.
 - Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design).
 - "Call our fraud team now" is not caught as urgency (only fixed phrases such as "call now" are). The AI covers it.
 - `npm audit` reports moderate advisories in dev tooling from the scaffold.
-- The demo has not been seen with live AI answers yet (no API key here).
 - "Don't tell Dad" is now a secrecy request, so a harmless "don't tell Dad about his birthday present" gets WARNING
   from the rules. Accepted: it errs on the side of caution, and the eval in Phase 6 will show how often this matters.
 - Rule gaps the evaluation showed (not fixed, to keep the measured numbers honest; the AI is expected to cover them):

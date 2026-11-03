@@ -18,6 +18,9 @@ export const PARENT_ROUTES = {
 
 export type ParentRoute = keyof typeof PARENT_ROUTES;
 
+// What the person asked to check. A photo has no text until the check has read it.
+export type CheckedInput = { kind: "text" | "voice"; text: string } | { kind: "image" };
+
 export interface ParentEnv {
   circle: DeviceCircle;
   channel: FamilyChannel;
@@ -26,6 +29,9 @@ export interface ParentEnv {
   call(name: string, phone: string): void;
   autoRead: boolean;
   pollMs: number;
+  // Let the demo panel follow the phone: what is being checked, and whether a result is showing.
+  checkStarted?(input: CheckedInput): void;
+  resultShown?(shown: boolean): void;
 }
 
 export const ParentEnvContext = createContext<ParentEnv | null>(null);

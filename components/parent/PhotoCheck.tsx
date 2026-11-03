@@ -5,6 +5,7 @@ import { Camera, ImageUp, RotateCcw, Search } from "lucide-react";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
 import { compressImage } from "@/lib/image/compress";
+import { useParentEnv } from "@/lib/parent/env";
 import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
 import { Screen } from "./nav";
@@ -21,6 +22,7 @@ type Step =
 
 export function PhotoCheck() {
   const { circle, channel } = useParent();
+  const env = useParentEnv();
   const [step, setStep] = useState<Step>({ name: "choose" });
   const [error, setError] = useState("");
   const cameraInput = useRef<HTMLInputElement>(null);
@@ -44,6 +46,7 @@ export function PhotoCheck() {
 
   async function check(image: string) {
     setStep({ name: "checking" });
+    env?.checkStarted?.({ kind: "image" });
     const result = await atLeast(runCheck({ type: "image", image }));
     setStep({ name: "result", result });
   }

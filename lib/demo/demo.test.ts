@@ -4,19 +4,20 @@ import { buildAlert } from "@/lib/circle/channel";
 import { pickNextStep } from "@/lib/next-step";
 import { DEMO_CIRCLE } from "./circle";
 import { createDemoFamilyLoop } from "./family-loop";
+import { checkedPanel, checkedSample, showFamilyHint } from "./panel";
 import { DEMO_SAMPLES } from "./samples";
 
 // The demo must give a sensible answer even when the AI service fails, so every sample is
 // checked here with the rules alone.
 
 describe("demo samples", () => {
-  it("covers the messages the brief asks for", () => {
+  it("covers the messages the brief asks for, with 'Hi Mum' first", () => {
     expect(DEMO_SAMPLES.map((s) => s.id)).toEqual([
+      "new-number",
       "bank-code",
       "account-frozen",
       "traffic-fine",
       "parcel-fee",
-      "new-number",
       "police-secret",
       "prize",
       "appointment",
@@ -137,5 +138,46 @@ describe("demo family loop", () => {
     expect(loop.getAlerts()).toEqual([]);
     expect(await channel.poll(id)).toEqual({ status: "gone" });
     expect(loop.reply(id, "fine")).toBe("That message is no longer here.");
+  });
+});
+
+describe("demo panel", () => {
+  const sample = DEMO_SAMPLES.find((s) => s.id === "bank-code")!;
+
+  it("shows the sample and highlights it when a sample was checked", () => {
+    const checked = { kind: "text" as const, text: sample.text };
+    expect(checkedSample(checked)?.id).toBe("bank-code");
+    expect(checkedPanel(checked, "Amina")).toEqual({ caption: "The message Amina got", body: sample.text });
+  });
+
+  it("shows the pasted text, not the earlier sample, and clears the highlight", () => {
+    const pasted = { kind: "text" as const, text: "  Your library book is due back on Friday.\n" };
+    expect(checkedSample(pasted)).toBeNull();
+    expect(checkedPanel(pasted, "Amina")).toEqual({
+      caption: "The message Amina got",
+      body: "Your library book is due back on Friday.",
+    });
+  });
+
+  it("describes an uploaded screenshot instead of showing a sample", () => {
+    expect(checkedSample({ kind: "image" })).toBeNull();
+    expect(checkedPanel({ kind: "image" }, "Amina")?.body).toBe("A screenshot Amina uploaded");
+  });
+
+  it("shows what was said for a voice check", () => {
+    const voice = { kind: "voice" as const, text: sample.text };
+    expect(checkedSample(voice)).toBeNull();
+    expect(checkedPanel(voice, "Amina")?.caption).toBe("What Amina said");
+  });
+
+  it("shows nothing before anything is checked", () => {
+    expect(checkedSample(null)).toBeNull();
+    expect(checkedPanel(null, "Amina")).toBeNull();
+  });
+
+  it("hints at the family loop after a result, until something is sent", () => {
+    expect(showFamilyHint(false, 0)).toBe(false);
+    expect(showFamilyHint(true, 0)).toBe(true);
+    expect(showFamilyHint(true, 1)).toBe(false);
   });
 });

@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState, useSyncExternalStore, type ReactNode, type Ref } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
   ImageUp,
   Info,
   Keyboard,
@@ -17,8 +18,9 @@ import {
 import { APP_NAME } from "@/lib/config";
 import { DEMO_CIRCLE } from "@/lib/demo/circle";
 import { createDemoFamilyLoop } from "@/lib/demo/family-loop";
+import { checkedPanel, checkedSample, showFamilyHint } from "@/lib/demo/panel";
 import { DEMO_SAMPLES, type DemoSample } from "@/lib/demo/samples";
-import type { ParentRoute } from "@/lib/parent/env";
+import type { CheckedInput, ParentRoute } from "@/lib/parent/env";
 import { canSpeak } from "@/lib/speech/speak";
 import { DemoFamily } from "./DemoFamily";
 import { DemoParent, type ParentView } from "./DemoParent";
@@ -35,13 +37,18 @@ type Phone = "parent" | "family";
 export function DemoApp() {
   const [loop] = useState(createDemoFamilyLoop);
   const [view, setView] = useState<ParentView>({ route: "home", nonce: 0 });
-  const [sample, setSample] = useState<DemoSample | null>(null);
+  // What Amina's phone last checked, as the phone reported it.
+  const [checked, setChecked] = useState<CheckedInput | null>(null);
+  const [resultShowing, setResultShowing] = useState(false);
   const [autoRead, setAutoRead] = useState(true);
   const [call, setCall] = useState<{ name: string; phone: string } | null>(null);
   const [phone, setPhone] = useState<Phone>("parent");
   const parentFrameRef = useRef<HTMLElement>(null);
   const alerts = useSyncExternalStore(loop.subscribe, loop.getAlerts, loop.getAlerts);
   const waiting = alerts.filter((a) => !a.reply).length;
+  const sample = checkedSample(checked);
+  const panel = checkedPanel(checked, parentName);
+  const hint = showFamilyHint(resultShowing, alerts.length);
 
   const navigate = useCallback((route: ParentRoute) => {
     setCall(null);
@@ -61,8 +68,14 @@ export function DemoApp() {
   }
 
   function trySample(s: DemoSample) {
-    setSample(s);
+    setChecked({ kind: "text", text: s.text });
     showOnParent("text", s.text);
+  }
+
+  // The judge's own message: the panel stays empty until the phone checks it.
+  function tryOwn(route: "text" | "photo") {
+    setChecked(null);
+    showOnParent(route);
   }
 
   function stopSpeaking() {
@@ -72,7 +85,7 @@ export function DemoApp() {
   function restart() {
     stopSpeaking();
     loop.reset();
-    setSample(null);
+    setChecked(null);
     setPhone("parent");
     showOnParent("home");
   }
@@ -148,22 +161,33 @@ export function DemoApp() {
           </ul>
 
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => showOnParent("text")} className={chip}>
+            <button type="button" onClick={() => tryOwn("text")} className={chip}>
               <Keyboard aria-hidden="true" className="size-5 shrink-0" />
               Paste your own
             </button>
-            <button type="button" onClick={() => showOnParent("photo")} className={chip}>
+            <button type="button" onClick={() => tryOwn("photo")} className={chip}>
               <ImageUp aria-hidden="true" className="size-5 shrink-0" />
               Upload a screenshot
             </button>
           </div>
 
-          {sample && (
+          {panel && (
             <figure className="flex flex-col gap-2 rounded-2xl border-2 border-border bg-surface p-4">
-              <figcaption className="text-base font-bold text-muted">The message {parentName} got</figcaption>
-              <blockquote className="whitespace-pre-line break-words">{sample.text}</blockquote>
+              <figcaption className="text-base font-bold text-muted">{panel.caption}</figcaption>
+              <blockquote className="whitespace-pre-line break-words">{panel.body}</blockquote>
             </figure>
           )}
+
+          <div role="status">
+            {hint && (
+              <p className="flex items-start gap-2 rounded-2xl border-2 border-primary bg-surface p-4 font-bold">
+                <ArrowRight aria-hidden="true" className="mt-1 size-5 shrink-0 text-primary" />
+                <span>
+                  Next: tap &ldquo;Show {familyName}&rdquo;, then reply on {familyName}&apos;s phone.
+                </span>
+              </p>
+            )}
+          </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <label className="inline-flex min-h-12 items-center gap-3 font-bold">
@@ -203,7 +227,15 @@ export function DemoApp() {
           visible={phone === "parent"}
           overlay={call && <CallNotice call={call} onClose={() => setCall(null)} />}
         >
-          <DemoParent loop={loop} view={view} autoRead={autoRead} onNavigate={navigate} onCall={onCall} />
+          <DemoParent
+            loop={loop}
+            view={view}
+            autoRead={autoRead}
+            onNavigate={navigate}
+            onCall={onCall}
+            onCheckStarted={setChecked}
+            onResultShown={setResultShowing}
+          />
         </PhoneFrame>
 
         <PhoneFrame id="family-phone" title={`${familyName}'s phone`} subtitle={`${parentName}'s daughter`} visible={phone === "family"}>

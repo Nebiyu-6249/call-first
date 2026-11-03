@@ -5,6 +5,7 @@ import { ClipboardPaste, Search } from "lucide-react";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
 import { MAX_TEXT_LENGTH } from "@/lib/check/request";
+import { useParentEnv } from "@/lib/parent/env";
 import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
@@ -20,6 +21,7 @@ type Step =
 // The demo passes a sample message and checks it straight away, as if it had been pasted.
 export function TextCheck({ initialText = "", checkNow = false }: { initialText?: string; checkNow?: boolean }) {
   const { circle, channel } = useParent();
+  const env = useParentEnv();
   const [step, setStep] = useState<Step>(checkNow && initialText.trim() ? { name: "checking" } : { name: "input" });
   const [text, setText] = useState(initialText);
   const [error, setError] = useState("");
@@ -28,6 +30,7 @@ export function TextCheck({ initialText = "", checkNow = false }: { initialText?
   async function check(message: string) {
     setError("");
     setStep({ name: "checking" });
+    env?.checkStarted?.({ kind: "text", text: message });
     const result = await atLeast(runCheck({ type: "text", text: message }));
     setStep({ name: "result", result });
   }
@@ -36,6 +39,7 @@ export function TextCheck({ initialText = "", checkNow = false }: { initialText?
     if (startedRef.current || !checkNow || !initialText.trim()) return;
     startedRef.current = true;
     void check(initialText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once for the demo sample, guarded by startedRef
   }, [checkNow, initialText]);
 
   async function paste() {

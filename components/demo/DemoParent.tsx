@@ -10,7 +10,7 @@ import { TextCheck } from "@/components/parent/TextCheck";
 import { VoiceCheck } from "@/components/parent/VoiceCheck";
 import { DEMO_CIRCLE } from "@/lib/demo/circle";
 import type { DemoFamilyLoop } from "@/lib/demo/family-loop";
-import { ParentEnvContext, type ParentEnv, type ParentRoute } from "@/lib/parent/env";
+import { ParentEnvContext, type CheckedInput, type ParentEnv, type ParentRoute } from "@/lib/parent/env";
 
 // What Amina's phone is showing. A new `nonce` starts the screen afresh.
 export interface ParentView {
@@ -32,20 +32,33 @@ export function DemoParent({
   autoRead,
   onNavigate,
   onCall,
+  onCheckStarted,
+  onResultShown,
 }: {
   loop: DemoFamilyLoop;
   view: ParentView;
   autoRead: boolean;
   onNavigate: (route: ParentRoute) => void;
   onCall: (name: string, phone: string) => void;
+  onCheckStarted: (input: CheckedInput) => void;
+  onResultShown: (shown: boolean) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
   const channel = useMemo(() => loop.channel(DEMO_CIRCLE.familyMembers[0].name), [loop]);
 
   const env = useMemo<ParentEnv>(
-    () => ({ circle: DEMO_CIRCLE, channel, go: onNavigate, call: onCall, autoRead, pollMs: DEMO_POLL_MS }),
-    [channel, onNavigate, onCall, autoRead],
+    () => ({
+      circle: DEMO_CIRCLE,
+      channel,
+      go: onNavigate,
+      call: onCall,
+      autoRead,
+      pollMs: DEMO_POLL_MS,
+      checkStarted: onCheckStarted,
+      resultShown: onResultShown,
+    }),
+    [channel, onNavigate, onCall, autoRead, onCheckStarted, onResultShown],
   );
 
   // On each new screen, go back to the top and move focus there, as a page change would.

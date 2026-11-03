@@ -12,6 +12,12 @@ export interface DemoSample {
 
 export const DEMO_SAMPLES: DemoSample[] = [
   {
+    id: "new-number",
+    label: "Hi Mum, new number",
+    kind: "scam",
+    text: "Hi Mum, it's Omar. I dropped my phone in the sink so this is my new number. Can you send £450 to my friend's account today? I'll pay you back. Don't tell Dad yet x",
+  },
+  {
     id: "bank-code",
     label: "Bank asks for a code",
     kind: "scam",
@@ -34,12 +40,6 @@ export const DEMO_SAMPLES: DemoSample[] = [
     label: "Parcel held for a fee",
     kind: "scam",
     text: "Swift Example Parcels: Your parcel could not be delivered because of an unpaid fee of £1.99. Pay now to arrange delivery: https://sxp.example/Rp8Kq2",
-  },
-  {
-    id: "new-number",
-    label: "Hi Mum, new number",
-    kind: "scam",
-    text: "Hi Mum, it's Omar. I dropped my phone in the sink so this is my new number. Can you send £450 to my friend's account today? I'll pay you back. Don't tell Dad yet x",
   },
   {
     id: "police-secret",

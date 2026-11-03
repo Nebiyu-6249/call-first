@@ -76,6 +76,14 @@ export function ResultView({
 
   const showingResult = !dismissed && !sentAlertId;
 
+  // Tell the demo panel while the answer is on screen.
+  const resultShown = env?.resultShown;
+  useEffect(() => {
+    if (!resultShown || !showingResult) return;
+    resultShown(true);
+    return () => resultShown(false);
+  }, [resultShown, showingResult]);
+
   // Read the result aloud once it appears, and stop when the screen changes.
   useEffect(() => {
     if (!readAloud || !showingResult) return;
