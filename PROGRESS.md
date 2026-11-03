@@ -270,7 +270,7 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
 
 ## Deployed (Nov 3, 2026)
 
-- **Live:** https://second-look-safespace.netlify.app. **Code:** https://github.com/Nebiyu-6249/second-look (public).
+- **Live:** https://call-first-safespace.netlify.app. **Code:** https://github.com/Nebiyu-6249/call-first (public).
 - **Supabase:**
   - Project `second-look` (ref `zrjjvewrcraaqyzwfgns`, us-east-2) in the free organisation "Second Look". The
     migration was applied with `supabase db push --remote`.
@@ -278,7 +278,7 @@ run `npm run eval`, and commit the new `EVALUATION.md`.
   - Using the public key, every table reads empty and every function is refused.
   - The database password is in the git-ignored `.env.supabase-db`.
 - **Netlify:**
-  - Site `second-look-safespace` on the free team `gemedunebiyu`. Environment variables were imported from
+  - Site `call-first-safespace` (called `second-look-safespace` until Nov 3) on the free team `gemedunebiyu`. Environment variables were imported from
     `.env.local`.
   - Deployed with `npx netlify-cli deploy --prod` from this machine. GitHub is not connected for automatic deploys.
   - Visitor access: the team default required a Netlify login for every deploy. The site is now set to protect
@@ -338,17 +338,23 @@ time, with a go-ahead between steps. `eval/heldout.json` must not be opened befo
 - Tests: 232 pass (demo panel cases added). Checked in the browser: sample, then pasted text, then a generated
   screenshot.
 
-### Step 2: Rename to "Call First" - done in the code and docs
+### Step 2: Rename to "Call First" - done
 
 - `APP_NAME` is now "Call First". Every page title, heading, footer, the demo, README, DEVPOST.md and the
   evaluation set's "about" text follow it. The AI prompt never named the product, and EVALUATION.md has no name in it.
 - Internal names changed too: package `call-first`, the service worker cache `call-first-v1` (old `second-look-`
   caches are deleted on update), the phone's storage keys `callfirst.*` and the family cookie `cf_family`. A phone
   paired before this change, and a family member signed in before it, have to pair or sign in again.
-- Kept on purpose: the brief in CLAUDE.md, old commit messages, the Supabase project and organisation names (account
-  names, not shown anywhere), and the live and GitHub links, which still use `second-look` until you decide on
-  renaming them.
-- Not done (needs your answer): renaming the GitHub repository and the Netlify site.
+- Kept on purpose: the brief in CLAUDE.md, old commit messages, and the Supabase project and organisation names
+  (account names, not shown anywhere).
+- With your go-ahead, renamed the addresses:
+  - GitHub: https://github.com/Nebiyu-6249/call-first (`gh repo rename`); the old address redirects to it, and the
+    local `origin` points at the new one.
+  - Netlify: https://call-first-safespace.netlify.app (`netlify api updateSite`). The old
+    `second-look-safespace.netlify.app` address now returns 404; Netlify does not redirect it.
+  - README, DEVPOST.md and this file use the new links.
+- The live site still shows "Second Look" until the next deploy (Step 6). The Step 1 and 2 commits are not pushed
+  yet.
 
 Next: Step 3, masking personal details before the AI sees them.
 

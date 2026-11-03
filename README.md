@@ -7,9 +7,9 @@ Built during SafeSpace Hacks (Oct 17 - Nov 22, 2026), starting from an empty rep
 
 > Call First gives a second opinion, not a guarantee. It is not an emergency service.
 
-**Live demo:** https://second-look-safespace.netlify.app/demo
+**Live demo:** https://call-first-safespace.netlify.app/demo
 
-**Code:** https://github.com/Nebiyu-6249/second-look
+**Code:** https://github.com/Nebiyu-6249/call-first
 
 ## What it does
 
