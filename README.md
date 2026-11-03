@@ -62,6 +62,7 @@ Without `SUPABASE_URL`, `npm run dev` uses an in-memory store so you can try the
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript check |
 | `npm test` | Unit tests (Vitest) |
+| `npm run eval` | Run the 48 test messages in `eval/messages.json` through the real pipeline (rules, live AI, verdict) and write `EVALUATION.md`. Uses `OPENAI_*` from `.env.local`; without a key it measures the rules only and says so. |
 
 ## Project structure
 

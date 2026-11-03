@@ -194,12 +194,32 @@ Notes:
   on Amina's phone; prompt-injection text pasted -> WARNING; Back, Golden Rules and Start again; no console or server
   errors; the real `/p` pages still use normal links.
 
-## Next: Phase 6 - Evaluation
+## Phase 6: Evaluation - done (rules-only numbers; the AI run still needs a key)
 
-- `eval/messages.json`: about 30 fictional scams covering the taxonomy and about 15 normal messages, including tricky
-  normal ones (requested login code, bank notice with no request, delivery update with no payment).
-- `npm run eval`: run every message through the real pipeline (rules + live AI + verdict) and write `EVALUATION.md`
-  with the counts exactly as they come out, misses included.
+- `eval/messages.json`: 48 fictional messages, 32 scams (7 of them spoken call descriptions) and 16 normal. Every
+  taxonomy flag is a target of at least one scam. Tricky normal ones: requested sign-in code, bank notice with no
+  request, delivery update, delivery with a tracking link, appointment with a phone number, council notice, a bank
+  "did you make this payment? Reply YES or NO" check. Numbers are in Ofcom drama ranges, links on `.example`.
+- `npm run eval` (`eval/run.ts`, run with `tsx --conditions=react-server` so `server-only` imports work outside Next):
+  loads `.env.local` with `@next/env`, calls the real `analyse()` (same prompt, schema, 8 s timeout) three at a time,
+  builds each result with `buildCheckResult` exactly as the app does, and also records the rules-only result.
+  Writes `EVALUATION.md` (`eval/report.ts`): verdict counts for scams and normal messages, misses and false alarms by
+  name, AI failures and median time, per-flag coverage, and a row per message. It names the commit and says when there
+  were uncommitted changes. Without a key it says at the top that the AI was not used and shows rules-only numbers only.
+- The set was written before any results were seen, and the rules were not changed afterwards (the report says so).
+- Rules-only result (the AI-down fallback): scams 21 WARNING, 11 NOT SURE, 0 missed; normal 1 false alarm (n16, the
+  bank's "Reply YES or NO" check, flagged as asking for payment), 15 NOT SURE.
+- 203 unit tests. New: the data set (size, every flag targeted, tricky normals present, fiction-only numbers and
+  `.example` links, broken sets rejected) and the report (counts, misses, false alarms, the no-AI notice).
+
+To get the real numbers: put `OPENAI_API_KEY` (and the other `OPENAI_*` values from `.env.example`) in `.env.local`,
+run `npm run eval`, and commit the new `EVALUATION.md`.
+
+## Next: Phase 7 - Polish and deploy
+
+- Accessibility pass (contrast, 200% zoom, keyboard, screen reader), offline cache for contacts and Golden Rules,
+  privacy page with a `#limitations` section (check OpenAI's current API data-usage policy), Netlify deploy, final
+  README and DEVPOST.md.
 
 ## Known issues
 
@@ -214,4 +234,14 @@ Notes:
 - The demo has not been seen with live AI answers yet (no API key here).
 - "Don't tell Dad" is now a secrecy request, so a harmless "don't tell Dad about his birthday present" gets WARNING
   from the rules. Accepted: it errs on the side of caution, and the eval in Phase 6 will show how often this matters.
+- Rule gaps the evaluation showed (not fixed, to keep the measured numbers honest; the AI is expected to cover them):
+  - remote access worded "so our engineer can fix it" or "so they could see my screen" (s04, s05: 0 of 2 found);
+  - card or bank details asked as "confirming your card number", "billing details", "reply with... account number",
+    "paid over the phone with my card" (s02, s22, s29, s23; s13 is arguable): 2 of 7;
+  - urgency such as "today" away from the verb, "tonight", "in two hours", "before 6pm" (s06, s08, s18, s23, s29,
+    s30): 4 of 10;
+  - secrecy toward "the staff at the branch" or "his parents" (s03, s08): 3 of 5;
+  - threats to a "computer" or "online banking", or "cut off" (s20, s29, s23): 5 of 8;
+  - a bank "Reply YES or NO" check (n16) is treated as a payment request: the one false alarm.
+  Fixing these later means saying in EVALUATION.md that the rules changed after the first run.
 - The demo's parent phone uses CSS `zoom` (supported in current Chrome, Edge, Safari and Firefox 126+).
