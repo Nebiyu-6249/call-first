@@ -19,12 +19,14 @@ export const VERDICT_COPY: Record<VerdictLevel, { word: string; line: string }> 
   },
 };
 
-export function whatToDo(level: VerdictLevel, familyName: string = DEFAULT_FAMILY_NAME): string {
+// `callName` is whoever the big call button rings (for example the bank), so the words and the
+// button agree. The reassurance line always names the family.
+export function whatToDo(level: VerdictLevel, familyName: string = DEFAULT_FAMILY_NAME, callName: string = familyName): string {
   switch (level) {
     case "WARNING":
-      return `Do not reply, pay, or share anything. Call ${familyName} first.`;
+      return `Do not reply, pay, or share anything. Call ${callName} first.`;
     case "NOT_SURE":
-      return `Do not reply yet. Check with ${familyName} before you do anything.`;
+      return `Do not reply yet. Check with ${callName} before you do anything.`;
     case "NO_WARNING_SIGNS":
       return `If anyone asks you for money or a code, check with ${familyName} first.`;
   }

@@ -2,7 +2,7 @@
 // Used by the parent device, the demo and the evaluation script, so they all share one pipeline.
 
 import type { AiAnalysis, SenderType } from "@/lib/ai/schema";
-import { guessSenderType, runRules } from "@/lib/rules/rules";
+import { guessClaimedPerson, guessSenderType, runRules } from "@/lib/rules/rules";
 import { computeVerdict, type MergedFlag, type VerdictLevel } from "@/lib/verdict";
 
 // "skipped" means no AI call was made; "failed" means it was tried and did not answer in time.
@@ -61,7 +61,7 @@ export function buildCheckResult(text: string, ai: AiAnalysis | null, aiStatus: 
       analysis && analysis.claimed_sender_type !== "unknown"
         ? analysis.claimed_sender_type
         : guessSenderType(checkedText, rules.flags),
-    claimedPerson: analysis?.claimed_person ?? "",
+    claimedPerson: analysis?.claimed_person || guessClaimedPerson(checkedText),
     summary: analysis?.input_summary ?? "",
     explanation: analysis && AGREES[verdict.level] === analysis.ai_assessment ? analysis.plain_explanation : "",
     checkedText,

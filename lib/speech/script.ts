@@ -17,7 +17,7 @@ export function speechScript(result: CheckResult, nextStep: NextStep | null, fam
   const parts = [SPOKEN_WORD[result.level], VERDICT_COPY[result.level].line];
   if (result.explanation) parts.push(result.explanation);
   for (const flag of result.flags.slice(0, MAX_REASONS)) parts.push(flag.reason);
-  parts.push(`What to do now. ${whatToDo(result.level, familyName)}`);
+  parts.push(`What to do now. ${whatToDo(result.level, familyName, nextStep?.name)}`);
   if (nextStep) parts.push(`The big button says: ${nextStep.label}.`);
   if (result.phoneNumbers.length > 0 || result.links.length > 0) {
     parts.push("Do not call any number or tap any link from the message.");

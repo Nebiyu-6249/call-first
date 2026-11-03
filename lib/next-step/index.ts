@@ -5,6 +5,8 @@ import type { SenderType } from "@/lib/ai/schema";
 import type { FamilyMember, ParentCircle } from "@/lib/circle/types";
 
 export interface NextStep {
+  // Who the call goes to, for example "Gulf Example Bank".
+  name: string;
   // Button text, for example "Call Gulf Example Bank".
   label: string;
   // Saved number, used for the tel: link.
@@ -36,6 +38,7 @@ export function pickNextStep(
     const bank = circle.contacts.find((c) => c.category === "bank");
     if (bank) {
       return {
+        name: bank.label,
         label: `Call ${bank.label}`,
         phone: bank.phone,
         reason: `This is the number ${main?.name ?? "your family"} saved for your bank.`,
@@ -47,6 +50,7 @@ export function pickNextStep(
     const member = findClaimedFamilyMember(circle.familyMembers, claimedPerson);
     if (member) {
       return {
+        name: member.name,
         label: `Call ${member.name}`,
         phone: member.phone,
         reason: `Call ${member.name} on the number you already have, to check it is really them.`,
@@ -56,6 +60,7 @@ export function pickNextStep(
 
   if (main) {
     return {
+      name: main.name,
       label: `Call ${main.name}`,
       phone: main.phone,
       reason: `${main.name} can help you check.`,

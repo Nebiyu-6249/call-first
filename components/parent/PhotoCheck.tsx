@@ -7,6 +7,7 @@ import { runCheck } from "@/lib/check/client";
 import { compressImage } from "@/lib/image/compress";
 import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
+import { Screen } from "./nav";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
@@ -57,7 +58,7 @@ export function PhotoCheck() {
 
   if (step.name === "result") {
     return (
-      <main className="flex flex-1 flex-col">
+      <Screen className="flex flex-1 flex-col">
         <ResultView
           result={step.result}
           circle={circle}
@@ -65,13 +66,13 @@ export function PhotoCheck() {
           source={{ kind: "image", text: step.result.checkedText }}
           onCheckAnother={reset}
         />
-      </main>
+      </Screen>
     );
   }
 
   if (step.name === "preview") {
     return (
-      <main className="flex flex-1 flex-col gap-6">
+      <Screen className="flex flex-1 flex-col gap-6">
         <h1 className="text-3xl font-bold">Is this the right picture?</h1>
         {/* eslint-disable-next-line @next/next/no-img-element -- a local preview, never uploaded anywhere but the check */}
         <img
@@ -87,13 +88,13 @@ export function PhotoCheck() {
           <RotateCcw aria-hidden="true" className="size-7" />
           Choose another
         </button>
-      </main>
+      </Screen>
     );
   }
 
   return (
-    <main className="flex flex-1 flex-col gap-6">
-      <BackLink href="/p/check" />
+    <Screen className="flex flex-1 flex-col gap-6">
+      <BackLink to="check" />
       <h1 className="text-3xl font-bold">Photo or screenshot</h1>
       <p className="text-xl">Take a photo of the letter or screen, or choose a screenshot you already have.</p>
 
@@ -118,6 +119,6 @@ export function PhotoCheck() {
       <p className="text-lg text-muted">
         The picture is made smaller and its location details are removed before it is sent. It is not saved.
       </p>
-    </main>
+    </Screen>
   );
 }

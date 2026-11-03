@@ -50,7 +50,7 @@ export function AlertCard({
   const labels = alert.flagIds.filter(isFlagId).map((id) => TAXONOMY[id].label);
 
   return (
-    <article className={`${fCard} flex flex-col gap-4`} aria-label={`Alert from ${parentName}, ${when(alert.createdAt)}`}>
+    <article className={`${fCard} @container flex flex-col gap-4`} aria-label={`Alert from ${parentName}, ${when(alert.createdAt)}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <VerdictBadge level={alert.verdict} />
         <time dateTime={alert.createdAt} className="text-base text-muted">
@@ -81,7 +81,7 @@ export function AlertCard({
       ) : (
         <div className="flex flex-col gap-3">
           <p className="font-bold">Reply to {parentName}:</p>
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <div className="flex flex-col gap-2 @lg:flex-row @lg:flex-wrap">
             {QUICK.map(({ kind, Icon }) => (
               <button key={kind} type="button" disabled={busy} onClick={() => reply(kind)} className={kind === "calling" ? fButton : fButtonSecondary}>
                 <Icon aria-hidden="true" className="size-5" />
@@ -89,7 +89,7 @@ export function AlertCard({
               </button>
             ))}
           </div>
-          <form onSubmit={sendCustom} className="flex flex-col gap-2 sm:flex-row">
+          <form onSubmit={sendCustom} className="flex flex-col gap-2 @lg:flex-row">
             <label className="sr-only" htmlFor={`custom-${alert.id}`}>
               Write your own short reply
             </label>

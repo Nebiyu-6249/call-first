@@ -17,7 +17,7 @@ describe("speechScript", () => {
 
   it("reads the reasons, what to do, and the verified button", () => {
     expect(script).toContain("It asks you to share a code");
-    expect(script).toContain("What to do now. Do not reply, pay, or share anything. Call Sara first.");
+    expect(script).toContain("What to do now. Do not reply, pay, or share anything. Call Gulf Example Bank first.");
     expect(script).toContain("The big button says: Call Gulf Example Bank.");
   });
 

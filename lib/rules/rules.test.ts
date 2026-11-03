@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { runRules } from "./rules";
+import { guessClaimedPerson, guessSenderType, runRules } from "./rules";
 import type { FlagId } from "./taxonomy";
 
 // All messages are fictional. Banks and companies are made up, numbers use the
@@ -58,6 +58,7 @@ describe("secrecy_request", () => {
     "If the bank asks, say the money is for a new kitchen.",
     "Don't tell anyone about this call.",
     "Do not hang up or the case will be closed.",
+    "Can you send £450 today? Don't tell Dad yet.",
   ])("flags: %s", (text) => {
     expect(ids(text)).toContain("secrecy_request");
   });
@@ -85,8 +86,16 @@ describe("asks_for_payment", () => {
     "Move your savings to a safe account today.",
     "Send the fine of £75 using bitcoin.",
     "Mum can you transfer £300 for my rent?",
+    "You have an unpaid fine. Pay today at https://pay.example/ref/1 to avoid court.",
+    "Your parcel is waiting. Pay now to arrange delivery.",
   ])("flags: %s", (text) => {
     expect(ids(text)).toContain("asks_for_payment");
+  });
+
+  it("does not flag a bank reporting a payment it stopped", () => {
+    expect(ids("Gulf Example Bank: we have stopped a payment of £950.00 from your account.")).not.toContain(
+      "asks_for_payment",
+    );
   });
 
   it("does not flag a message that says no payment is needed", () => {
@@ -126,12 +135,14 @@ describe("medium flags", () => {
   it("threat_or_penalty", () => {
     expect(ids("A warrant has been issued for your arrest.")).toContain("threat_or_penalty");
     expect(ids("Your account will be suspended.")).toContain("threat_or_penalty");
+    expect(ids("Pay by Friday or the amount will double.")).toContain("threat_or_penalty");
     expect(ids("That one is fine, don't worry.")).not.toContain("threat_or_penalty");
   });
 
   it("urgency_or_deadline", () => {
     expect(ids("You must act now.")).toContain("urgency_or_deadline");
     expect(ids("Your account will close within 24 hours.")).toContain("urgency_or_deadline");
+    expect(ids("Call us today to keep your account open.")).toContain("urgency_or_deadline");
     expect(ids("Your code expires in 10 minutes.")).not.toContain("urgency_or_deadline");
   });
 
@@ -215,4 +226,29 @@ it("quotes at most 12 words of evidence", () => {
   for (const f of runRules(long).flags) {
     expect(f.evidence.split(/\s+/).length).toBeLessThanOrEqual(12);
   }
+});
+
+describe("guessSenderType", () => {
+  const guess = (text: string) => guessSenderType(text, runRules(text).flags);
+
+  it("goes by who the message names first", () => {
+    expect(guess("This is Detective Harris. Your bank account is linked to a fraud case.")).toBe("police");
+    expect(guess("Gulf Example Bank: if you do not reply, the police will be told.")).toBe("bank");
+    expect(guess("Swift Example Parcels: your parcel is held.")).toBe("delivery");
+  });
+
+  it("treats a family claim as family", () => {
+    expect(guess("Hi Mum, this is my new number. My bank card is blocked.")).toBe("family");
+  });
+});
+
+describe("guessClaimedPerson", () => {
+  it.each([
+    ["Hi Mum, it's Omar. This is my new number.", "Omar"],
+    ["Grandma it's me, your grandson. I'm in trouble.", "grandson"],
+    ["Hi Dad, this is my new number.", ""],
+    ["Your parcel is on its way.", ""],
+  ])("%s -> %s", (text, expected) => {
+    expect(guessClaimedPerson(text)).toBe(expected);
+  });
 });

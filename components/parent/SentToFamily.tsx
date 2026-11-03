@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Home, MessageCircleHeart, Phone } from "lucide-react";
 import type { FamilyReply } from "@/lib/circle/alerts";
 import type { FamilyChannel } from "@/lib/circle/channel";
-import { telHref } from "@/lib/next-step";
+import { useParentEnv } from "@/lib/parent/env";
 import { speak } from "@/lib/speech/speak";
+import { CallLink, ParentLink } from "./nav";
 import { primaryButton, secondaryButton } from "./styles";
 
 export const POLL_MS = 5000;
@@ -18,14 +18,14 @@ export function SentToFamily({
   alertId,
   familyPhone,
   autoRead = true,
-  homeHref = "/p",
 }: {
   channel: FamilyChannel;
   alertId: string;
   familyPhone?: string;
   autoRead?: boolean;
-  homeHref?: string;
 }) {
+  // The demo asks more often, so the reply shows up quickly.
+  const pollMs = useParentEnv()?.pollMs ?? POLL_MS;
   const [reply, setReply] = useState<FamilyReply | null>(null);
   const [gone, setGone] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -51,12 +51,12 @@ export function SentToFamily({
         setReply(result.reply);
         if (autoRead) stopSpeaking = speak(`${name} says: ${result.reply.text}`);
       }
-    }, POLL_MS);
+    }, pollMs);
     return () => {
       window.clearInterval(timer);
       stopSpeaking();
     };
-  }, [alertId, autoRead, channel, gone, name, reply]);
+  }, [alertId, autoRead, channel, gone, name, pollMs, reply]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -81,15 +81,15 @@ export function SentToFamily({
       )}
 
       {familyPhone && (
-        <a href={telHref(familyPhone)} className={reply ? secondaryButton : primaryButton}>
+        <CallLink name={name} phone={familyPhone} className={reply ? secondaryButton : primaryButton}>
           <Phone aria-hidden="true" className="size-7" />
           Call {name}
-        </a>
+        </CallLink>
       )}
-      <Link href={homeHref} className={secondaryButton}>
+      <ParentLink to="home" className={secondaryButton}>
         <Home aria-hidden="true" className="size-7" />
         Go to the start
-      </Link>
+      </ParentLink>
     </div>
   );
 }

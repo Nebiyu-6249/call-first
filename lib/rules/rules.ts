@@ -126,7 +126,7 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
       lower,
       [
         // Includes reported speech from a call description: "he said not to tell my daughter".
-        /\b(?:do not|don't|dont|never|not to|you must not|you cannot|you can't|you are not allowed to|i must not|i can't|i cannot|i was not allowed to|i wasn't allowed to)\s+(?:tell|inform|contact|call|speak to|talk to|mention (?:this|it) to|discuss (?:this|it) with|let)\s+(?:anyone|anybody|(?:your|my) (?:family|bank|children|kids|son|daughter|husband|wife|friends?|relatives|grandchildren|grandson|granddaughter|partner)|the bank|bank staff|family|branch staff|the police)\b/,
+        /\b(?:do not|don't|dont|never|not to|you must not|you cannot|you can't|you are not allowed to|i must not|i can't|i cannot|i was not allowed to|i wasn't allowed to)\s+(?:tell|inform|contact|call|speak to|talk to|mention (?:this|it) to|discuss (?:this|it) with|let)\s+(?:anyone|anybody|(?:(?:your|my) )?(?:family|children|kids|son|daughter|husband|wife|friends?|relatives|grandchildren|grandson|granddaughter|partner|mum|mom|mam|dad|mother|father|parents|brother|sister)|(?:your|my) bank|the bank|bank staff|branch staff|the police)\b/,
         /\b(?:keep|kept) (?:it|this) (?:a )?secret\b/,
         /\bkeep (?:this|it|everything|our conversation) (?:a )?(?:secret|confidential|private|quiet|between us|to yourself)\b/,
         /\bbetween (?:you and me|you and i|ourselves)\b/,
@@ -168,7 +168,9 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
         /\b(?:release|processing|handling|redelivery|re-delivery|customs|clearance|admin|administration|unlock|activation|transfer|courier|small|shipping|postage) (?:fee|charge|payment)\b/,
         /\b(?:send|transfer|lend) me (?:some |the )?money\b/,
         /\bcan you (?:send|transfer|lend|pay)\b/,
-        /\bpayment (?:of|is required|required|must be made)\b/,
+        /\bpay (?:it |this |the (?:fee|fine|balance|amount|charge) )?(?:now|today|tonight|immediately|online|here|at|via|through|using|by (?:card|clicking|tapping|following|visiting))\b/,
+        // "A payment of £20 is required", but not "we stopped a payment of £950".
+        /\bpayment (?:of [£$€]?\s?[\d,.]+ )?(?:is (?:required|due|needed|outstanding)|required|must be made)\b/,
       ],
       { negatable: true },
     ),
@@ -202,11 +204,13 @@ const RULES: Record<Exclude<FlagId, "contains_link" | "contains_callback_number"
       /\b(?:arrest|arrested|warrant|prosecute|prosecuted|prosecution|legal action|legal proceedings|court (?:summons|case|action|order|date|hearing)|summons|lawsuit|sued|jail|prison|deported|deportation|bailiffs?|debt collectors?|enforcement (?:agents?|action)|criminal (?:charges?|record|case)|penalty|penalties|fined|a fine|the fine|fine of|late fee|seized|repossess(?:ed|ion)?)\b/,
       /\b(?:account|card|service|access|number|line|benefits|pension|licen[cs]e)\b[^.!?\n]{0,20}?\b(?:will be|has been|have been|is being|is|are|was) (?:temporarily |permanently )?(?:blocked|suspended|frozen|closed|locked|restricted|deactivated|terminated|cancelled|canceled|disconnected|cut off|stopped|disabled)\b/,
       /\b(?:lose|losing) (?:access|your (?:money|savings|account|benefits|pension))\b/,
+      /\b(?:amount|fine|fee|charge|penalty|price|cost) will (?:double|triple|increase|go up|rise)\b/,
     ]),
 
   urgency_or_deadline: ({ lower }) =>
     find(lower, [
       /\b(?:urgent|urgently|immediately|immediate action|right now|right away|act now|respond now|reply now|call now|asap|as soon as possible|without delay|don't delay|do not delay|hurry|final (?:notice|warning|reminder|demand|attempt)|last (?:chance|warning|notice|attempt)|time is running out|limited time|today only|expires? (?:today|tonight|soon|shortly)|by (?:today|tonight|midnight|end of (?:the )?day)|before (?:midnight|it's too late|it is too late|the end of (?:the )?day)|stay on the line)\b/,
+      /\b(?:pay|call|reply|respond|act|click|tap|verify|confirm|send)(?: (?:it|this|us|me))? (?:now|today|tonight|immediately)\b/,
       /\bwithin (?:the next )?\d+ ?(?:hours?|hrs?|minutes?|mins?)\b/,
       /\b(?:24|48|72)[ -]?(?:hours?|hrs?)\b/,
       /\bin the next (?:hour|few hours|\d+ minutes)\b/,
@@ -240,15 +244,31 @@ export type GuessedSender = "bank" | "government" | "police" | "delivery" | "fam
 export function guessSenderType(input: string, flags: RuleFlag[]): GuessedSender {
   const lower = normalise(input).toLowerCase();
   if (flags.some((f) => f.id === "family_emergency_claim")) return "family";
-  if (/\b(?:bank|banking|building society|credit union|card services)\b/.test(lower)) return "bank";
-  if (/\b(?:police|officer|detective|constable|court|judge|magistrate)\b/.test(lower)) return "police";
-  if (/\b(?:government|tax (?:office|authority|department)|revenue|ministry|council|immigration|social security|pension service|benefits)\b/.test(lower)) {
-    return "government";
-  }
-  if (/\b(?:parcel|package|courier|delivery|post office|postal)\b/.test(lower)) return "delivery";
+  // Senders usually name themselves first: "This is Detective Harris... your bank account" is the police.
+  const named = SENDER_PATTERNS.map(([type, pattern]) => ({ type, index: lower.search(pattern) }))
+    .filter((s) => s.index !== -1)
+    .sort((a, b) => a.index - b.index);
+  if (named.length > 0) return named[0].type;
   if (flags.some((f) => f.id === "impersonates_bank_or_company")) return "company";
   return "unknown";
 }
+
+const SENDER_PATTERNS: [GuessedSender, RegExp][] = [
+  ["bank", /\b(?:bank|banking|building society|credit union|card services)\b/],
+  ["police", /\b(?:police|officer|detective|constable|court|judge|magistrate)\b/],
+  ["government", /\b(?:government|tax (?:office|authority|department)|revenue|ministry|council|immigration|social security|pension service|benefits|traffic office)\b/],
+  ["delivery", /\b(?:parcel|package|courier|delivery|post office|postal)\b/],
+];
+
+// Who a "family" message says it is from, when the AI is unavailable: "Hi Mum, it's Omar" gives
+// "Omar", and "it's your grandson" gives "grandson". Used only to pick which saved number to call.
+export function guessClaimedPerson(input: string): string {
+  const match = normalise(input).match(/\b(?:it's|it is|this is|i'm|i am)\s+(?:me,?\s+)?(?:your\s+)?([A-Za-z]+)/i);
+  const word = match?.[1] ?? "";
+  return CLAIM_STOPWORDS.has(word.toLowerCase()) ? "" : word;
+}
+
+const CLAIM_STOPWORDS = new Set(["my", "me", "a", "an", "the", "not", "just", "so", "really", "very", "in", "at", "on", "stuck", "sorry", "safe", "ok", "okay", "fine", "here", "now", "urgent"]);
 
 function normalise(text: string): string {
   return text.replace(/[‘’‛′]/g, "'").replace(/[“”″]/g, '"');

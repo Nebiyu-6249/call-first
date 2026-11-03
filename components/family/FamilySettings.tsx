@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CircleCheck, Unplug } from "lucide-react";
-import { BackLink } from "@/components/parent/BackLink";
+import { ArrowLeft, CircleCheck, Unplug } from "lucide-react";
 import type { CircleSettingsInput } from "@/lib/circle/validate";
 import { familyApi, type DeviceInfo, type FamilyCircle } from "@/lib/family/api";
 import { CircleForm } from "./CircleForm";
@@ -98,7 +98,10 @@ export function FamilySettings() {
 
   return (
     <main className="flex flex-col gap-6">
-      <BackLink href="/f/home" label="Back to messages" />
+      <Link href="/f/home" className="inline-flex min-h-12 items-center gap-2 self-start text-lg font-bold text-primary underline underline-offset-4">
+        <ArrowLeft aria-hidden="true" className="size-6" />
+        Back to messages
+      </Link>
       <h1 className="text-3xl font-bold">Contacts and settings</h1>
       <p>Changes need your PIN every time. {circle.parentName}&apos;s phone picks them up the next time it opens the app.</p>
 

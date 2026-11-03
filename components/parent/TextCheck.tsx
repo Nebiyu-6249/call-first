@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ClipboardPaste, Search } from "lucide-react";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
@@ -8,6 +8,7 @@ import { MAX_TEXT_LENGTH } from "@/lib/check/request";
 import { useParent } from "@/lib/parent/use-parent";
 import { BackLink } from "./BackLink";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
+import { Screen } from "./nav";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
 
@@ -16,11 +17,26 @@ type Step =
   | { name: "checking" }
   | { name: "result"; result: CheckResult };
 
-export function TextCheck() {
+// The demo passes a sample message and checks it straight away, as if it had been pasted.
+export function TextCheck({ initialText = "", checkNow = false }: { initialText?: string; checkNow?: boolean }) {
   const { circle, channel } = useParent();
-  const [step, setStep] = useState<Step>({ name: "input" });
-  const [text, setText] = useState("");
+  const [step, setStep] = useState<Step>(checkNow && initialText.trim() ? { name: "checking" } : { name: "input" });
+  const [text, setText] = useState(initialText);
   const [error, setError] = useState("");
+  const startedRef = useRef(false);
+
+  async function check(message: string) {
+    setError("");
+    setStep({ name: "checking" });
+    const result = await atLeast(runCheck({ type: "text", text: message }));
+    setStep({ name: "result", result });
+  }
+
+  useEffect(() => {
+    if (startedRef.current || !checkNow || !initialText.trim()) return;
+    startedRef.current = true;
+    void check(initialText);
+  }, [checkNow, initialText]);
 
   async function paste() {
     try {
@@ -36,16 +52,13 @@ export function TextCheck() {
     }
   }
 
-  async function submit(event: FormEvent) {
+  function submit(event: FormEvent) {
     event.preventDefault();
     if (!text.trim()) {
       setError("Please type or paste the message first.");
       return;
     }
-    setError("");
-    setStep({ name: "checking" });
-    const result = await atLeast(runCheck({ type: "text", text }));
-    setStep({ name: "result", result });
+    void check(text);
   }
 
   function reset() {
@@ -57,15 +70,15 @@ export function TextCheck() {
 
   if (step.name === "result") {
     return (
-      <main className="flex flex-1 flex-col">
+      <Screen className="flex flex-1 flex-col">
         <ResultView result={step.result} circle={circle} channel={channel} onCheckAnother={reset} />
-      </main>
+      </Screen>
     );
   }
 
   return (
-    <main className="flex flex-1 flex-col gap-6">
-      <BackLink href="/p/check" />
+    <Screen className="flex flex-1 flex-col gap-6">
+      <BackLink to="check" />
       <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
         <label htmlFor="message" className="text-3xl font-bold">
           Type or paste the message
@@ -94,6 +107,6 @@ export function TextCheck() {
           Check it
         </button>
       </form>
-    </main>
+    </Screen>
   );
 }

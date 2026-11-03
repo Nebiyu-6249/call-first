@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Keyboard, Mic, RotateCcw, Square } from "lucide-react";
 import type { CheckResult } from "@/lib/check";
 import { runCheck } from "@/lib/check/client";
@@ -9,6 +8,7 @@ import { useParent } from "@/lib/parent/use-parent";
 import { MAX_RECORDING_SECONDS, RECORDING_TYPES } from "@/lib/voice/audio";
 import { transcribe } from "@/lib/voice/client";
 import { BackLink } from "./BackLink";
+import { ParentLink, Screen } from "./nav";
 import { CheckingScreen, atLeast } from "./CheckingScreen";
 import { ResultView } from "./ResultView";
 import { primaryButton, secondaryButton } from "./styles";
@@ -117,7 +117,7 @@ export function VoiceCheck() {
 
   if (step.name === "result") {
     return (
-      <main className="flex flex-1 flex-col">
+      <Screen className="flex flex-1 flex-col">
         <ResultView
           result={step.result}
           circle={circle}
@@ -125,13 +125,13 @@ export function VoiceCheck() {
           source={{ kind: "voice", text: step.transcript }}
           onCheckAnother={reset}
         />
-      </main>
+      </Screen>
     );
   }
 
   if (step.name === "recording") {
     return (
-      <main className="flex flex-1 flex-col gap-6">
+      <Screen className="flex flex-1 flex-col gap-6">
         <h1 className="flex items-center gap-3 text-3xl font-bold">
           <Mic aria-hidden="true" className="size-10 shrink-0 text-warning motion-safe:animate-pulse" />
           Listening...
@@ -144,13 +144,13 @@ export function VoiceCheck() {
           <Square aria-hidden="true" className="size-8" />
           I have finished
         </button>
-      </main>
+      </Screen>
     );
   }
 
   return (
-    <main className="flex flex-1 flex-col gap-6">
-      <BackLink href="/p/check" />
+    <Screen className="flex flex-1 flex-col gap-6">
+      <BackLink to="check" />
       <h1 className="text-3xl font-bold">Tell me what happened</h1>
 
       {step.name === "problem" ? (
@@ -176,15 +176,15 @@ export function VoiceCheck() {
         </button>
       )}
 
-      <Link href="/p/check/text" className={secondaryButton}>
+      <ParentLink to="text" className={secondaryButton}>
         <Keyboard aria-hidden="true" className="size-7" />
         Type it instead
-      </Link>
+      </ParentLink>
 
       <p className="text-lg text-muted">
         You can talk for up to {MAX_RECORDING_SECONDS} seconds. Your voice is turned into words and then checked. The
         recording is not saved.
       </p>
-    </main>
+    </Screen>
   );
 }

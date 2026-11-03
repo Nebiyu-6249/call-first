@@ -154,13 +154,52 @@ Notes:
   family inbox, the one-tap reply reached the parent's screen; a settings change needed the PIN ("4 tries left" on a
   wrong one) and switched the parent's phone to 28px text.
 
-## Next: Phase 5 - Demo mode
+## Phase 5: Demo mode - done
 
-- `/demo`: two phone frames side by side (toggle on mobile), fictional circle (Amina, Sara, Gulf Example Bank).
-- Sample message row (bank code, frozen account link, traffic fine, parcel fee, "Hi Mum", police secrecy, prize,
-  appointment reminder, requested login code), paste or upload.
-- In-browser family loop using a demo `FamilyChannel`; no database writes; works if Supabase is unreachable.
-- Banner explaining the demo with links to privacy and limitations.
+- `/demo` (`components/demo`): a banner (who Amina and Sara are, three steps, links to `/privacy` and
+  `/privacy#limitations`), sample messages, and two phones. Wide screens (1280px and up): samples on the left, then
+  Amina's phone and Sara's phone in phone frames. 1024-1279px: samples above the two phones. Narrower: a toggle between
+  the phones; Sara's tab shows how many alerts are waiting for a reply. Both phones stay mounted, so switching keeps state.
+- The parent phone runs the real parent screens. `lib/parent/env.ts` is a context the demo fills with its own circle,
+  family channel, navigation and call handler; without it the screens behave as before under `/p`.
+  `components/parent/nav.tsx` has `ParentLink` (Next link, or a button in the demo), `CallLink` (always a `tel:` link
+  to a saved number; in the demo it shows a note instead of dialling) and `Screen` (`main`, or `div` inside the demo
+  so the page has one main landmark). The parent content is zoomed to 137.5% so it matches the real 22px text.
+- Samples (`lib/demo/samples.ts`): the nine from the brief, each labelled Scam or Normal message. Tapping one
+  checks it straight away on Amina's phone and shows the full message beside the samples. "Paste your own" and
+  "Upload a screenshot" open those screens on Amina's phone. A "Read answers aloud" switch and "Start again".
+- Family loop (`lib/demo/family-loop.ts`): in-browser store with the same limits as the server (summary 200,
+  excerpt 500, one reply per alert). The demo polls every 1.5 s instead of 5 s so replies show quickly.
+  The only network call is `/api/check` (and `/api/transcribe` for voice); `/demo` is a static page and needs no database.
+- Sara's phone shows the inbox with one-tap replies and the numbers Sara saved, with a note that only family can
+  change them, with the PIN.
+- The demo circle moved to `lib/demo/circle.ts` (tests import it from there via `test/fixtures.ts`).
+- Fixes found while building the demo:
+  - Rules: "Pay today at ...", "Pay now to ..." now count as asking for payment; "we stopped a payment of £950" no
+    longer does; "Don't tell Dad" is a secrecy request; "the amount will double" is a threat; "call us today" is urgency.
+  - Without the AI, the sender is now whoever the message names first ("This is Detective Harris... your bank
+    account" is the police), and `guessClaimedPerson` finds "it's Omar", so "Hi Mum" offers "Call Omar" on his
+    saved number.
+  - "What to do now" names whoever the call button rings ("Call Gulf Example Bank first"), so words and button agree.
+  - `AlertCard` uses container queries, so it lays out well inside the narrow phone frame.
+  - `/p/rules` now uses the family member's name in "When in doubt, call Sara".
+- With the rules alone, 6 of the 7 scam samples get WARNING. "Account frozen, with a link" gets NOT SURE, because
+  it asks for nothing directly. Both normal samples find no warning signs, which gives NOT SURE without the AI.
+  The live AI result decides the rest.
+- 195 unit tests. New: every sample checked with the rules alone, samples use only fiction-range numbers and
+  `.example` links, "Hi Mum" goes to Omar's saved number, the demo loop (send, poll, reply, one reply only, limits,
+  reset), new rule patterns, sender and claimed-person guesses.
+- Checked in the browser at 1440, 1024 and 375px wide (no horizontal scroll), without an API key (rules-only fallback):
+  "Hi Mum" -> WARNING with "Call Omar"; the demo call note; "Show Sara" -> alert on Sara's phone -> one-tap reply shown
+  on Amina's phone; prompt-injection text pasted -> WARNING; Back, Golden Rules and Start again; no console or server
+  errors; the real `/p` pages still use normal links.
+
+## Next: Phase 6 - Evaluation
+
+- `eval/messages.json`: about 30 fictional scams covering the taxonomy and about 15 normal messages, including tricky
+  normal ones (requested login code, bank notice with no request, delivery update with no payment).
+- `npm run eval`: run every message through the real pipeline (rules + live AI + verdict) and write `EVALUATION.md`
+  with the counts exactly as they come out, misses included.
 
 ## Known issues
 
@@ -171,3 +210,8 @@ Notes:
 - Bank, delivery and appointment messages with a phone number get NOT SURE from the rules alone (by design).
 - "Call our fraud team now" is not caught as urgency (only fixed phrases such as "call now" are). The AI covers it.
 - `npm audit` reports moderate advisories in dev tooling from the scaffold.
+- `/privacy` is still a placeholder (Phase 7); the demo banner already links to it and to `#limitations`.
+- The demo has not been seen with live AI answers yet (no API key here).
+- "Don't tell Dad" is now a secrecy request, so a harmless "don't tell Dad about his birthday present" gets WARNING
+  from the rules. Accepted: it errs on the side of caution, and the eval in Phase 6 will show how often this matters.
+- The demo's parent phone uses CSS `zoom` (supported in current Chrome, Edge, Safari and Firefox 126+).

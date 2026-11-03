@@ -1,5 +1,12 @@
-import { ComingSoon } from "@/components/ComingSoon";
+import type { Metadata } from "next";
+import { DemoApp } from "@/components/demo/DemoApp";
+import { APP_NAME } from "@/lib/config";
 
-export default function Demo() {
-  return <ComingSoon title="Demo" />;
+export const metadata: Metadata = {
+  title: `Demo - ${APP_NAME}`,
+  description: `Try ${APP_NAME} with a made-up family: check sample scam messages and see the family loop.`,
+};
+
+export default function DemoPage() {
+  return <DemoApp />;
 }

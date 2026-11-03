@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
   CircleCheck,
   CircleHelp,
@@ -18,13 +17,15 @@ import {
 import { buildAlert, type FamilyChannel } from "@/lib/circle/channel";
 import type { ParentCircle } from "@/lib/circle/types";
 import { MAX_REASONS, type CheckResult } from "@/lib/check";
-import { pickNextStep, telHref } from "@/lib/next-step";
+import { pickNextStep } from "@/lib/next-step";
+import { useParentEnv } from "@/lib/parent/env";
 import { speechScript } from "@/lib/speech/script";
 import { canSpeak, speak } from "@/lib/speech/speak";
 import type { VerdictLevel } from "@/lib/verdict";
 import { DEFAULT_FAMILY_NAME, VERDICT_COPY, whatToDo } from "@/lib/verdict/copy";
 import { FromMessage } from "./FromMessage";
 import { GoldenRules } from "./GoldenRules";
+import { CallLink, ParentLink } from "./nav";
 import { SentToFamily } from "./SentToFamily";
 import { primaryButton, secondaryButton, textLink } from "./styles";
 
@@ -42,8 +43,7 @@ export function ResultView({
   circle = null,
   source = { kind: "text" },
   channel = null,
-  autoRead = true,
-  homeHref = "/p",
+  autoRead,
   onCheckAnother,
 }: {
   result: CheckResult;
@@ -51,10 +51,12 @@ export function ResultView({
   source?: ResultSource;
   // How to reach the family. Null when the phone is not connected to a family circle.
   channel?: FamilyChannel | null;
+  // Read the answer aloud as soon as it appears. On by default; the demo has a switch for it.
   autoRead?: boolean;
-  homeHref?: string;
   onCheckAnother: () => void;
 }) {
+  const env = useParentEnv();
+  const readAloud = autoRead ?? env?.autoRead ?? true;
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stopReadingRef = useRef<() => void>(() => {});
   const [dismissed, setDismissed] = useState(false);
@@ -76,11 +78,11 @@ export function ResultView({
 
   // Read the result aloud once it appears, and stop when the screen changes.
   useEffect(() => {
-    if (!autoRead || !showingResult) return;
+    if (!readAloud || !showingResult) return;
     const stop = speak(script, { onStart: () => setReading(true), onEnd: () => setReading(false) });
     stopReadingRef.current = stop;
     return stop;
-  }, [autoRead, showingResult, script]);
+  }, [readAloud, showingResult, script]);
 
   async function showFamily() {
     if (!channel) return;
@@ -98,8 +100,7 @@ export function ResultView({
         channel={channel}
         alertId={sentAlertId}
         familyPhone={circle?.familyMembers[0]?.phone}
-        autoRead={autoRead}
-        homeHref={homeHref}
+        autoRead={readAloud}
       />
     );
   }
@@ -119,10 +120,10 @@ export function ResultView({
         <p className="text-xl">
           We can get things wrong. If you are not sure, ask {familyName} before you do anything.
         </p>
-        <Link href={homeHref} className={primaryButton}>
+        <ParentLink to="home" className={primaryButton}>
           <Home aria-hidden="true" className="size-7" />
           Go to the start
-        </Link>
+        </ParentLink>
       </div>
     );
   }
@@ -204,13 +205,13 @@ export function ResultView({
         <h2 id="todo" className="text-2xl font-bold">
           What to do now
         </h2>
-        <p className="text-xl">{whatToDo(result.level, familyName)}</p>
+        <p className="text-xl">{whatToDo(result.level, familyName, nextStep?.name)}</p>
         {nextStep && (
           <div className="flex flex-col gap-2">
-            <a href={telHref(nextStep.phone)} className={primaryButton}>
+            <CallLink name={nextStep.name} phone={nextStep.phone} className={primaryButton}>
               <Phone aria-hidden="true" className="size-7" />
               {nextStep.label}
-            </a>
+            </CallLink>
             <p className="text-lg text-muted">
               {nextStep.phone}. {nextStep.reason}
             </p>

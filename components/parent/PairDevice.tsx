@@ -45,7 +45,7 @@ export function PairDevice() {
 
   return (
     <main className="flex flex-1 flex-col gap-6">
-      <BackLink href="/p" />
+      <BackLink to="home" />
       <form onSubmit={submit} noValidate className="flex flex-col gap-5">
         <label htmlFor="pair-code" className="text-3xl font-bold">
           Type the 6 numbers from your family
