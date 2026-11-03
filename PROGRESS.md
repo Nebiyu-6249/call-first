@@ -458,14 +458,40 @@ time, with a go-ahead between steps. `eval/heldout.json` must not be opened befo
 - Tests: 292 pass (held-out format, sets without targets, Wilson values, report order and provenance, the
   changed-since note).
 
-Next: Step 6, deploy and verify (stop the dev server first), push the commits, final README/DEVPOST/PROGRESS.
+### Step 6: Deploy and verify - done
+
+- Deployed with `npx --yes netlify-cli deploy --prod` (no dev server running) to
+  https://call-first-safespace.netlify.app. The old `second-look-safespace` address returns 404.
+- Checked on the live demo:
+  - the new name everywhere, with no "Second Look" left;
+  - "Hi Mum" first, the panel showing the checked message, and the "Show Sara" hint (the Step 1 demo fix);
+  - a real AI check, giving WARNING, with "What the AI service saw" showing `[FAMILY MEMBER]`;
+  - "I already sent money" from that result: a plan with a call to Gulf Example Bank, and an URGENT alert on Sara's
+    phone with the verdict and the message; Sara's "I'm calling you now." reached Amina;
+  - "Someone is on the phone with me now": "I hung up", the wait-five-minutes line, both saved numbers, "Tell Sara",
+    and an URGENT card on top of Sara's inbox;
+  - private mode: no request to `/api/check`, "Quick check on this phone only", no "What the AI service saw";
+  - `/p/phone`, `/p/happened`, `/privacy` (advice sources, held-out numbers) and `/f/new` (private mode setting).
+- Function logs (`netlify logs --source functions --since 30m`) hold only durations and start-up lines, with no
+  message text. The 5-second entry matches the live check.
+- Not checked live: an URGENT alert through the deployed API with a real paired phone. That path is covered by the
+  route-handler tests and by `npm run check:supabase` against the live database.
+- README has a "What is new" section, the new name with a note on the old one, the urgent moments, masking and private
+  mode. DEVPOST.md has the new features, a second half to the safer-outcome story, two new challenges and the
+  held-out numbers. Every `[PLACEHOLDER]` is kept for you to write.
 
 ## Still to do (needs you)
 
-1. **Disable the legacy JWT keys** in Supabase: https://supabase.com/dashboard/project/zrjjvewrcraaqyzwfgns/settings/api-keys,
-   then **Legacy API Keys > Disable JWT-based API keys**. The old service_role key was exposed in a terminal log.
-2. **Fill in the `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience.
-3. **On a real phone:** check the camera, the microphone, offline mode and a screen reader on the live site.
+1. **Disable the legacy JWT keys** in Supabase, if you have not yet:
+   https://supabase.com/dashboard/project/zrjjvewrcraaqyzwfgns/settings/api-keys, then **Legacy API Keys > Disable
+   JWT-based API keys**. The old service_role key was exposed in a terminal log.
+2. **Fill in the seven `[PLACEHOLDER: ...]` parts of DEVPOST.md** with your own experience, including how you used
+   Claude Code.
+3. **On a real phone:** check the camera, the microphone, offline mode, a screen reader, and that the call buttons
+   dial. Pair a phone to a real circle once and try both urgent buttons end to end.
+4. **Submit on Devpost** before Nov 22, 2026, 5:00 PM US Eastern, with the live demo link and the repository link.
+   Screenshots or a video must show only the made-up demo data.
+5. **Optional:** say yes if you want the SMS spam dataset check from UPGRADE.md.
 
 ## Known issues
 

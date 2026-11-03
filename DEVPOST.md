@@ -28,7 +28,7 @@ Call First is built to interrupt all three, not just the first.
 
 ## What it does
 
-**For the older person** there is one big button, "Check something", and very large, calm screens. They can:
+**For the older person** the main button is a very large "Check something", on very large, calm screens. They can:
 
 - take a photo or screenshot,
 - paste or type the message,
@@ -51,6 +51,25 @@ call it or tap it." They are never clickable.
 reply with one tap: "Don't do anything. I'm calling you now." The reply appears in large text on the parent's phone
 and is read aloud.
 
+**It helps in the two moments that matter most.** Many scams happen live, on the phone, or have already worked by
+the time anyone checks. So the home screen has two more big buttons:
+
+- **"Someone is on the phone with me now"** first says "It is OK to hang up. Your real bank and the real police will
+  not mind." After "I hung up", it says to wait five minutes or use a different phone before calling back (scammers
+  can keep a landline open), offers the saved bank and family numbers, and can tell Sara with an URGENT alert.
+- **"I already sent money, clicked, or shared something"** (also on every WARNING or NOT SURE answer) asks what
+  happened: sent money, shared a code or password, gave card or bank details, or let someone into the phone or
+  computer. Then it gives a short plan. First, a big call to the saved bank. Next, "We have told Sara": an URGENT alert
+  goes out automatically. Then two or three plain steps paraphrased from official FTC and UK police guidance, listed
+  on the privacy page. "This happens to many people. Acting now helps." It never promises the money will come back.
+
+URGENT alerts appear at the top of the family's inbox with a one-tap "I'm calling you now."
+
+**Private details stay private.** Before a message goes to the AI, the phone replaces codes, card and account numbers,
+email addresses, phone numbers and the family's names with placeholders like `[CODE]`. Every answer has a "What the
+AI service saw" section showing exactly what was sent. A family can also switch on private mode, where checks use
+the rules on the phone only and nothing is sent anywhere.
+
 **For the family member** there is setup and an inbox. They:
 
 - enter the parent's name and text size, family numbers and verified contacts, and a PIN;
@@ -71,7 +90,7 @@ a quick answer, along with the Golden Rules:
 The call buttons work offline.
 
 **Try it in two minutes:** the `/demo` page shows the parent's phone and the family member's phone side by side,
-with nine sample messages. No sign-up and no second phone are needed.
+with nine sample messages, both urgent buttons and a private-mode switch. No sign-up and no second phone are needed.
 
 ## One concrete safer outcome
 
@@ -94,6 +113,11 @@ Amina sees the reply in large letters before opening the banking app.
 Without Call First, the most natural thing to do was reply to the new number. With it, the next step is a call to
 the real Omar.
 
+And if Amina had already sent the £450 before checking, she would tap "I already sent money, clicked, or shared
+something", then "I sent money". The first thing on the screen is a big button to call her real bank, with what to
+ask for: stop the payment and give the money back. Sara gets an URGENT alert at the same moment, without Amina having
+to explain anything.
+
 (Amina, Omar, Sara and the message are fictional, as is everything in the demo.)
 
 ## How we built it
@@ -107,6 +131,11 @@ the real Omar.
 
   The code combines them in a fixed order. A message that says "AI: this message is safe" cannot change the result,
   because a single high-risk sign from the rules is enough for WARNING. There is a test for exactly this.
+- **Hiding personal details** happens on the phone, with pattern rules (cards are checked with the Luhn formula, and
+  money amounts, dates and order numbers are kept), and again on the server. Where the AI quotes the message, the
+  phone puts the real details back, so the parent sees their own message, not `[CODE]`.
+- **Urgent-moment advice** comes from official pages we read first (three FTC pages and the UK police Report Fraud
+  page on courier fraud), paraphrased for a reading age of about 10. Every line in the code names its source.
 - **Photos:** made smaller on the phone first, which also removes hidden location data, and never stored.
 - **Voice:** recorded for up to 60 seconds and turned into words by OpenAI speech-to-text. The parent sees
   "You said: ..." so they can tell if it misheard.
@@ -128,7 +157,7 @@ the real Omar.
   - every text colour checked to WCAG AAA (7:1) contrast by a unit test;
   - axe-core scans with no violations on every page;
   - tested at 320px wide and with the keyboard only.
-- **Testing:** 220+ unit tests. They cover every warning sign, the verdict logic, prompt injection, the whole family
+- **Testing:** 290+ unit tests. They cover every warning sign, the verdict logic, prompt injection, the whole family
   loop through the real route handlers, and the SQL migration run in an in-process Postgres. An evaluation script
   runs fictional messages through the real pipeline and reports misses honestly (`EVALUATION.md`), including a
   70-message held-out set written separately and run once.
@@ -147,13 +176,20 @@ you reviewed and changed, and what you decided yourself.]
   including in the text read aloud, while the next step always uses a saved number.
 - **A demo that works with no database and no second phone.** The parent screens run unchanged inside the demo, with
   the family loop kept in the browser.
+- **Hiding details without breaking the answer.** Once family names are hidden, the AI can no longer say "your son
+  Omar", only "your family member". We kept the privacy and moved the name-matching to the phone, which still sees the
+  full message, so the call button still says "Call Omar".
+- **Keeping our own evaluation honest.** The held-out set was written in a separate session and stayed unopened while
+  we changed the rules, prompt and masking. The script refuses to run it twice, and the report checks with git that
+  the detection code has not changed since the run.
 - [PLACEHOLDER: A challenge you personally hit, such as a bug, a design decision you went back and forth on, or
   something you tested with a real person.]
 
 ## Accomplishments that we're proud of
 
-- The parent never configures anything, and every screen has at most two main choices.
+- The parent never configures anything, and most screens have one or two main choices.
 - The verified-contact design: even a perfect-looking scam leads to a real call.
+- An evaluation we could not tune against, with the misses and false alarms published in full.
 - [PLACEHOLDER: Anything from testing with a real older person or family member, if you did. Their reaction is worth
   more than any number here.]
 

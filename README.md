@@ -3,7 +3,8 @@
 A scam interrupter for older people who are not comfortable with technology, and for the family members who look
 out for them.
 
-Built during SafeSpace Hacks (Oct 17 - Nov 22, 2026), starting from an empty repository.
+Built during SafeSpace Hacks (Oct 17 - Nov 22, 2026), starting from an empty repository. It was called "Second Look"
+for most of the build; the repository, the live site and the app were renamed to Call First in November 2026.
 
 > Call First gives a second opinion, not a guarantee. It is not an emergency service.
 
@@ -23,11 +24,28 @@ pressure to act fast and tell no one. Most scam checkers only deal with the firs
    "This came from the message. Do not call it or tap it."
 3. **Show my family.** One button sends the message and the answer to a family member, who replies with one tap
    ("Don't do anything. I'm calling you now."). The reply appears in large text on the parent's phone and is read aloud.
+4. **Help in the urgent moments.** "Someone is on the phone with me now" says it is OK to hang up, then offers the
+   saved bank and family numbers and tells the family. "I already sent money, clicked, or shared something" (on the
+   home screen and on every WARNING or NOT SURE answer) gives a short plan for what happened: call the saved bank
+   first, the family is told straight away, then two or three steps paraphrased from official FTC and UK police
+   guidance. It never promises the money will come back.
 
 There are two kinds of user:
 
-- **The parent** sees one big "Check something" button and very large, simple screens. They never set anything up.
+- **The parent** sees one very large "Check something" button, two big buttons for urgent moments, and simple screens. They never set anything up.
 - **The family member** sets everything up, holds the PIN, gets the alerts and replies.
+
+## What is new (November 2026)
+
+- **Renamed to Call First**, with a new live address (the old one no longer works).
+- **Personal details are hidden before the AI sees a message:** codes, card and account numbers, email addresses,
+  phone numbers and the family's names. The parent can open "What the AI service saw" to see exactly what was sent.
+- **Private mode:** a family setting that keeps every check on the phone, with the rules only.
+- **The two urgent moments** above, with URGENT alerts that appear first on the family's phone.
+- **An independent evaluation:** 70 messages written in a separate session that never saw the rules, run once.
+  See [Evaluation](#evaluation).
+- **Demo fixes:** the demo panel follows what was actually checked, "Hi Mum, new number" comes first, and a hint
+  points to "Show Sara".
 
 ## Try the demo in three steps
 
@@ -39,18 +57,25 @@ Gulf Example Bank. No sign-up or second phone is needed.
 2. Read Amina's answer on the left. The call button uses a number Sara saved, never one from the message.
 3. Tap "Show Sara", then reply on Sara's phone on the right. Amina sees the reply.
 
+Then try "Someone is on the phone with me now" or "I already sent money, clicked, or shared something" on Amina's home
+screen: Sara gets an URGENT alert. The "Private mode" switch shows what happens when nothing may leave the phone.
+
 On a phone, use the toggle to switch between Amina's phone and Sara's phone.
 
 ## How a check works
 
 ```
-text / photo / voice  ->  rules engine (no AI)  --+
-                      ->  AI analysis (JSON)   --+-->  verdict (code)  ->  next step (code)
+text / photo / voice  ->  rules engine (no AI)                      --+
+                      ->  hide personal details  ->  AI analysis (JSON) --+-->  verdict (code)  ->  next step (code)
 ```
 
 - **Rules engine** (`lib/rules`): 14 warning signs in a fixed list, such as "asks for a code", "asks to keep it
   secret" or "asks to control your device". It tells "your code is 482913, never share it" apart from "read me the
   code".
+- **Hiding personal details** (`lib/privacy/mask.ts`): on the phone, before anything is sent, codes, card and account
+  numbers, email addresses, phone numbers and the family's names become placeholders such as `[CODE]`. Links keep
+  only their web address. The server hides them again. Photos are sent as they are, so the photo screen says to
+  cover any card number first. In private mode nothing is sent at all.
 - **AI analysis** (`lib/ai`): OpenAI Responses API with Structured Outputs and an 8-second timeout. The message is
   sent between markers as untrusted data, never as instructions.
 - **Verdict** (`lib/verdict`): computed in code from both. Any high-severity sign gives WARNING. NO WARNING SIGNS
@@ -67,8 +92,10 @@ The full, plain-language version is at `/privacy` on the site.
 
 - **Never stored:** pictures, voice recordings, transcripts, and messages that were checked but not shared. Server
   logs never contain message content.
-- **Alerts:** only a one-line summary and up to 500 characters of the message, kept for at most 7 days, and only when
-  the parent taps "Show".
+- **Alerts:** only a one-line summary and up to 500 characters of the message (codes, card and account numbers
+  hidden), kept for at most 7 days, and only when the parent taps "Show" or sends an URGENT alert.
+- **Hidden before the AI sees it:** see "Hiding personal details" above. "What the AI service saw" on every answer
+  shows exactly what was sent. **Private mode** sends nothing.
 - **OpenAI:** API data is not used for training. Checks are sent with `store: false`. OpenAI keeps abuse-monitoring
   logs for up to 30 days. Checked against OpenAI's data-controls page in November 2026.
 - **The parent's phone can read the verified contacts but not change them.** Only family members with the PIN can,
